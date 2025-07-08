@@ -1,0 +1,1 @@
+export type WithUpdating<T> = T & { isUpdating: boolean };
