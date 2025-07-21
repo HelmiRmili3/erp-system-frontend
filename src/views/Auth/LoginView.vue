@@ -120,7 +120,7 @@ const onSubmit = async () => {
   if (!v$.value.$invalid && !isSubmitting.value) {
     isSubmitting.value = true
     try {
-      var { data } = await login(user)
+      var  data  = await login(user)
       if (data) {
         toast.add({
           life: 5000,

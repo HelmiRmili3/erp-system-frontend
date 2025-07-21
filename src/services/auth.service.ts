@@ -12,8 +12,13 @@ const register = (data: RegisterModel) => {
   return api.value!.post<Response<User>>('/register', data)
 }
 
-const login = (data: LoginModel) => {
-  return api.value!.post<LoginResult>('/users/login', data)
+// const login = (data: LoginModel) => {
+//   return api.value!.post<LoginResult>('/Auth/login', data)
+// }
+const login = async (data: LoginModel) => {
+  const res = await api.value!.post<Response<LoginResult>>('/Auth/login', data)
+  console.log(res.data.data)
+  return res.data.data // ✅ unwrap the `data` field
 }
 
 const resendEmailVerification = (email: string) => {

@@ -21,7 +21,14 @@ export default defineConfig({
     svgLoader()
   ],
   server: {
-    port: 4000
+    port: 4000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000', // ✅ OR 'https://localhost:5001' if you're using HTTPS
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
   resolve: {
     alias: {

@@ -24,7 +24,7 @@ router.beforeEach(async (to, from, next) => {
 
 async function checkUserAuth() {
   try {
-    await api.value!.get('/categories')
+    await api.value!.get('/Auth/me')
     return true
   } catch (e) {
     return false
