@@ -1,11 +1,6 @@
+import type { Absence } from '@/models/absence.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type for Absence - adjust according to your actual model
-interface Absence {
-  id: number
-  // Add other absence properties as needed
-}
 
 const getAllAbsences = () => {
   return api.value!.get<Response<Absence[]>>('/api/Absences')

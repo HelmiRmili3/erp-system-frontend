@@ -1,11 +1,6 @@
+import type { Payroll } from '@/models/payroll.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type - adjust according to your actual model
-interface Payroll {
-  id: number
-  // Add other payroll properties
-}
 
 const createPayroll = (data: Partial<Payroll>) => {
   return api.value!.post<Response<Payroll>>('/api/Payrolls', data)
@@ -24,7 +19,7 @@ const deletePayroll = (id: number) => {
 }
 
 const getPayrollById = (id: number) => {
-  return api.value!.get<Response<Payroll>>(`/api/Payrolls/{id}`)
+  return api.value!.get<Response<Payroll>>(`/api/Payrolls/${id}`)
 }
 
 const getCurrentUserPayrolls = () => {

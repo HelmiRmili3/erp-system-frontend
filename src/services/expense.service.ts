@@ -1,11 +1,6 @@
+import type { Expense } from '@/models/expense.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type - adjust according to your actual model
-interface Expense {
-  id: number
-  // Add other expense properties
-}
 
 const createExpense = (data: Partial<Expense>) => {
   return api.value!.post<Response<Expense>>('/api/Expenses', data)

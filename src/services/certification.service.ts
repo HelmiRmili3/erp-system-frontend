@@ -1,11 +1,6 @@
+import type { Certification } from '@/models/certification.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type - adjust according to your actual model
-interface Certification {
-  id: number
-  // Add other certification properties
-}
 
 const createCertification = (data: Partial<Certification>) => {
   return api.value!.post<Response<Certification>>('/api/Certifications', data)

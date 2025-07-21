@@ -1,11 +1,6 @@
+import type { Attendance } from '@/models/attendance.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type - adjust according to your actual model
-interface Attendance {
-  id: number
-  // Add other attendance properties
-}
 
 const markAttendance = (data: Partial<Attendance>) => {
   return api.value!.post<Response<Attendance>>('/api/Attendances/mark', data)

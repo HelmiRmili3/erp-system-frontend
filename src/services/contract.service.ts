@@ -1,11 +1,6 @@
+import type { Contract } from '@/models/contract.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
-
-// Placeholder type - adjust according to your actual model
-interface Contract {
-  id: number
-  // Add other contract properties
-}
 
 const createContract = (data: Partial<Contract>) => {
   return api.value!.post<Response<Contract>>('/api/Contracts', data)
