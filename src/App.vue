@@ -1,7 +1,9 @@
 <template>
   <div class="relative">
-    <div v-show="loading"
-      class="absolute bg-white bg-opacity-60 h-screen w-screen flex items-center justify-center z-[9999]">
+    <div
+      v-show="loading"
+      class="absolute bg-white bg-opacity-60 h-screen w-screen flex items-center justify-center z-[9999]"
+    >
       <div class="flex items-center">
         <loading-svg class="w-32 h-32" />
       </div>
@@ -9,7 +11,7 @@
 
     <div class="py-10 px-5 mb-4">
       <router-view v-slot="{ Component, route }">
-        <transition :name="route.meta.transition ?? ''" mode="out-in">
+        <transition name="route.meta.transition ?? ''" mode="out-in">
           <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
@@ -17,24 +19,22 @@
       <ConfirmPopup />
       <DynamicDialog />
     </div>
-
   </div>
 </template>
 <script setup lang="ts">
 import LoadingSvg from '@/assets/loader.svg?component'
 import { useAppStore } from './stores/app.store'
 import { storeToRefs } from 'pinia'
-import { useConfigurationsStore } from './stores/configurations.store'
+// import { useConfigurationsStore } from './stores/configurations.store'
 
 const { loading } = storeToRefs(useAppStore())
 
-
 const appStore = useAppStore()
-const configurationStore = useConfigurationsStore()
+// const configurationStore = useConfigurationsStore()
 
 const init = async () => {
   appStore.setLoading(true)
-  await configurationStore.initConfigurations()
+  // await configurationStore.initConfigurations()
   appStore.setLoading(false)
 }
 

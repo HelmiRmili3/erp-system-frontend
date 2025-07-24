@@ -2,7 +2,9 @@
   <div class="flex justify-start items-center flex-row gap-5">
     <div class="flex flex-1 justify-start items-center flex-row gap-5">
       <div class="flex justify-start items-start flex-col py-2.5">
-        <span class="text-[#2A2A2A] text-xl font-semibold"> Bienvenue Théo Smith 👋 </span>
+        <span class="text-[#2A2A2A] text-xl font-semibold">
+          Bienvenue {{ user?.firstName }} 👋
+        </span>
         <span class="text-[#494949] text-xs"> Bienvenue sur votre tableau de bord ! </span>
       </div>
       <div class="flex flex-1 justify-start items-center flex-row gap-5">
@@ -10,7 +12,8 @@
           <div class="flex flex-1 justify-start items-start flex-col">
             <div class="flex self-stretch justify-start items-start flex-col">
               <div
-                class="flex self-stretch justify-start items-start flex-col gap-3 px-4 bg-[#FFFFFE] border-solid border-[#F2F2F2] border rounded-[10px]">
+                class="flex self-stretch justify-start items-start flex-col gap-3 px-4 bg-[#FFFFFE] border-solid border-[#F2F2F2] border rounded-[10px]"
+              >
                 <div class="self-stretch h-[0px]"></div>
                 <div class="flex self-stretch justify-between items-center flex-row gap-1">
                   <div class="flex justify-start items-center flex-row gap-1">
@@ -38,8 +41,10 @@
           </div>
         </div>
         <div class="flex justify-start items-start flex-col">
-          <span class="text-[#2A2A2A] text-sm font-medium cursor-pointer" @click="logout">Théo Smith</span>
-          <span class="text-[#5F6C7B] text-xs">Admin</span>
+          <span class="text-[#2A2A2A] text-sm font-medium cursor-pointer" @click="logout"
+            >{{ user?.userName }}
+          </span>
+          <span class="text-[#5F6C7B] text-xs">{{ user?.roles[0] }}</span>
         </div>
         <div class="flex justify-center items-center flex-row cursor-pointer" @click="logout">
           <chevron-down-icon />
@@ -54,11 +59,11 @@ import SearchIcon from './searchIcon.svg'
 import NotificationIcon from './notificationIcon.svg'
 import ChevronDownIcon from './chevronDownIcon.svg'
 import { useAuthStore } from '../../../../stores/auth.store'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-const authStore = useAuthStore();
-const router = useRouter();
-
+const authStore = useAuthStore()
+const router = useRouter()
+const user = authStore.user
 const logout = () => {
   authStore.logout()
   router.push({ name: 'Login' })

@@ -2,13 +2,13 @@ export interface User {
   id: string
   firstName: string
   lastName: string
-  birthDate: string | null
-  address: string | null
-  fullName: string
+  birthDate: string
+  address: string
+  userName: string
   email: string
   jobTitle: string
   department: string
-  hireDate: string | null
+  hireDate: string
   contractType: string
   status: string
   createdAt: string

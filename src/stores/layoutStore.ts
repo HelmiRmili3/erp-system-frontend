@@ -39,19 +39,55 @@ export const useLayoutStore = defineStore('layoutStore', () => {
         title: 'Categories',
         items: [
           {
-            id: 'manage-categories',
-            label: 'Manage Categories',
+            id: 'Absences',
+            label: 'Absences',
             icon: 'categories',
             to: '/admin/categories'
+          },
+          {
+            id: 'Attendance',
+            label: 'Attendance',
+            icon: 'categories',
+            to: '/admin/Contracts'
+          },
+          {
+            id: 'Contracts',
+            label: 'Contracts',
+            icon: 'categories',
+            to: '/admin/Contracts'
+          },
+          {
+            id: 'Certifications',
+            label: 'Certifications',
+            icon: 'categories',
+            to: '/admin/Contracts'
+          },
+          {
+            id: 'Expenses',
+            label: 'Expenses',
+            icon: 'categories',
+            to: '/admin/Contracts'
+          },
+          {
+            id: 'Payrolls',
+            label: 'Payrolls',
+            icon: 'categories',
+            to: '/admin/Contracts'
           }
         ]
       },
       {
-        title: 'Settings',
+        title: 'Roles & Permissions',
         items: [
           {
             id: 'settings',
-            label: 'Settings',
+            label: 'Roles',
+            icon: 'settings',
+            to: '/admin/configurations'
+          },
+          {
+            id: 'settings',
+            label: 'Permissions',
             icon: 'settings',
             to: '/admin/configurations'
           }

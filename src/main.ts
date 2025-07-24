@@ -50,7 +50,9 @@ const appStore = useAppStore()
 appStore.setLoading(true)
 
 loadConfig().then((config) => {
-  console.log('Loaded config:', config)
+  // console.log('Loaded config:', config)
+  console.log('Connected to :', config.VITE_BASE_URL)
+
   createAxiosInstances(config.VITE_BASE_URL || 'https://localhost:5000')
   app.use(axiosPlugin)
 })

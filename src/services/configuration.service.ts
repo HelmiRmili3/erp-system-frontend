@@ -19,8 +19,7 @@ const updateLogo = async (oldFile: string, file: File) => {
   oldFile = encodeURI(oldFile)
   try {
     await deleteFile(oldFile)
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error deleting old file:', error)
   }
   const result = await uploadFile(file)

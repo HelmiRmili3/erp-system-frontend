@@ -1,92 +1,8 @@
 <template>
-  <DashboardWrapper>
-    <div class="relative flex divide-y flex-col p-4 divide-gray-300">
-      <div v-if="loading" class="absolute inset-0 bg-white/80 flex items-center justify-center z-50">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-
-      <div class="flex divide-x rounded-t-md">
-        <generic-managment title="Name Configuration" label="Name" :initialValue="name" @save="handleNameSubmit"
-          :loading="nameLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Name is required' }
-          ]">
-          <i class="pi pi-user"></i>
-        </generic-managment>
-
-        <generic-managment title="Slogan Configuration" label="Slogan" :initialValue="slogan" @save="handleSloganSubmit"
-          :loading="sloganLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Slogan is required' }
-          ]">
-          <i class="pi pi-comment"></i>
-        </generic-managment>
-
-        <logo-managment :value="pathToFullUrl(logo)" @save="handleLogoSubmit" :loading="logoLoading" />
-        <!-- <generic-managment
-          title="Logo Configuration"
-          label="Logo"
-          :initialValue="logo"
-          @save="handleLogoSubmit"
-          :loading="logoLoading"
-        >
-          <i class="pi pi-image"></i>
-        </generic-managment> -->
-      </div>
-
-      <div class="flex divide-x rounded-b-xl">
-        <generic-managment title="Phone Configuration" label="Phone" :initialValue="phone" @save="handlePhoneSubmit"
-          :loading="phoneLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Phone is required' }
-          ]">
-          <i class="pi pi-phone"></i>
-        </generic-managment>
-
-        <generic-managment title="Email Configuration" label="Email" :initialValue="email" @save="handleEmailSubmit"
-          :loading="emailLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Email is required' },
-            {
-              validate: (value: string) =>
-                value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g) !== null,
-              message: 'Invalid email format'
-            }
-          ]">
-          <i class="pi pi-envelope"></i>
-        </generic-managment>
-      </div>
-
-      <div class="flex divide-x">
-        <generic-managment title="Address Configuration" label="Address" :initialValue="address"
-          @save="handleAddressSubmit" :loading="addressLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Address is required' }
-          ]">
-          <i class="pi pi-map"></i>
-        </generic-managment>
-        <currency-managment :currency="currency" @save="handleCurrencySubmit"
-          :loading="currencyLoading"></currency-managment>
-      </div>
-
-      <div class="flex divide-x">
-        <generic-managment title="TVA Percentage" label="TVA %" :initialValue="tvaPercentage.toString()"
-          @save="handleTVASubmit" :loading="tvaLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'TVA percentage is required' },
-            { validate: (value: string) => !isNaN(Number(value)), message: 'TVA must be a number' },
-            { validate: (value: string) => Number(value) >= 0, message: 'TVA must be a positive number' }
-          ]">
-          <i class="pi pi-percentage"></i>
-        </generic-managment>
-        <generic-managment title="Timbre Fiscal" label="Timbre Fiscal Value" :initialValue="timbreFiscal.toString()"
-          @save="handleTimbreFiscalSubmit" :loading="timbreFiscalLoading" :validation-rules="[
-            { validate: (value: string) => value.length > 0, message: 'Timbre fiscal is required' },
-            { validate: (value: string) => !isNaN(Number(value)), message: 'Timbre fiscal must be a number' },
-            { validate: (value: string) => Number(value) >= 0, message: 'Timbre fiscal must be a positive number' }
-          ]">
-          <i class="pi pi-money-bill"></i>
-        </generic-managment>
-      </div>
-    </div>
-  </DashboardWrapper>
+  <DashboardWrapper> </DashboardWrapper>
 </template>
 
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { ref } from 'vue'
 import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper.vue'
 import CurrencyManagment from './components/AdminConfiguration/CurrencyManagment.vue'
@@ -217,6 +133,6 @@ getConfigurations()
 const pathToFullUrl = (path: string) => {
   return import.meta.env.VITE_BASE_URL + '/files/' + path
 }
-</script>
+</script> -->
 
 <style></style>

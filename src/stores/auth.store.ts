@@ -8,7 +8,7 @@ import type { User } from '@/models/user.model'
 
 export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(localStorage.getItem('token') !== null)
-  const user = ref<User | null>(null)
+  const user = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'))
   const refreshToken = ref<string | null>(localStorage.getItem('refreshToken'))
   const tokenExpiresAt = ref<number | null>(
     localStorage.getItem('tokenExpiresAt')
@@ -51,9 +51,9 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('register : ', result)
       if (result.data.succeeded) {
         user.value = result.data.data
+        localStorage.setItem('user', JSON.stringify(user.value)) // Persist user
         await loginAction({ email: data.email, password: data.password })
       } else {
-        // console.error('Registration failed:', result.message, result.errors)
         return result
       }
     } catch (error) {
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const loginAction = async (credentials: LoginModel) => {
     try {
-      const result = await login(credentials) // Returns Response<LoginResult>
+      const result = await login(credentials)
       if (result.succeeded && result.data.accessToken && result.data.tokenType) {
         localStorage.setItem('token', `${result.data.tokenType} ${result.data.accessToken}`)
         token.value = `${result.data.tokenType} ${result.data.accessToken}`
@@ -77,8 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
           tokenExpiresAt.value = expiresAt
         }
         isAuthenticated.value = true
-        user.value = null // Login does not return user
-        await fetchMe() // Fetch user data after login
+        await fetchMe()
         startRefreshTimer()
       } else {
         console.error('Invalid login result:', result.message, result.errors)
@@ -92,6 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('tokenExpiresAt')
+    localStorage.removeItem('user') // Clear persisted user
     token.value = ''
     refreshToken.value = null
     tokenExpiresAt.value = null
@@ -102,9 +102,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   const fetchMe = async () => {
     try {
-      const result = await me() // Returns Response<User>
+      const result = await me()
       if (result.succeeded) {
         user.value = result.data
+        localStorage.setItem('user', JSON.stringify(user.value)) // Persist user
       } else {
         console.error('Failed to fetch user:', result.message, result.errors)
         logout()
@@ -123,7 +124,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      const result = await refresh(refreshToken.value) // Returns Response<LoginResult>
+      const result = await refresh(refreshToken.value)
       if (result.succeeded && result.data.accessToken && result.data.tokenType) {
         localStorage.setItem('token', `${result.data.tokenType} ${result.data.accessToken}`)
         localStorage.setItem('refreshToken', result.data.refreshToken)
@@ -135,6 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
         refreshToken.value = result.data.refreshToken
         tokenExpiresAt.value = Date.now() + result.data.expiresIn * 1000
         isAuthenticated.value = true
+        await fetchMe() // Fetch user data after refresh
         startRefreshTimer()
         return true
       } else {
@@ -172,7 +174,7 @@ export const useAuthStore = defineStore('auth', () => {
       refreshAction()
     } else {
       startRefreshTimer()
-      fetchMe()
+      if (!user.value) fetchMe() // Fetch user if not restored from localStorage
     }
   }
 
@@ -184,7 +186,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     fetchMe,
     refresh: refreshAction,
-    isAdmin: true, // Preserved from original
-    fullName: 'Admin' // Preserved from original
+    isAdmin: true,
+    fullName: 'Admin'
   }
 })

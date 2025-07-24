@@ -23,7 +23,7 @@ export const useConfigurationsStore = defineStore('configurations', () => {
   const address = ref('')
   const currency = ref('€')
   const tvaPercentage = ref(20) // Default TVA 20%
-  const timbreFiscal = ref(1)   // Default Timbre Fiscal 1
+  const timbreFiscal = ref(1) // Default Timbre Fiscal 1
 
   const _config = ref<ConfigObject>({
     address: '123 Rue Example, Tunis 1000',
@@ -55,7 +55,8 @@ export const useConfigurationsStore = defineStore('configurations', () => {
     }
 
     Object.entries(configMap).forEach(([key, [defaultValue, setter]]) => {
-      const value = configurations.value?.find((config) => config.key === key)?.value ?? defaultValue
+      const value =
+        configurations.value?.find((config) => config.key === key)?.value ?? defaultValue
       setter(value)
     })
 
