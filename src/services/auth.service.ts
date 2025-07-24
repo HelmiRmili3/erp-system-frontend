@@ -1,52 +1,57 @@
 import type {
   LoginModel,
-  LoginResult,
   RegisterModel,
   ResetPasswordModel,
-  User
+  LoginResult,
+  Response
 } from '@/models/auth.model'
-import type { Response } from '@/models/response'
-import { api, noBaseUrlApi } from '@/plugins/axios'
+import type { User } from '@/models/user.model'
+import { api, normalApi } from '@/plugins/axios'
 
-const register = (data: RegisterModel) => {
-  return api.value!.post<Response<User>>('/register', data)
+// Register a new user
+const register = async (userData: RegisterModel) => {
+  const payload = { data: userData }
+  console.log('Sending payload:', JSON.stringify(payload, null, 2))
+  try {
+    const response = await normalApi.value!.post<Response<User>>('/api/Auth/register', payload)
+    console.log('Registration successful:', response.data)
+    return response
+  } catch (error: any) {
+    console.error('Registration failed:', error)
+    console.error('Backend validation errors:', JSON.stringify(error.response?.data, null, 2))
+    throw error
+  }
 }
 
-// const login = (data: LoginModel) => {
-//   return api.value!.post<LoginResult>('/Auth/login', data)
-// }
+// Login a user
 const login = async (data: LoginModel) => {
-  const res = await api.value!.post<Response<LoginResult>>('/Auth/login', data)
-  console.log(res.data.data)
-  return res.data.data // ✅ unwrap the `data` field
+  const response = await api.value!.post<Response<LoginResult>>('Auth/login', data)
+  return response.data
 }
 
-const resendEmailVerification = (email: string) => {
-  return api.value!.get<Response<any>>(`/email/resend/${email}`)
+// Refresh access token
+const refresh = async (refreshToken: string) => {
+  const response = await api.value!.post<Response<LoginResult>>('/Auth/refresh', {
+    token: refreshToken
+  })
+  return response.data
 }
 
-const verifyEmail = (url: string) => {
-  return noBaseUrlApi.value!.get<Response<any>>(url)
+// Change password
+const resetPassword = async (data: ResetPasswordModel) => {
+  const response = await api.value!.post<Response<void>>('Auth/change-password', data)
+  return response.data
 }
 
-const requestResetPassword = (email: string) => {
-  return api.value!.post<Response<any>>(`/password/email/`, { email })
+// Get current user
+const me = async () => {
+  const response = await api.value!.get<Response<User>>('Auth/me')
+  return response.data
 }
 
-const resetPassword = (data: ResetPasswordModel) => {
-  return api.value!.post<Response<any>>(`/password/reset/`, data)
+const googleSignIn = async (id: string) => {
+  const response = await api.value!.get<Response<User>>('Auth/me')
+  return response.data
 }
 
-const googleSignIn = (idToken: string) => {
-  return api.value!.post('/auth/google-signin', { token: idToken })
-}
-
-export {
-  register,
-  login,
-  resendEmailVerification,
-  requestResetPassword,
-  resetPassword,
-  verifyEmail,
-  googleSignIn
-}
+export { register, login, refresh, resetPassword, me, googleSignIn }

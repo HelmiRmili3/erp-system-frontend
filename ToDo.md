@@ -74,3 +74,12 @@
 | DELETE | `/api/Payrolls/{id}` | Delete a payroll record     |
 | GET    | `/api/Payrolls/{id}` | Get one payroll record      |
 | GET    | `/api/Payrolls/me`   | Current user’s payroll info |
+
+
+
+Method,Endpoint,Description
+POST,/api/Auth/login,Authenticate a user and return a token
+POST,/api/Auth/register,Register a new user account
+POST,/api/Auth/refresh,Refresh an access token
+POST,/api/Auth/change-password,Change the current user's password
+GET,/api/Auth/me,Retrieve the current user's information
