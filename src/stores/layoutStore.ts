@@ -35,6 +35,64 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           }
         ]
       },
+      // {
+      //   title: 'Categories',
+      //   items: [
+      //     {
+      //       id: 'Absences',
+      //       label: 'Absences',
+      //       icon: 'categories',
+      //       to: '/admin/absences'
+      //     },
+      //     {
+      //       id: 'Attendances',
+      //       label: 'Attendances',
+      //       icon: 'categories',
+      //       to: '/attendances/all'
+      //     },
+      //     {
+      //       id: 'Contracts',
+      //       label: 'Contracts',
+      //       icon: 'categories',
+      //       to: '/admin/Contracts'
+      //     },
+      //     {
+      //       id: 'Certifications',
+      //       label: 'Certifications',
+      //       icon: 'categories',
+      //       to: '/admin/certifications'
+      //     },
+      //     {
+      //       id: 'Expenses',
+      //       label: 'Expenses',
+      //       icon: 'categories',
+      //       to: '/admin/expenses'
+      //     },
+      //     {
+      //       id: 'Payrolls',
+      //       label: 'Payrolls',
+      //       icon: 'categories',
+      //       to: '/admin/payrolls'
+      //     }
+      //   ]
+      // },
+      // {
+      //   title: 'Roles & Permissions',
+      //   items: [
+      //     {
+      //       id: 'settings',
+      //       label: 'Roles',
+      //       icon: 'settings',
+      //       to: '/admin/configurations'
+      //     },
+      //     {
+      //       id: 'settings',
+      //       label: 'Permissions',
+      //       icon: 'settings',
+      //       to: '/admin/configurations'
+      //     }
+      //   ]
+      // }
       {
         title: 'Categories',
         items: [
@@ -42,55 +100,55 @@ export const useLayoutStore = defineStore('layoutStore', () => {
             id: 'Absences',
             label: 'Absences',
             icon: 'categories',
-            to: '/admin/categories'
-          },
-          {
-            id: 'Attendance',
-            label: 'Attendance',
-            icon: 'categories',
-            to: '/admin/Contracts'
-          },
-          {
-            id: 'Contracts',
-            label: 'Contracts',
-            icon: 'categories',
-            to: '/admin/Contracts'
-          },
-          {
-            id: 'Certifications',
-            label: 'Certifications',
-            icon: 'categories',
-            to: '/admin/Contracts'
-          },
-          {
-            id: 'Expenses',
-            label: 'Expenses',
-            icon: 'categories',
-            to: '/admin/Contracts'
-          },
-          {
-            id: 'Payrolls',
-            label: 'Payrolls',
-            icon: 'categories',
-            to: '/admin/Contracts'
+            to: '/admin/absences'
           }
+          // {
+          //   id: 'Attendances',
+          //   label: 'Attendances',
+          //   name: 'admin',
+          //   to: '/admin/attendances'
+          // },
+          // {
+          //   id: 'Contracts',
+          //   label: 'Contracts',
+          //   name: 'admin',
+          //   to: '/admin/contracts'
+          // },
+          // {
+          //   id: 'Certifications',
+          //   label: 'Certifications',
+          //   name: 'admin',
+          //   to: '/admin/certifications'
+          // },
+          // {
+          //   id: 'Expenses',
+          //   label: 'Expenses',
+          //   name: 'admin',
+          //   to: '/admin/expenses'
+          // },
+          // {
+          //   id: 'Payrolls',
+          //   label: 'Payrolls',
+          //   name: 'admin',
+          //   to: '/admin/payrolls'
+          // }
         ]
       },
       {
         title: 'Roles & Permissions',
         items: [
-          {
-            id: 'settings',
-            label: 'Roles',
-            icon: 'settings',
-            to: '/admin/configurations'
-          },
-          {
-            id: 'settings',
-            label: 'Permissions',
-            icon: 'settings',
-            to: '/admin/configurations'
-          }
+          // {
+          //   id: 'settings',
+          //   label: 'Roles',
+          //   name: 'settings',
+          //   to: '/admin/configurations'
+          // },
+          // {
+          //   id: 'settings',
+          //   label: 'Permissions',
+          //   name: 'settings',
+          //   to: '/admin/configurations'
+          // }
         ]
       }
     ]

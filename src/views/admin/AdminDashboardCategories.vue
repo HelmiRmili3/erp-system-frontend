@@ -12,15 +12,19 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <div class="flex flex-row gap-2.5 align-center">
-          <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5">{{ categories.length }}
-            éléments</span>
+          <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
+            >{{ categories.length }} éléments</span
+          >
         </div>
       </div>
       <div class="flex justify-start items-center gap-4">
         <!-- Search Input -->
         <div class="relative">
-          <InputText v-model="searchQuery" placeholder="Rechercher..."
-            class="pl-10 py-2 border border-gray-300 rounded-lg" />
+          <InputText
+            v-model="searchQuery"
+            placeholder="Rechercher..."
+            class="pl-10 py-2 border border-gray-300 rounded-lg"
+          />
         </div>
 
         <!-- Add Category Button -->
@@ -35,18 +39,33 @@
     </div>
 
     <!-- Categories DataTable -->
-    <DataTable :value="filteredCategories" class="p-datatable-sm" :rows="pageSize" paginator
-      :rowsPerPageOptions="[10, 20, 50]" :loading="loading" responsiveLayout="scroll" stripedRows :scrollable="true"
-      scrollHeight="calc(100vh - 250px)">
-
+    <DataTable
+      :value="filteredCategories"
+      class="p-datatable-sm"
+      :rows="pageSize"
+      paginator
+      :rowsPerPageOptions="[10, 20, 50]"
+      :loading="loading"
+      responsiveLayout="scroll"
+      stripedRows
+      :scrollable="true"
+      scrollHeight="calc(100vh - 250px)"
+    >
       <!-- Image/Logo -->
       <Column header="Image" style="width: 80px">
         <template #body="{ data }">
           <div class="flex items-center justify-center">
             <div v-if="data.logo" class="w-16 h-16 bg-gray-100 rounded overflow-hidden">
-              <img :src="baseUrl + data.logo" :alt="data.name || 'Category image'" class="w-full h-full object-cover" />
+              <img
+                :src="baseUrl + data.logo"
+                :alt="data.name || 'Category image'"
+                class="w-full h-full object-cover"
+              />
             </div>
-            <div v-else class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400">
+            <div
+              v-else
+              class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded text-gray-400"
+            >
               <i class="pi pi-image text-2xl"></i>
             </div>
           </div>
@@ -60,7 +79,10 @@
       <Column field="name" header="Nom" sortable>
         <template #body="{ data }">
           <div>{{ data.name }}</div>
-          <div v-if="data.subCategories && data.subCategories.length > 0" class="text-xs text-gray-500">
+          <div
+            v-if="data.subCategories && data.subCategories.length > 0"
+            class="text-xs text-gray-500"
+          >
             {{ data.subCategories.length }} sous-catégorie(s)
           </div>
         </template>
@@ -70,14 +92,38 @@
       <Column header="Actions" style="width: 150px">
         <template #body="{ data }">
           <div class="flex gap-1">
-            <Button icon="pi pi-eye" rounded text severity="info" @click="viewProducts(data)"
-              v-tooltip="'Voir les produits'" />
-            <Button icon="pi pi-list" rounded text severity="secondary" @click="viewSubcategories(data)"
-              v-tooltip="'Voir les sous-catégories'" />
-            <Button icon="pi pi-pencil" rounded text severity="success" @click="initEditCategory(data)"
-              v-tooltip="'Modifier'" />
-            <Button icon="pi pi-trash" rounded text severity="danger" @click="confirmDeleteCategory(data)"
-              v-tooltip="'Supprimer'" />
+            <Button
+              icon="pi pi-eye"
+              rounded
+              text
+              severity="info"
+              @click="viewProducts(data)"
+              v-tooltip="'Voir les produits'"
+            />
+            <Button
+              icon="pi pi-list"
+              rounded
+              text
+              severity="secondary"
+              @click="viewSubcategories(data)"
+              v-tooltip="'Voir les sous-catégories'"
+            />
+            <Button
+              icon="pi pi-pencil"
+              rounded
+              text
+              severity="success"
+              @click="initEditCategory(data)"
+              v-tooltip="'Modifier'"
+            />
+            <Button
+              icon="pi pi-trash"
+              rounded
+              text
+              severity="danger"
+              @click="confirmDeleteCategory(data)"
+              v-tooltip="'Supprimer'"
+            />
           </div>
         </template>
       </Column>
@@ -104,7 +150,12 @@ import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper
 import SectionHeader from './components/AdminDashboardOrders/SectionHeader.vue'
 import CategoriesFilledIcon from '@/assets/svg/categories_filled.svg?component'
 import { useTemplateRef } from 'vue'
-import { createCategory, deleteCategory, getCategories, updateCategory } from '@/services/Category.service'
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  updateCategory
+} from '@/services/Category.service'
 import type { IsLoadable } from '@/models/common.model'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
@@ -134,9 +185,8 @@ const filteredCategories = computed(() => {
   if (!searchQuery.value) return categories.value
 
   const query = searchQuery.value.toLowerCase()
-  return categories.value.filter(cat =>
-    cat.name.toLowerCase().includes(query) ||
-    (cat.id && cat.id.toString().includes(query))
+  return categories.value.filter(
+    (cat) => cat.name.toLowerCase().includes(query) || (cat.id && cat.id.toString().includes(query))
   )
 })
 
@@ -304,11 +354,11 @@ defineOptions({
   font-family: 'Poppins', sans-serif;
 }
 
-.p-datatable .p-datatable-tbody>tr {
+.p-datatable .p-datatable-tbody > tr {
   cursor: pointer;
 }
 
-.p-datatable .p-datatable-tbody>tr:hover {
+.p-datatable .p-datatable-tbody > tr:hover {
   background-color: #f8f9fa;
 }
 </style>

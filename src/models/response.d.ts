@@ -1,6 +1,10 @@
 export interface Response<T> {
-    success: boolean;
-    message: string;
-    data: T
-    status: string
+  pageNumber: number
+  pageSize: number
+  recordsFiltered: number
+  recordsTotal: number
+  success: boolean
+  message: string
+  data: T
+  status: string
 }

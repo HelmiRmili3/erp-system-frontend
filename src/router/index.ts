@@ -11,7 +11,6 @@ const router = createRouter({
       name: 'Home',
       redirect: '/admin/home'
     },
-
     {
       path: '/auth',
       name: 'Auth',
@@ -58,6 +57,60 @@ const router = createRouter({
         }
       ]
     },
+    // {
+    //   path: '/admin',
+    //   name: 'AdminDashboard',
+    //   component: () => import('@/views/admin/AdminDashboardView.vue'),
+    //   meta: {
+    //     requiresAuth: true,
+    //     requiresLoading: true
+    //   },
+    //   redirect: '/admin/home',
+    //   children: [
+    //     {
+    //       path: 'home',
+    //       name: 'AdminDashboardHome',
+    //       component: () => import('@/views/admin/AdminDashboardHome.vue')
+    //     },
+    //     {
+    //       path: 'absences',
+    //       name: 'Absences',
+    //       children: [
+    //         {
+    //           path: '/absences',
+    //           name: 'AdminDashboardCategories',
+    //           component: () => import('@/views/admin/AdminDashboardCategories.vue')
+    //         }
+    //         // {
+    //         //   path: ':id/categories',
+    //         //   name: 'AdminDashboardSubCategories',
+    //         //   component: () => import('@/views/admin/AdminDashboardSubCategories.vue')
+    //         // }
+    //       ]
+    //     },
+    //     {
+    //       path: 'attendances',
+    //       name: 'Attendances',
+    //       children: [
+    //         {
+    //           path: '',
+    //           name: '/all',
+    //           component: () => import('@/views/admin/AdminDashboardCategories.vue')
+    //         }
+    //         // {
+    //         //   path: ':id/categories',
+    //         //   name: 'AdminDashboardSubCategories',
+    //         //   component: () => import('@/views/admin/AdminDashboardSubCategories.vue')
+    //         // }
+    //       ]
+    //     }
+    //     // {
+    //     //   path: 'configurations',
+    //     //   name: 'AdminDashboardConfigurations',
+    //     //   component: () => import('@/views/admin/AdminDashboardConfiguration.vue')
+    //     // }
+    //   ]
+    // }
     {
       path: '/admin',
       name: 'AdminDashboard',
@@ -74,26 +127,40 @@ const router = createRouter({
           component: () => import('@/views/admin/AdminDashboardHome.vue')
         },
         {
-          path: 'categories',
-          name: 'AdminDashboardCategory',
-          children: [
-            {
-              path: '',
-              name: 'AdminDashboardCategories',
-              component: () => import('@/views/admin/AdminDashboardCategories.vue')
-            },
-            {
-              path: ':id/categories',
-              name: 'AdminDashboardSubCategories',
-              component: () => import('@/views/admin/AdminDashboardSubCategories.vue')
-            }
-          ]
-        },
-        {
-          path: 'configurations',
-          name: 'AdminDashboardConfigurations',
-          component: () => import('@/views/admin/AdminDashboardConfiguration.vue')
+          path: 'absences',
+          name: 'Absences',
+          component: () => import('@/views/admin/AdminDashboardAbsences.vue.vue')
         }
+        // {
+        //   path: 'attendances',
+        //   name: 'Attendances',
+        //   component: () => import('@/views/admin/attendances.vue')
+        // },
+        // {
+        //   path: 'contracts',
+        //   name: 'Contracts',
+        //   component: () => import('@/views/admin/Contracts.vue')
+        // },
+        // {
+        //   path: 'certifications',
+        //   name: 'Certifications',
+        //   component: () => import('@/views/admin/Certifications.vue')
+        // },
+        // {
+        //   path: 'expenses',
+        //   name: 'Expenses',
+        //   component: () => import('@/views/admin/Expenses.vue')
+        // },
+        // {
+        //   path: 'payrolls',
+        //   name: 'Payrolls',
+        //   component: () => import('@/views/admin/Payrolls.vue')
+        // },
+        // {
+        //   path: 'configurations',
+        //   name: 'Configurations',
+        //   component: () => import('@/views/admin/Configurations.vue')
+        // }
       ]
     }
   ]

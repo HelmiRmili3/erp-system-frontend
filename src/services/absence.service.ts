@@ -1,30 +1,33 @@
-import type { Absence } from '@/models/absence.model'
+// services/absence.service.ts
+import type { Absence, CreateAbsence, UpdateAbsence } from '@/models/absence.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
 
-const getAllAbsences = () => {
-  return api.value!.get<Response<Absence[]>>('/api/Absences')
+/* ----------------------------------------------------------
+ * Admin endpoints
+ * ---------------------------------------------------------- */
+const getAllAbsences = (currentPage: number, pageSize: number, search?: string) => {
+  return api.value!.get<Response<Absence[]>>('Absences', {
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
+  })
 }
 
-const getAbsenceById = (id: number) => {
-  return api.value!.get<Response<Absence>>(`/api/Absences/${id}`)
-}
+const getAbsenceById = (id: number) => api.value!.get<Response<Absence>>(`Absences/${id}`)
 
-const createAbsence = (data: Partial<Absence>) => {
-  return api.value!.post<Response<Absence>>('/api/Absences', data)
-}
+/* ----------------------------------------------------------
+ * User endpoints
+ * ---------------------------------------------------------- */
+const getCurrentUserAbsences = (currentPage: number, pageSize: number, search?: string) =>
+  api.value!.get<Response<Absence[]>>('Absences/me', {
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
+  })
 
-const updateAbsence = (id: number, data: Partial<Absence>) => {
-  return api.value!.put<Response<Absence>>(`/api/Absences/${id}`, data)
-}
+const createAbsence = (data: CreateAbsence) => api.value!.post<Response<Absence>>('Absences', data)
 
-const deleteAbsence = (id: number) => {
-  return api.value!.delete<Response<any>>(`/api/Absences/${id}`)
-}
+const updateAbsence = (id: number, data: UpdateAbsence) =>
+  api.value!.put<Response<Absence>>(`Absences/${id}`, data)
 
-const getCurrentUserAbsences = () => {
-  return api.value!.get<Response<Absence[]>>('/api/Absences/me')
-}
+const deleteAbsence = (id: number) => api.value!.delete<Response<any>>(`Absences/${id}`)
 
 export {
   getAllAbsences,

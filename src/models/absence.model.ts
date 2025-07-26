@@ -7,3 +7,18 @@ export interface Absence {
   statusType: number
   reason: string
 }
+
+export interface UpdateAbsence {
+  startDate: string
+  endDate: string
+  absenceType: number
+  reason: string
+  id: number
+}
+
+export interface CreateAbsence {
+  startDate: string
+  endDate: string
+  absenceType: number
+  reason: string
+}
