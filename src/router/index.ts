@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import NotFound from '@/views/NotFound.vue'
 
 import RegisterView from '@/views/Auth/RegisterView.vue'
 import LoginView from '@/views/Auth/LoginView.vue'
@@ -129,12 +130,18 @@ const router = createRouter({
         {
           path: 'users',
           name: 'AdminDashboardUsers',
-          component: () => import('@/views/admin/AdminDashboardUsers.vue')
+          component: () => import('@/views/admin/AdminDashboardUsers.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
         },
         {
           path: 'absences',
           name: 'AdminDashboardAbsences',
-          component: () => import('@/views/admin/AdminDashboardAbsences.vue')
+          component: () => import('@/views/admin/AdminDashboardAbsences.vue'),
+          meta: {
+            roles: ['Employee']
+          }
         },
         // {
         //   path: 'attendances',
@@ -164,14 +171,26 @@ const router = createRouter({
         {
           path: 'roles',
           name: 'AdminDashboardRoles',
-          component: () => import('@/views/admin/AdminDashboardRoles.vue')
+          component: () => import('@/views/admin/AdminDashboardRoles.vue'),
+          meta: {
+            roles: ['Administrator'],
+            permissions: ['Roles.View']
+          }
         },
         {
           path: 'permissions',
           name: 'AdminDashboardPermissions',
-          component: () => import('@/views/admin/AdminDashboardPermissions.vue')
+          component: () => import('@/views/admin/AdminDashboardPermissions.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
         }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFound
     }
   ]
 })
