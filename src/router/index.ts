@@ -127,10 +127,15 @@ const router = createRouter({
           component: () => import('@/views/admin/AdminDashboardHome.vue')
         },
         {
+          path: 'users',
+          name: 'AdminDashboardUsers',
+          component: () => import('@/views/admin/AdminDashboardUsers.vue')
+        },
+        {
           path: 'absences',
-          name: 'Absences',
-          component: () => import('@/views/admin/AdminDashboardAbsences.vue.vue')
-        }
+          name: 'AdminDashboardAbsences',
+          component: () => import('@/views/admin/AdminDashboardAbsences.vue')
+        },
         // {
         //   path: 'attendances',
         //   name: 'Attendances',
@@ -156,11 +161,16 @@ const router = createRouter({
         //   name: 'Payrolls',
         //   component: () => import('@/views/admin/Payrolls.vue')
         // },
-        // {
-        //   path: 'configurations',
-        //   name: 'Configurations',
-        //   component: () => import('@/views/admin/Configurations.vue')
-        // }
+        {
+          path: 'roles',
+          name: 'AdminDashboardRoles',
+          component: () => import('@/views/admin/AdminDashboardRoles.vue')
+        },
+        {
+          path: 'permissions',
+          name: 'AdminDashboardPermissions',
+          component: () => import('@/views/admin/AdminDashboardPermissions.vue')
+        }
       ]
     }
   ]

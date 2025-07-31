@@ -30,11 +30,19 @@
 //   permissions: Permission[]
 // }
 export interface Role {
+  id: string
   name: string
 }
 
 export interface Permission {
+  id: string
   name: string
+  description: string
+}
+
+export interface RolePermissions {
+  role: Role
+  permissions: Permission[]
 }
 
 export interface User {
@@ -58,11 +66,6 @@ export interface User {
   supervisorFullName: string
   roles: string[]
   permissions: string[]
-}
-
-export interface RolePermissions {
-  role: Role
-  permissions: Permission[]
 }
 
 export interface Response<T> {

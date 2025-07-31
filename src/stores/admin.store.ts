@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Role, Permission, User, RolePermissions } from '@/models/admin.model'
+import type { Permission, Role, User, RolePermissions } from '@/models/admin.model'
 import {
   createRole,
-  assignPermissionsToRole,
   assignRolesToUser,
   removePermissionsFromRole,
   deleteRole,
@@ -19,129 +18,82 @@ export const useAdminStore = defineStore('admin', () => {
   const users = ref<User[]>([])
   const rolesPermissions = ref<RolePermissions[]>([])
   const loading = ref(false)
+  const currentPage = ref(1)
+  const pageSize = ref(10)
+  const totalRecords = ref(0)
 
-  // Fetch all roles
+  /* ---------- Users ---------- */
+  const fetchUsers = async (
+    page: number = currentPage.value,
+    size: number = pageSize.value,
+    search?: string
+  ) => {
+    loading.value = true
+    try {
+      const { data } = await getAllUsers(page, size, search)
+      users.value = data.data || []
+      totalRecords.value = data.recordsFiltered ?? data.recordsTotal ?? 0
+      currentPage.value = data.pageNumber
+      pageSize.value = data.pageSize
+    } catch (e) {
+      console.error(e)
+      users.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const setPageAndSize = async (page: number, size: number) => {
+    currentPage.value = page
+    pageSize.value = size
+    await fetchUsers(page, size)
+  }
+
+  /* ---------- Roles ---------- */
   const fetchRoles = async () => {
     loading.value = true
     try {
-      const response = await getAllRoles()
-      roles.value = response.data.data
-    } catch (error) {
-      console.error('Error fetching roles:', error)
+      roles.value = (await getAllRoles()).data.data
+    } catch (e) {
+      console.error(e)
     } finally {
       loading.value = false
     }
   }
 
-  // Fetch all permissions
+  /* ---------- Permissions ---------- */
   const fetchPermissions = async () => {
     loading.value = true
     try {
-      const response = await getAllPermissions()
-      permissions.value = response.data.data
-    } catch (error) {
-      console.error('Error fetching permissions:', error)
+      permissions.value = (await getAllPermissions()).data.data
+    } catch (e) {
+      console.error(e)
     } finally {
       loading.value = false
     }
   }
 
-  // Fetch all users
-  const fetchUsers = async () => {
-    loading.value = true
-    try {
-      const response = await getAllUsers()
-      users.value = response.data.data
-    } catch (error) {
-      console.error('Error fetching users:', error)
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Fetch roles with their permissions
+  /* ---------- Roles + Permissions ---------- */
   const fetchRolesWithPermissions = async () => {
     loading.value = true
     try {
-      const response = await getRolesWithPermissions()
-      rolesPermissions.value = response.data.data
-    } catch (error) {
-      console.error('Error fetching roles with permissions:', error)
+      rolesPermissions.value = (await getRolesWithPermissions()).data.data
+    } catch (e) {
+      console.error(e)
     } finally {
       loading.value = false
     }
   }
 
-  // Create a new role
-  const addRole = async (data: Partial<Role>) => {
-    loading.value = true
-    try {
-      const response = await createRole(data)
-      roles.value.push(response.data.data)
-      return response.data.data
-    } catch (error) {
-      console.error('Error creating role:', error)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
+  /* ---------- Mutations ---------- */
+  const addRole = (d: { name: string }) => createRole(d).then((r) => r.data.data)
 
-  // Assign permissions to a role
-  const assignPermissions = async (data: { roleId: string; permissionIds: string[] }) => {
-    loading.value = true
-    try {
-      const response = await assignPermissionsToRole(data)
-      return response.data.data
-    } catch (error) {
-      console.error('Error assigning permissions to role:', error)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Assign roles to a user
-  const assignRoles = async (data: { userId: string; roleIds: string[] }) => {
-    loading.value = true
-    try {
-      const response = await assignRolesToUser(data)
-      return response.data.data
-    } catch (error) {
-      console.error('Error assigning roles to user:', error)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Remove permissions from a role
-  const removePermissions = async (data: { roleId: string; permissionIds: string[] }) => {
-    loading.value = true
-    try {
-      const response = await removePermissionsFromRole(data)
-      return response.data
-    } catch (error) {
-      console.error('Error removing permissions from role:', error)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Delete a role
-  const removeRole = async (roleId: string) => {
-    loading.value = true
-    try {
-      await deleteRole(roleId)
-      return true
-    } catch (error) {
-      console.error('Error deleting role:', error)
-      return false
-    } finally {
-      loading.value = false
-    }
-  }
+  const assignRoles = (d: { userId: string; roleIds: string[] }) =>
+    assignRolesToUser(d).then((r) => r.data.data)
+  const removePermissions = (d: { role: string; permissions: string[] }) =>
+    removePermissionsFromRole(d).then((r) => r.data)
+  const removeRole = (name: string) => deleteRole({ role: name })
 
   return {
     roles,
@@ -149,12 +101,15 @@ export const useAdminStore = defineStore('admin', () => {
     users,
     rolesPermissions,
     loading,
+    currentPage,
+    pageSize,
+    totalRecords,
     fetchRoles,
     fetchPermissions,
     fetchUsers,
+    setPageAndSize,
     fetchRolesWithPermissions,
     addRole,
-    assignPermissions,
     assignRoles,
     removePermissions,
     removeRole

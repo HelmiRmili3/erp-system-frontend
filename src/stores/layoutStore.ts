@@ -35,6 +35,18 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           }
         ]
       },
+      {
+        title: 'Manage',
+        items: [
+          {
+            id: 'manage',
+            label: 'Users',
+            icon: 'dashboard',
+            isActive: false,
+            to: '/admin/users'
+          }
+        ]
+      },
       // {
       //   title: 'Categories',
       //   items: [
@@ -137,18 +149,18 @@ export const useLayoutStore = defineStore('layoutStore', () => {
       {
         title: 'Roles & Permissions',
         items: [
-          // {
-          //   id: 'settings',
-          //   label: 'Roles',
-          //   name: 'settings',
-          //   to: '/admin/configurations'
-          // },
-          // {
-          //   id: 'settings',
-          //   label: 'Permissions',
-          //   name: 'settings',
-          //   to: '/admin/configurations'
-          // }
+          {
+            id: 'settings',
+            label: 'Roles',
+            icon: 'settings',
+            to: '/admin/roles'
+          },
+          {
+            id: 'settings',
+            label: 'Permissions',
+            icon: 'settings',
+            to: '/admin/permissions'
+          }
         ]
       }
     ]

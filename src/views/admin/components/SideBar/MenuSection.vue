@@ -3,12 +3,23 @@
     <div class="flex justify-start items-start flex-row gap-2.5 px-2.5 opacity-50">
       <span class="text-[#5F6C7B] text-xs font-bold">{{ sectionTitle }}</span>
     </div>
-    <div v-for="item in items" :key="item.label" :class="itemClasses(item)" @click="selectItem(item)">
+    <div
+      v-for="item in items"
+      :key="item.label"
+      :class="itemClasses(item)"
+      @click="selectItem(item)"
+    >
       <div class="flex justify-center items-center flex-row w-[24px] h-[24px]">
-        <component :is="stringToComponent(item.icon)" :class="[itemIsActive(item) ? 'selected' : '', item.icon]" />
+        <component
+          :is="stringToComponent(item.icon)"
+          :class="[itemIsActive(item) ? 'selected' : '', item.icon]"
+        />
       </div>
-      <span :class="itemIsActive(item) ? 'text-[#87C767] font-semibold' : 'text-[#5F6C7B]'" v-if="isOpen">{{ item.label
-        }}</span>
+      <span
+        :class="itemIsActive(item) ? 'text-[#87C767] font-semibold' : 'text-[#5F6C7B]'"
+        v-if="isOpen"
+        >{{ item.label }}</span
+      >
     </div>
   </div>
 </template>
@@ -75,7 +86,7 @@ const itemClasses = computed(() => {
     }
   }
 })
-
+// const filteredItems = computed(() => props.items.filter((item) => item.label === 'Roles'))
 const itemIsActive = computed(() => {
   return (item: any) => {
     return item.to === route.path
