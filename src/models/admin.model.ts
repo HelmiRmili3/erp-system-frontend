@@ -1,34 +1,3 @@
-// export interface Role {
-//   name: string
-// }
-
-// export interface Permission {
-//   name: string
-// }
-
-// export interface User {
-//   id: string
-//   email: string
-//   userName: string
-//   firstName: string
-//   lastName: string
-//   birthDate: string
-//   address: string
-//   phone: string
-//   jobTitle: string
-//   department: string
-//   hireDate: string
-//   contractType: number
-//   status: number
-//   supervisorId: string
-//   roles: string[]
-//   permissions: string[]
-// }
-
-// export interface RolePermissions {
-//   role: Role
-//   permissions: Permission[]
-// }
 export interface Role {
   id: string
   name: string

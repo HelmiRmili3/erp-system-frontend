@@ -33,7 +33,6 @@
     <div class="h-[20px]"></div>
 
     <!-- Users DataTable -->
-
     <DataTable
       :value="adminStore.users"
       class="p-datatable-sm"
@@ -54,26 +53,11 @@
       <Column field="jobTitle" header="Poste" sortable style="min-width: 140px" />
       <Column field="department" header="Département" sortable style="min-width: 140px" />
 
-      <!-- Dates -->
-      <!-- <Column field="birthDate" header="Date de naissance" sortable style="min-width: 140px">
-        <template #body="{ data }">{{ formatDate(data.birthDate) }}</template>
-      </Column>
-      <Column field="hireDate" header="Date d’embauche" sortable style="min-width: 140px">
-        <template #body="{ data }">{{ formatDate(data.hireDate) }}</template>
-      </Column> -->
-
       <!-- Contract & Status -->
       <Column field="contractType" header="Contrat" sortable style="min-width: 120px" />
       <Column field="status" header="Statut" sortable style="min-width: 100px" />
 
-      <!-- Supervisor -->
-      <!-- <Column field="supervisorFullName" header="Superviseur" sortable style="min-width: 140px" /> -->
-
-      <!-- Address -->
-      <!-- <Column field="address" header="Adresse" sortable style="min-width: 200px" /> -->
-
-      <!-- Roles & Permissions (comma-separated) -->
-      <!-- Rôles -->
+      <!-- Roles -->
       <Column field="roles" header="Rôles" style="min-width: 160px">
         <template #body="{ data }">
           <div class="flex flex-wrap gap-1">
@@ -89,22 +73,20 @@
       </Column>
 
       <!-- Permissions -->
-      <Column field="permissions" header="Permissions" style="min-width: 160px">
+      <Column header="Permissions" style="min-width: 120px">
         <template #body="{ data }">
-          <div class="flex flex-wrap gap-1">
-            <span
-              v-for="p in data.permissions"
-              :key="p"
-              class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs"
-            >
-              {{ p }}
-            </span>
-          </div>
+          <Button
+            label="See More"
+            text
+            severity="info"
+            @click="openPermissionsModal(data)"
+            v-tooltip="'Voir Permissions'"
+          />
         </template>
       </Column>
 
       <!-- Actions -->
-      <Column header="Actions" style="width: 120px">
+      <Column header="Actions" style="width: 100px">
         <template #body="{ data }">
           <div class="flex gap-1">
             <Button
@@ -130,7 +112,7 @@
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
-          <p class="mt-2 text-gray-500">Aucun utilisateur trouvé</p>
+          <p class="text-gray-500">Aucun utilisateur trouvé</p>
         </div>
       </template>
     </DataTable>
@@ -181,6 +163,33 @@
         </div>
       </div>
     </Dialog>
+
+    <!-- Permissions Popup -->
+    <Dialog
+      v-model:visible="showPermissionsModal"
+      header="Permissions de l'utilisateur"
+      modal
+      :style="{ width: '400px' }"
+      class="p-4"
+    >
+      <div class="flex flex-col gap-3">
+        <p v-if="selectedUser && selectedUser.permissions.length === 0" class="text-gray-500">
+          Aucune permission attribuée.
+        </p>
+        <div v-else class="flex flex-wrap gap-2">
+          <span
+            v-for="permission in selectedUser?.permissions"
+            :key="permission"
+            class="bg-gray-500 text-white px-3 py-1 rounded-full text-sm"
+          >
+            {{ permission }}
+          </span>
+        </div>
+        <div class="flex justify-end mt-4">
+          <Button label="Fermer" severity="secondary" text @click="closePermissionsModal" />
+        </div>
+      </div>
+    </Dialog>
   </DashboardWrapper>
 </template>
 
@@ -206,8 +215,10 @@ const toast = useToast()
 /* ---------- State ---------- */
 const showModal = ref(false)
 const showDeleteModal = ref(false)
+const showPermissionsModal = ref(false)
 const isUpdateMode = ref(false)
 const selectedUserId = ref<string | null>(null)
+const selectedUser = ref<any>(null)
 const searchQuery = ref('')
 
 const formData = reactive({
@@ -274,6 +285,11 @@ const openDeleteModal = (id: string) => {
   showDeleteModal.value = true
 }
 
+const openPermissionsModal = (user: any) => {
+  selectedUser.value = user
+  showPermissionsModal.value = true
+}
+
 const closeModal = () => {
   showModal.value = false
   selectedUserId.value = null
@@ -282,6 +298,11 @@ const closeModal = () => {
 const closeDeleteModal = () => {
   showDeleteModal.value = false
   selectedUserId.value = null
+}
+
+const closePermissionsModal = () => {
+  showPermissionsModal.value = false
+  selectedUser.value = null
 }
 
 /* ---------- CRUD ---------- */

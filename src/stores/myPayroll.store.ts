@@ -4,13 +4,12 @@ import type { Payroll } from '@/models/payroll.model'
 import {
   createPayroll,
   updatePayroll,
-  getAllPayrolls,
   deletePayroll,
   getPayrollById,
   getCurrentUserPayrolls
 } from '@/services/payroll.service'
 
-export const usePayrollsStore = defineStore('payrolls', () => {
+export const useMyPayrollsStore = defineStore('payrolls', () => {
   const payrolls = ref<Payroll[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -19,19 +18,12 @@ export const usePayrollsStore = defineStore('payrolls', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (
-    page: number,
-    perPage: number,
-    search: string = '',
-    fetchUserPayrolls: boolean = false
-  ) => {
+  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    if (fetchUserPayrolls) {
+    {
       await fetchCurrentUserPayrolls()
-    } else {
-      await fetchPayrolls()
     }
   }
 
@@ -60,31 +52,11 @@ export const usePayrollsStore = defineStore('payrolls', () => {
       if (index !== -1) {
         payrolls.value[index] = updatedPayroll
       }
-      await fetchPayrolls() // Refresh the list to ensure pagination consistency
+      await fetchCurrentUserPayrolls() // Refresh the list to ensure pagination consistency
       return updatedPayroll
     } catch (error) {
       console.error('Error updating payroll:', error)
       return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Fetch all payrolls with pagination and search
-  const fetchPayrolls = async () => {
-    loading.value = true
-    try {
-      const response = await getAllPayrolls({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      payrolls.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching payrolls:', error)
-      payrolls.value = []
-      totalRecords.value = 0
     } finally {
       loading.value = false
     }
@@ -95,7 +67,7 @@ export const usePayrollsStore = defineStore('payrolls', () => {
     loading.value = true
     try {
       await deletePayroll(id)
-      await fetchPayrolls() // Refresh the list to ensure pagination consistency
+      await fetchCurrentUserPayrolls() // Refresh the list to ensure pagination consistency
       return true
     } catch (error) {
       console.error('Error deleting payroll:', error)
@@ -146,7 +118,6 @@ export const usePayrollsStore = defineStore('payrolls', () => {
     setPageAndSize,
     addPayroll,
     editPayroll,
-    fetchPayrolls,
     removePayroll,
     getPayroll,
     fetchCurrentUserPayrolls

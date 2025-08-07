@@ -4,12 +4,12 @@ import type { Certification } from '@/models/certification.model'
 import {
   createCertification,
   updateCertification,
-  getAllCertifications,
   deleteCertification,
-  getCertificationById
+  getCertificationById,
+  getCurrentUserCertifications
 } from '@/services/certification.service'
 
-export const useCertificationsStore = defineStore('certifications', () => {
+export const useMyCertificationsStore = defineStore('certifications', () => {
   const certifications = ref<Certification[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -28,9 +28,9 @@ export const useCertificationsStore = defineStore('certifications', () => {
     pageSize.value = perPage
     searchQuery.value = search
     if (fetchUserCertifications) {
-      await fetchCertifications()
+      await fetchCurrentUserCertifications()
     } else {
-      await fetchCertifications()
+      await fetchCurrentUserCertifications()
     }
   }
 
@@ -68,26 +68,6 @@ export const useCertificationsStore = defineStore('certifications', () => {
     }
   }
 
-  // Fetch all certifications with pagination and search
-  const fetchCertifications = async () => {
-    loading.value = true
-    try {
-      const response = await getAllCertifications({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      certifications.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching certifications:', error)
-      certifications.value = []
-      totalRecords.value = 0
-    } finally {
-      loading.value = false
-    }
-  }
-
   // Delete a certification
   const removeCertification = async (id: number) => {
     loading.value = true
@@ -114,6 +94,26 @@ export const useCertificationsStore = defineStore('certifications', () => {
     }
   }
 
+  // Fetch current user's certifications with pagination and search
+  const fetchCurrentUserCertifications = async () => {
+    loading.value = true
+    try {
+      const response = await getCurrentUserCertifications({
+        page: currentPage.value,
+        perPage: pageSize.value,
+        search: searchQuery.value
+      })
+      certifications.value = response.data.data
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
+    } catch (error) {
+      console.error('Error fetching current user certifications:', error)
+      certifications.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     certifications,
     loading,
@@ -124,8 +124,8 @@ export const useCertificationsStore = defineStore('certifications', () => {
     setPageAndSize,
     addCertification,
     editCertification,
-    fetchCertifications,
     removeCertification,
-    getCertification
+    getCertification,
+    fetchCurrentUserCertifications
   }
 })

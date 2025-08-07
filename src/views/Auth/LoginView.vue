@@ -144,7 +144,8 @@ const onSubmit = async () => {
         user.email = ''
         user.password = ''
         v$.value.$reset()
-        router.push({ name: 'AdminDashboard' })
+
+        router.push({ name: 'EmployeeDashboard' })
       } else {
         toast.add({
           life: 5000,

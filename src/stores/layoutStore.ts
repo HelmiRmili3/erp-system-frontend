@@ -1,201 +1,3 @@
-// import { defineStore } from 'pinia'
-// import { ref, watch } from 'vue'
-// import { useRouter } from 'vue-router'
-
-// interface MenuItem {
-//   title: string
-//   items: MenuItemItem[]
-// }
-
-// interface MenuItemItem {
-//   id: string
-//   label: string
-//   icon: string
-//   to: string
-//   permission?: string[]
-//   role?: string[]
-// }
-
-// export const useLayoutStore = defineStore('layoutStore', () => {
-//   const router = useRouter()
-
-//   const storedMenuItems = JSON.parse(localStorage.getItem('menuItems') || 'null')
-//   const storedNavbarState = JSON.parse(localStorage.getItem('isNavbarOpen') || 'false')
-
-//   const isNavbarOpen = ref(storedNavbarState || false)
-//   const menuItems = ref<MenuItem[]>(
-//     storedMenuItems || [
-//       {
-//         title: 'Home',
-//         items: [
-//           {
-//             id: 'dashboard',
-//             label: 'Dashboard',
-//             icon: 'dashboard',
-//             isActive: true,
-//             to: '/admin/home'
-//           }
-//         ]
-//       },
-//       {
-//         title: 'Manage',
-//         items: [
-//           {
-//             id: 'manage',
-//             label: 'Users',
-//             icon: 'dashboard',
-//             isActive: false,
-//             to: '/admin/users'
-//           }
-//         ]
-//       },
-//       // {
-//       //   title: 'Categories',
-//       //   items: [
-//       //     {
-//       //       id: 'Absences',
-//       //       label: 'Absences',
-//       //       icon: 'categories',
-//       //       to: '/admin/absences'
-//       //     },
-//       //     {
-//       //       id: 'Attendances',
-//       //       label: 'Attendances',
-//       //       icon: 'categories',
-//       //       to: '/attendances/all'
-//       //     },
-//       //     {
-//       //       id: 'Contracts',
-//       //       label: 'Contracts',
-//       //       icon: 'categories',
-//       //       to: '/admin/Contracts'
-//       //     },
-//       //     {
-//       //       id: 'Certifications',
-//       //       label: 'Certifications',
-//       //       icon: 'categories',
-//       //       to: '/admin/certifications'
-//       //     },
-//       //     {
-//       //       id: 'Expenses',
-//       //       label: 'Expenses',
-//       //       icon: 'categories',
-//       //       to: '/admin/expenses'
-//       //     },
-//       //     {
-//       //       id: 'Payrolls',
-//       //       label: 'Payrolls',
-//       //       icon: 'categories',
-//       //       to: '/admin/payrolls'
-//       //     }
-//       //   ]
-//       // },
-//       // {
-//       //   title: 'Roles & Permissions',
-//       //   items: [
-//       //     {
-//       //       id: 'settings',
-//       //       label: 'Roles',
-//       //       icon: 'settings',
-//       //       to: '/admin/configurations'
-//       //     },
-//       //     {
-//       //       id: 'settings',
-//       //       label: 'Permissions',
-//       //       icon: 'settings',
-//       //       to: '/admin/configurations'
-//       //     }
-//       //   ]
-//       // }
-//       {
-//         title: 'Categories',
-//         items: [
-//           {
-//             id: 'Absences',
-//             label: 'Absences',
-//             icon: 'categories',
-//             to: '/admin/absences'
-//           }
-//           // {
-//           //   id: 'Attendances',
-//           //   label: 'Attendances',
-//           //   name: 'admin',
-//           //   to: '/admin/attendances'
-//           // },
-//           // {
-//           //   id: 'Contracts',
-//           //   label: 'Contracts',
-//           //   name: 'admin',
-//           //   to: '/admin/contracts'
-//           // },
-//           // {
-//           //   id: 'Certifications',
-//           //   label: 'Certifications',
-//           //   name: 'admin',
-//           //   to: '/admin/certifications'
-//           // },
-//           // {
-//           //   id: 'Expenses',
-//           //   label: 'Expenses',
-//           //   name: 'admin',
-//           //   to: '/admin/expenses'
-//           // },
-//           // {
-//           //   id: 'Payrolls',
-//           //   label: 'Payrolls',
-//           //   name: 'admin',
-//           //   to: '/admin/payrolls'
-//           // }
-//         ]
-//       },
-//       {
-//         title: 'Roles & Permissions',
-//         items: [
-//           {
-//             id: 'settings',
-//             label: 'Roles',
-//             icon: 'settings',
-//             to: '/admin/roles'
-//           },
-//           {
-//             id: 'settings',
-//             label: 'Permissions',
-//             icon: 'settings',
-//             to: '/admin/permissions'
-//           }
-//         ]
-//       }
-//     ]
-//   )
-
-//   const toggleNavbar = () => {
-//     isNavbarOpen.value = !isNavbarOpen.value
-//   }
-
-//   const setActiveItem = (item: MenuItemItem) => {
-//     if (item.to === router.currentRoute.value.path) return
-//     router.push(item.to)
-//   }
-
-//   watch(
-//     menuItems,
-//     (newMenuItems) => {
-//       localStorage.setItem('menuItems', JSON.stringify(newMenuItems))
-//     },
-//     { deep: true }
-//   )
-
-//   watch(isNavbarOpen, (newIsNavbarOpen) => {
-//     localStorage.setItem('isNavbarOpen', JSON.stringify(newIsNavbarOpen))
-//   })
-
-//   return {
-//     menuItems,
-//     isNavbarOpen,
-//     toggleNavbar,
-//     setActiveItem
-//   }
-// })
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -241,62 +43,56 @@ export const useLayoutStore = defineStore('layoutStore', () => {
         {
           id: 'manage',
           label: 'Users',
-          icon: 'dashboard',
+          icon: 'users',
           to: '/admin/users',
           role: ['Administrator']
         }
       ]
     },
-    // {
-    //   title: 'Categories',
-    //   items: [
-    //     {
-    //       id: 'Absences',
-    //       label: 'Absences',
-    //       icon: 'categories',
-    //       to: '/admin/absences'
-    //     },
-    //     {
-    //       id: 'Attendances',
-    //       label: 'Attendances',
-    //       icon: 'categories',
-    //       to: '/attendances/all'
-    //     },
-    //     {
-    //       id: 'Contracts',
-    //       label: 'Contracts',
-    //       icon: 'categories',
-    //       to: '/admin/Contracts'
-    //     },
-    //     {
-    //       id: 'Certifications',
-    //       label: 'Certifications',
-    //       icon: 'categories',
-    //       to: '/admin/certifications'
-    //     },
-    //     {
-    //       id: 'Expenses',
-    //       label: 'Expenses',
-    //       icon: 'categories',
-    //       to: '/admin/expenses'
-    //     },
-    //     {
-    //       id: 'Payrolls',
-    //       label: 'Payrolls',
-    //       icon: 'categories',
-    //       to: '/admin/payrolls'
-    //     }
-    //   ]
-    // },
     {
       title: 'Categories',
       items: [
         {
           id: 'Absences',
           label: 'Absences',
-          icon: 'categories',
+          icon: 'eye',
           to: '/admin/absences',
-          role: ['Employee']
+          role: ['Administrator']
+        },
+        {
+          id: 'Attendances',
+          label: 'Attendances',
+          icon: 'categories',
+          to: '/admin/attendances',
+          role: ['Administrator']
+        },
+        {
+          id: 'Contracts',
+          label: 'Contracts',
+          icon: 'contact',
+          to: '/admin/Contracts',
+          role: ['Administrator']
+        },
+        {
+          id: 'Certifications',
+          label: 'Certifications',
+          icon: 'categories',
+          to: '/admin/certifications',
+          role: ['Administrator']
+        },
+        {
+          id: 'Expenses',
+          label: 'Expenses',
+          icon: 'extras',
+          to: '/admin/expenses',
+          role: ['Administrator']
+        },
+        {
+          id: 'Payrolls',
+          label: 'Payrolls',
+          icon: 'products',
+          to: '/admin/payrolls',
+          role: ['Administrator']
         }
       ]
     },
@@ -316,6 +112,53 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           icon: 'settings',
           to: '/admin/permissions',
           permission: ['Roles.View']
+        }
+      ]
+    },
+    {
+      title: 'Me',
+      items: [
+        {
+          id: 'Absences',
+          label: 'Absences',
+          icon: 'categories',
+          to: '/me/absences',
+          role: ['Employee']
+        },
+        {
+          id: 'Attendances',
+          label: 'Attendances',
+          icon: 'eye',
+          to: '/me/attendances',
+          role: ['Employee']
+        },
+        {
+          id: 'Contracts',
+          label: 'Contracts',
+          icon: 'contact',
+          to: '/me/Contracts',
+          role: ['Employee']
+        },
+        {
+          id: 'Certifications',
+          label: 'Certifications',
+          icon: 'categories',
+          to: '/me/certifications',
+          role: ['Employee']
+        },
+        {
+          id: 'Expenses',
+          label: 'Expenses',
+          icon: 'extras',
+          to: '/me/expenses',
+          role: ['Employee']
+        },
+        {
+          id: 'Payrolls',
+          label: 'Payrolls',
+          icon: 'products',
+          to: '/me/payrolls',
+          role: ['Employee']
         }
       ]
     }
@@ -341,8 +184,6 @@ export const useLayoutStore = defineStore('layoutStore', () => {
 
           // Must meet role if required
           const hasRole = !requiresRole || hasMatch(item.role, userRoles)
-
-          // Only return if item requires at least one of permission/role AND user has both
           const requiresAnything = requiresPermission || requiresRole
           return requiresAnything && hasPermission && hasRole
         })

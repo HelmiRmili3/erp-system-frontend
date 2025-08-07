@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Attendance } from '@/models/attendance.model'
-import { deleteAttendance, getAllAttendances } from '@/services/attendance.service'
+import { markAttendance, getCurrentUserAttendances } from '@/services/attendance.service'
 
-export const useAttendancesStore = defineStore('attendances', () => {
+export const useMyAttendancesStore = defineStore('attendances', () => {
   const attendances = ref<Attendance[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -11,16 +11,16 @@ export const useAttendancesStore = defineStore('attendances', () => {
   const totalRecords = ref(0)
   const searchQuery = ref<string>('')
 
-  // Delete an attendance record
-  const removeAttendance = async (id: number) => {
+  // Mark attendance
+  const addAttendance = async (data: Partial<Attendance>) => {
     loading.value = true
     try {
-      await deleteAttendance(id)
-      attendances.value = attendances.value.filter((att) => att.id !== id)
-      return true
+      const response = await markAttendance(data)
+      attendances.value.push(response.data.data)
+      return response.data.data
     } catch (error) {
-      console.error('Error deleting attendance:', error)
-      return false
+      console.error('Error marking attendance:', error)
+      return null
     } finally {
       loading.value = false
     }
@@ -31,18 +31,22 @@ export const useAttendancesStore = defineStore('attendances', () => {
     currentPage.value = page
     pageSize.value = size
     searchQuery.value = search
-    await fetchAttendances()
+    await fetchCurrentUserAttendances()
   }
 
-  // Fetch all attendances with pagination
-  const fetchAttendances = async () => {
+  // Fetch current user's attendance history with pagination
+  const fetchCurrentUserAttendances = async () => {
     loading.value = true
     try {
-      const response = await getAllAttendances(currentPage.value, pageSize.value, searchQuery.value)
+      const response = await getCurrentUserAttendances(
+        currentPage.value,
+        pageSize.value,
+        searchQuery.value
+      )
       attendances.value = response.data.data
       totalRecords.value = response.data.recordsTotal || response.data.data.length // Adjust based on your API response
     } catch (error) {
-      console.error('Error fetching attendances:', error)
+      console.error('Error fetching current user attendances:', error)
       attendances.value = []
       totalRecords.value = 0
     } finally {
@@ -57,8 +61,8 @@ export const useAttendancesStore = defineStore('attendances', () => {
     pageSize,
     totalRecords,
     searchQuery,
-    removeAttendance,
+    addAttendance,
     setPageAndSize,
-    fetchAttendances
+    fetchCurrentUserAttendances
   }
 })

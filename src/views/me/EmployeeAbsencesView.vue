@@ -2,7 +2,7 @@
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
       <SectionHeader title="Gestion des Absences">
-        <template #icon>
+        <template>
           <AbsencesFilledIcon />
         </template>
       </SectionHeader>
@@ -71,7 +71,7 @@
         </template>
       </Column>
       <Column header="Actions" style="width: 150px">
-        <!-- <template #body="{ data }">
+        <template #body="{ data }">
           <div class="flex gap-1">
             <Button
               icon="pi pi-pencil"
@@ -90,7 +90,7 @@
               v-tooltip="'Supprimer'"
             />
           </div>
-        </template> -->
+        </template>
       </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
@@ -175,11 +175,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive, computed } from 'vue'
+import { ref, onMounted, watch, reactive } from 'vue'
+import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
+import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
 import { useAppStore } from '@/stores/app.store'
 import { useAbsenceEnums } from '@/composables/useAbsenceEnums'
-import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper.vue'
-import SectionHeader from './components/AdminDashboardOrders/SectionHeader.vue'
 import AbsencesFilledIcon from '@/assets/svg/orders.svg'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -189,10 +189,10 @@ import Dialog from 'primevue/dialog'
 import Dropdown from 'primevue/dropdown'
 import Textarea from 'primevue/textarea'
 import { useToast } from 'primevue/usetoast'
-import { useAbsencesStore } from '@/stores/absence.store'
+import { useMyAbsencesStore } from '@/stores/myAbsence.store'
 
 const appStore = useAppStore()
-const absencesStore = useAbsencesStore()
+const absencesStore = useMyAbsencesStore()
 
 const { getAbsenceTypeName, getAbsenceStatusName, absenceTypes } = useAbsenceEnums()
 const toast = useToast()
@@ -213,23 +213,24 @@ const formData = reactive({
   reason: ''
 })
 
-computed(() => {
-  if (!searchQuery.value) return absencesStore.absences
+// Filtered absences based on search
+// const filteredAbsences = computed(() => {
+//   if (!searchQuery.value) return absencesStore.absences
 
-  const query = searchQuery.value.toLowerCase()
-  return absencesStore.absences.filter(
-    (absence) =>
-      absence &&
-      (getAbsenceTypeName(absence.absenceType)?.toLowerCase().includes(query) ||
-        getAbsenceStatusName(absence.statusType)?.toLowerCase().includes(query) ||
-        absence.reason?.toLowerCase().includes(query) ||
-        absence.id.toString().includes(query))
-  )
-})
+//   const query = searchQuery.value.toLowerCase()
+//   return absencesStore.absences.filter(
+//     (absence) =>
+//       absence &&
+//       (getAbsenceTypeName(absence.absenceType)?.toLowerCase().includes(query) ||
+//         getAbsenceStatusName(absence.statusType)?.toLowerCase().includes(query) ||
+//         absence.reason?.toLowerCase().includes(query) ||
+//         absence.id.toString().includes(query))
+//   )
+// })
 
 // Fetch absences when component is mounted
 onMounted(() => {
-  absencesStore.fetchAbsences(absencesStore.currentPage, absencesStore.pageSize)
+  absencesStore.fetchCurrentUserAbsences(absencesStore.currentPage, absencesStore.pageSize)
   appStore.setLoading(false)
 })
 const onPage = async (event: any) => {
@@ -317,21 +318,21 @@ const submitForm = async () => {
       id: selectedAbsenceId.value!
     }
     if (isUpdateMode.value && selectedAbsenceId.value) {
-      // await absencesStore.editAbsence(selectedAbsenceId.value, data)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence mise à jour avec succès',
-      //   life: 3000
-      // })
+      await absencesStore.editAbsence(selectedAbsenceId.value, data)
+      toast.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Absence mise à jour avec succès',
+        life: 3000
+      })
     } else {
-      // await absencesStore.addAbsence(data)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence créée avec succès',
-      //   life: 3000
-      // })
+      await absencesStore.addAbsence(data)
+      toast.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Absence créée avec succès',
+        life: 3000
+      })
     }
     closeModal()
   } catch (error) {
@@ -348,13 +349,13 @@ const submitForm = async () => {
 const confirmDelete = async () => {
   if (selectedAbsenceId.value) {
     try {
-      // await absencesStore.removeAbsence(selectedAbsenceId.value)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence supprimée avec succès',
-      //   life: 3000
-      // })
+      await absencesStore.removeAbsence(selectedAbsenceId.value)
+      toast.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Absence supprimée avec succès',
+        life: 3000
+      })
     } catch (error) {
       console.error('Error deleting absence:', error)
       toast.add({

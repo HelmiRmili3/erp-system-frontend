@@ -31,6 +31,9 @@ import productsSvg from '../../../../assets/svg/products.svg?component'
 import settingsSvg from '../../../../assets/svg/settings.svg?component'
 import contactIcon from '../../../../assets/svg/contact.svg?component'
 import ordersIcon from '../../../../assets/svg/orders.svg?component'
+import extrasIcon from '../../../../assets/svg/extras.svg?component'
+import usersIcon from '../../../../assets/svg/users.svg?component'
+import eyeIcon from '../../../../assets/svg/eye.svg?component'
 
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -107,6 +110,14 @@ const stringToComponent = (svg: string) => {
       return contactIcon
     case 'clipboard-list':
       return ordersIcon
+    case 'extras':
+      return extrasIcon
+    case 'users':
+      return usersIcon
+    case 'eye':
+      return eyeIcon
+    case 'contact':
+      return contactIcon
     default:
       return ''
   }

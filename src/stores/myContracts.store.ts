@@ -4,12 +4,12 @@ import type { Contract } from '@/models/contract.model'
 import {
   createContract,
   updateContract,
-  getAllContracts,
   deleteContract,
-  getContractById
+  getContractById,
+  getCurrentUserContracts
 } from '@/services/contract.service'
 
-export const useContractsStore = defineStore('contracts', () => {
+export const useMyContractsStore = defineStore('contracts', () => {
   const contracts = ref<Contract[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -28,9 +28,9 @@ export const useContractsStore = defineStore('contracts', () => {
     pageSize.value = perPage
     searchQuery.value = search
     if (fetchUserContracts) {
-      await fetchContracts()
+      await fetchCurrentUserContracts()
     } else {
-      await fetchContracts()
+      await fetchCurrentUserContracts()
     }
   }
 
@@ -68,26 +68,6 @@ export const useContractsStore = defineStore('contracts', () => {
     }
   }
 
-  // Fetch all contracts with pagination and search
-  const fetchContracts = async () => {
-    loading.value = true
-    try {
-      const response = await getAllContracts({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      contracts.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching contracts:', error)
-      contracts.value = []
-      totalRecords.value = 0
-    } finally {
-      loading.value = false
-    }
-  }
-
   // Delete a contract
   const removeContract = async (id: number) => {
     loading.value = true
@@ -114,6 +94,26 @@ export const useContractsStore = defineStore('contracts', () => {
     }
   }
 
+  // Fetch current user's contracts with pagination and search
+  const fetchCurrentUserContracts = async () => {
+    loading.value = true
+    try {
+      const response = await getCurrentUserContracts({
+        page: currentPage.value,
+        perPage: pageSize.value,
+        search: searchQuery.value
+      })
+      contracts.value = response.data.data
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
+    } catch (error) {
+      console.error('Error fetching current user contracts:', error)
+      contracts.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     contracts,
     loading,
@@ -124,8 +124,8 @@ export const useContractsStore = defineStore('contracts', () => {
     setPageAndSize,
     addContract,
     editContract,
-    fetchContracts,
     removeContract,
-    getContract
+    getContract,
+    fetchCurrentUserContracts
   }
 })

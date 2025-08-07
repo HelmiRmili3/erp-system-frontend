@@ -10,12 +10,16 @@ const deleteAttendance = (id: number) => {
   return api.value!.delete<Response<any>>(`/api/Attendances/${id}`)
 }
 
-const getAllAttendances = () => {
-  return api.value!.get<Response<Attendance[]>>('/api/Attendances')
+const getAllAttendances = (currentPage: number, pageSize: number, search?: string) => {
+  return api.value!.get<Response<Attendance[]>>('Attendances', {
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
+  })
 }
 
-const getCurrentUserAttendances = () => {
-  return api.value!.get<Response<Attendance[]>>('/api/Attendances/me')
+const getCurrentUserAttendances = (currentPage: number, pageSize: number, search?: string) => {
+  return api.value!.get<Response<Attendance[]>>('Attendances/me', {
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
+  })
 }
 
 export { markAttendance, deleteAttendance, getAllAttendances, getCurrentUserAttendances }

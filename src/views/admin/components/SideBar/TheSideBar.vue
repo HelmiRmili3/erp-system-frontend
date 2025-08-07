@@ -41,6 +41,6 @@ const selectItem = (item: any) => {
 </script>
 <style scoped>
 .the-side-bar {
-  height: calc(110vh - 5rem);
+  height: calc(120vh - 5rem);
 }
 </style>

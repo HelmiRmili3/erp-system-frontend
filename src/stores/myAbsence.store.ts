@@ -1,10 +1,17 @@
 // stores/absence.store.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Absence } from '@/models/absence.model'
-import { getAllAbsences } from '@/services/absence.service'
+import type { Absence, CreateAbsence, UpdateAbsence } from '@/models/absence.model'
+import {
+  getAllAbsences,
+  getAbsenceById,
+  createAbsence,
+  updateAbsence,
+  deleteAbsence,
+  getCurrentUserAbsences
+} from '@/services/absence.service'
 
-export const useAbsencesStore = defineStore('absences', () => {
+export const useMyAbsencesStore = defineStore('myAbsences', () => {
   const absences = ref<Absence[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -14,14 +21,14 @@ export const useAbsencesStore = defineStore('absences', () => {
   /* ----------------------------------------------------------
    * Fetch current user’s absences with server-side pagination
    * ---------------------------------------------------------- */
-  const fetchAbsences = async (
+  const fetchCurrentUserAbsences = async (
     page: number = currentPage.value,
     size: number = pageSize.value
     // search?: string
   ) => {
     loading.value = true
     try {
-      const response = await getAllAbsences(page, size)
+      const response = await getCurrentUserAbsences(page, size)
       const payload = response.data
       absences.value = payload.data || []
       totalRecords.value = payload.recordsFiltered ?? payload.recordsTotal ?? 0
@@ -42,31 +49,31 @@ export const useAbsencesStore = defineStore('absences', () => {
   const setPageAndSize = async (page: number, size: number) => {
     currentPage.value = page
     pageSize.value = size
-    await fetchAbsences(page, size)
+    await fetchCurrentUserAbsences(page, size)
   }
 
   /* ----------------------------------------------------------
    * CRUD helpers (unchanged, just call the same refresh logic)
    * ---------------------------------------------------------- */
-  // const getAbsence = async (id: number) => {
-  //   const { data } = await getAbsenceById(id)
-  //   return data?.data ?? null
-  // }
+  const getAbsence = async (id: number) => {
+    const { data } = await getAbsenceById(id)
+    return data?.data ?? null
+  }
 
-  // const addAbsence = async (payload: CreateAbsence) => {
-  //   await createAbsence(payload)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
+  const addAbsence = async (payload: CreateAbsence) => {
+    await createAbsence(payload)
+    await fetchCurrentUserAbsences(currentPage.value, pageSize.value)
+  }
 
-  // const editAbsence = async (id: number, payload: UpdateAbsence) => {
-  //   await updateAbsence(id, payload)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
+  const editAbsence = async (id: number, payload: UpdateAbsence) => {
+    await updateAbsence(id, payload)
+    await fetchCurrentUserAbsences(currentPage.value, pageSize.value)
+  }
 
-  // const removeAbsence = async (id: number) => {
-  //   await deleteAbsence(id)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
+  const removeAbsence = async (id: number) => {
+    await deleteAbsence(id)
+    await fetchCurrentUserAbsences(currentPage.value, pageSize.value)
+  }
 
   /* ---------------------------------------------------------- */
   return {
@@ -75,12 +82,12 @@ export const useAbsencesStore = defineStore('absences', () => {
     currentPage,
     pageSize,
     totalRecords,
-    fetchAbsences,
+    fetchCurrentUserAbsences,
     setPageAndSize,
-    // getAbsence,
-    // addAbsence,
-    // editAbsence,
-    // removeAbsence,
+    getAbsence,
+    addAbsence,
+    editAbsence,
+    removeAbsence,
     getAllAbsences
   }
 })

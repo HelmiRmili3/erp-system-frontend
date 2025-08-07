@@ -4,12 +4,12 @@ import type { Expense } from '@/models/expense.model'
 import {
   createExpense,
   updateExpense,
-  getAllExpenses,
   deleteExpense,
-  getExpenseById
+  getExpenseById,
+  getCurrentUserExpenses
 } from '@/services/expense.service'
 
-export const useExpensesStore = defineStore('expenses', () => {
+export const useMyExpensesStore = defineStore('expenses', () => {
   const expenses = ref<Expense[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -23,7 +23,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     pageSize.value = perPage
     searchQuery.value = search
     {
-      await fetchExpenses()
+      await fetchCurrentUserExpenses()
     }
   }
 
@@ -61,26 +61,6 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  // Fetch all expenses with pagination and search
-  const fetchExpenses = async () => {
-    loading.value = true
-    try {
-      const response = await getAllExpenses({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      expenses.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching expenses:', error)
-      expenses.value = []
-      totalRecords.value = 0
-    } finally {
-      loading.value = false
-    }
-  }
-
   // Delete an expense
   const removeExpense = async (id: number) => {
     loading.value = true
@@ -107,6 +87,26 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  // Fetch current user's expenses with pagination and search
+  const fetchCurrentUserExpenses = async () => {
+    loading.value = true
+    try {
+      const response = await getCurrentUserExpenses({
+        page: currentPage.value,
+        perPage: pageSize.value,
+        search: searchQuery.value
+      })
+      expenses.value = response.data.data
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
+    } catch (error) {
+      console.error('Error fetching current user expenses:', error)
+      expenses.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     expenses,
     loading,
@@ -117,8 +117,8 @@ export const useExpensesStore = defineStore('expenses', () => {
     setPageAndSize,
     addExpense,
     editExpense,
-    fetchExpenses,
     removeExpense,
-    getExpense
+    getExpense,
+    fetchCurrentUserExpenses
   }
 })

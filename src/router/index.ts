@@ -13,6 +13,11 @@ const router = createRouter({
       redirect: '/admin/home'
     },
     {
+      path: '/me',
+      name: '/meHome',
+      redirect: '/me/home'
+    },
+    {
       path: '/auth',
       name: 'Auth',
       children: [
@@ -58,60 +63,6 @@ const router = createRouter({
         }
       ]
     },
-    // {
-    //   path: '/admin',
-    //   name: 'AdminDashboard',
-    //   component: () => import('@/views/admin/AdminDashboardView.vue'),
-    //   meta: {
-    //     requiresAuth: true,
-    //     requiresLoading: true
-    //   },
-    //   redirect: '/admin/home',
-    //   children: [
-    //     {
-    //       path: 'home',
-    //       name: 'AdminDashboardHome',
-    //       component: () => import('@/views/admin/AdminDashboardHome.vue')
-    //     },
-    //     {
-    //       path: 'absences',
-    //       name: 'Absences',
-    //       children: [
-    //         {
-    //           path: '/absences',
-    //           name: 'AdminDashboardCategories',
-    //           component: () => import('@/views/admin/AdminDashboardCategories.vue')
-    //         }
-    //         // {
-    //         //   path: ':id/categories',
-    //         //   name: 'AdminDashboardSubCategories',
-    //         //   component: () => import('@/views/admin/AdminDashboardSubCategories.vue')
-    //         // }
-    //       ]
-    //     },
-    //     {
-    //       path: 'attendances',
-    //       name: 'Attendances',
-    //       children: [
-    //         {
-    //           path: '',
-    //           name: '/all',
-    //           component: () => import('@/views/admin/AdminDashboardCategories.vue')
-    //         }
-    //         // {
-    //         //   path: ':id/categories',
-    //         //   name: 'AdminDashboardSubCategories',
-    //         //   component: () => import('@/views/admin/AdminDashboardSubCategories.vue')
-    //         // }
-    //       ]
-    //     }
-    //     // {
-    //     //   path: 'configurations',
-    //     //   name: 'AdminDashboardConfigurations',
-    //     //   component: () => import('@/views/admin/AdminDashboardConfiguration.vue')
-    //     // }
-    //   ]
-    // }
     {
       path: '/admin',
       name: 'AdminDashboard',
@@ -140,34 +91,49 @@ const router = createRouter({
           name: 'AdminDashboardAbsences',
           component: () => import('@/views/admin/AdminDashboardAbsences.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Administrator']
           }
         },
-        // {
-        //   path: 'attendances',
-        //   name: 'Attendances',
-        //   component: () => import('@/views/admin/attendances.vue')
-        // },
-        // {
-        //   path: 'contracts',
-        //   name: 'Contracts',
-        //   component: () => import('@/views/admin/Contracts.vue')
-        // },
-        // {
-        //   path: 'certifications',
-        //   name: 'Certifications',
-        //   component: () => import('@/views/admin/Certifications.vue')
-        // },
-        // {
-        //   path: 'expenses',
-        //   name: 'Expenses',
-        //   component: () => import('@/views/admin/Expenses.vue')
-        // },
-        // {
-        //   path: 'payrolls',
-        //   name: 'Payrolls',
-        //   component: () => import('@/views/admin/Payrolls.vue')
-        // },
+        {
+          path: 'attendances',
+          name: 'AdminAttendances',
+          component: () => import('@/views/admin/AdminDashboardAttendances.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
+        },
+        {
+          path: 'contracts',
+          name: 'AdminContracts',
+          component: () => import('@/views/admin/AdminDashboardContracts.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
+        },
+        {
+          path: 'certifications',
+          name: 'AdminCertifications',
+          component: () => import('@/views/admin/AdminDashboardCertifications.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
+        },
+        {
+          path: 'expenses',
+          name: 'AdminExpenses',
+          component: () => import('@/views/admin/AdminDashboardExpenses.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
+        },
+        {
+          path: 'payrolls',
+          name: 'AdminPayrolls',
+          component: () => import('@/views/admin/AdminDashboardPayroll.vue'),
+          meta: {
+            roles: ['Administrator']
+          }
+        },
         {
           path: 'roles',
           name: 'AdminDashboardRoles',
@@ -183,6 +149,71 @@ const router = createRouter({
           component: () => import('@/views/admin/AdminDashboardPermissions.vue'),
           meta: {
             roles: ['Administrator']
+          }
+        }
+      ]
+    },
+    {
+      path: '/me',
+      name: 'EmployeeDashboard',
+      component: () => import('@/views/me/EmployeeDashboardView.vue'),
+      meta: {
+        requiresAuth: true,
+        requiresLoading: true
+      },
+      redirect: '/me/home',
+      children: [
+        {
+          path: 'home',
+          name: 'EmployeeDashboardHome',
+          component: () => import('@/views/me/EmployeeDashboardHome.vue')
+        },
+        {
+          path: 'absences',
+          name: 'EmployeeAbsencesView',
+          component: () => import('@/views/me/EmployeeAbsencesView.vue'),
+          meta: {
+            roles: ['Employee']
+          }
+        },
+        {
+          path: 'attendances',
+          name: 'EmployeeAttendancesView',
+          component: () => import('@/views/me/EmployeeAttendancesView.vue'),
+          meta: {
+            roles: ['Employee']
+          }
+        },
+        {
+          path: 'contracts',
+          name: 'EmployeeContractsView',
+          component: () => import('@/views/me/EmployeeContractsView.vue'),
+          meta: {
+            roles: ['Employee']
+          }
+        },
+        {
+          path: 'certifications',
+          name: 'EmployeeCertificationsView',
+          component: () => import('@/views/me/EmployeeCertificationsView.vue'),
+          meta: {
+            roles: ['Employee']
+          }
+        },
+        {
+          path: 'expenses',
+          name: 'EmployeeExpensesView',
+          component: () => import('@/views/me/EmployeeExpensesView.vue'),
+          meta: {
+            roles: ['Employee']
+          }
+        },
+        {
+          path: 'payrolls',
+          name: 'EmployeePayrollsView',
+          component: () => import('@/views/me/EmployeePayrollView.vue'),
+          meta: {
+            roles: ['Employee']
           }
         }
       ]
