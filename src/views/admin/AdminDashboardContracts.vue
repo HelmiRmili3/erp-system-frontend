@@ -71,7 +71,7 @@
         <template #body="{ data }">
           <a
             v-if="data.fileUrl && data.fileUrl !== 'string'"
-            :href="data.fileUrl"
+            :href="`${appStore.baseURL + data.fileUrl}`"
             target="_blank"
             class="text-blue-600 hover:underline"
             >Voir PDF</a
@@ -219,7 +219,7 @@
             <span class="font-medium text-gray-700">Fichier:</span>
             <a
               v-if="selectedContract?.fileUrl && selectedContract.fileUrl !== 'string'"
-              :href="selectedContract.fileUrl"
+              :href="`${appStore.baseURL + selectedContract.fileUrl}`"
               target="_blank"
               class="text-blue-600 hover:underline"
               >Voir PDF</a

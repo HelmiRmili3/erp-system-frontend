@@ -67,7 +67,7 @@
         <template #body="{ data }">
           <a
             v-if="data.receiptPath && data.receiptPath !== 'string'"
-            :href="data.receiptPath"
+            :href="`${appStore.baseURL + data.receiptPath}`"
             target="_blank"
             class="text-blue-600 hover:underline"
             >Voir Reçu</a
@@ -131,7 +131,7 @@
             <span class="font-medium text-gray-700">Reçu:</span>
             <a
               v-if="selectedExpense?.receiptPath && selectedExpense.receiptPath !== 'string'"
-              :href="selectedExpense.receiptPath"
+              :href="`${appStore.baseURL + selectedExpense.receiptPath}`"
               target="_blank"
               class="text-blue-600 hover:underline"
               >Voir Reçu</a

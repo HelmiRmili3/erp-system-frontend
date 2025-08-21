@@ -66,11 +66,13 @@
         <template #body="{ data }">
           <a
             v-if="data.fileUrl"
-            :href="data.fileUrl"
+            :href="`${appStore.baseURL + data.fileUrl}`"
             target="_blank"
+            rel="noopener"
             class="text-blue-600 hover:underline"
-            >Voir PDF</a
           >
+            Voir PDF
+          </a>
           <span v-else>N/A</span>
         </template>
       </Column>
@@ -191,7 +193,7 @@
             <span class="font-medium text-gray-700">Fichier:</span>
             <a
               v-if="selectedCertification?.fileUrl"
-              :href="selectedCertification.fileUrl"
+              :href="`${appStore.baseURL + selectedCertification.fileUrl}`"
               target="_blank"
               class="text-blue-600 hover:underline"
               >Voir PDF</a

@@ -5,13 +5,14 @@ export const useAppStore = defineStore('app', () => {
   const _loading = ref(false)
 
   const loading = computed(() => _loading.value)
-
+  const baseURL = localStorage.getItem('baseURL')
   const setLoading = (value: boolean) => {
     _loading.value = value
   }
 
   return {
     loading,
-    setLoading
+    setLoading,
+    baseURL
   }
 })
