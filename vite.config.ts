@@ -21,10 +21,11 @@ export default defineConfig({
     svgLoader()
   ],
   server: {
-    port: 4000,
+    port: 5000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000', // ✅ OR 'https://localhost:5001' if you're using HTTPS
+        // target: 'http://backend:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false
       }

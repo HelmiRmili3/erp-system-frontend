@@ -28,7 +28,7 @@
           />
         </div>
         <!-- Add Payroll Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -229,10 +229,6 @@
     >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span>{{ selectedPayroll?.id || 'N/A' }}</span>
-          </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Utilisateur:</span>
             <span>{{ selectedPayroll?.userId || 'N/A' }}</span>

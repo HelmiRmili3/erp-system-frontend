@@ -8,3 +8,11 @@ export interface Expense {
   status: number
   receiptPath: string
 }
+
+export interface CreateExpense {
+  description: string
+  amount: number
+  expenseDate: string
+  category: string
+  image: File
+}

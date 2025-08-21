@@ -30,8 +30,7 @@ async function loadConfig(): Promise<AppConfig> {
   if (import.meta.env.DEV) {
     // Development mode: Use import.meta.env
     return {
-      // VITE_BASE_URL: import.meta.env.VITE_BASE_URL || 'http://localhost:5000'
-      VITE_BASE_URL: 'http://localhost:5000'
+      VITE_BASE_URL: import.meta.env.VITE_BASE_URL || 'http://localhost:5000'
     }
   } else {
     // Production mode: Fetch config.json
@@ -53,7 +52,6 @@ appStore.setLoading(true)
 loadConfig().then((config) => {
   // console.log('Loaded config:', config)
   console.log('Connected to :', config.VITE_BASE_URL)
-
   createAxiosInstances(config.VITE_BASE_URL || 'https://localhost:5000')
   app.use(axiosPlugin)
 })

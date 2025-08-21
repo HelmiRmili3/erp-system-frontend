@@ -15,7 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
       ? parseInt(localStorage.getItem('tokenExpiresAt')!)
       : null
   )
-  let refreshInterval: number | null = null
+  let refreshInterval: ReturnType<typeof setInterval> | null = null
   const isRefreshing = ref(false) // Prevent concurrent refreshes
 
   // Check if token is expired or about to expire (within 5 minutes)
@@ -51,8 +51,8 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const result = await register(data)
       console.log('register:', result)
-      if (result.data.succeeded) {
-        user.value = result.data.data
+      if (result.succeeded) {
+        user.value = result.data
         localStorage.setItem('user', JSON.stringify(user.value))
         await loginAction({ email: data.email, password: data.password })
       }

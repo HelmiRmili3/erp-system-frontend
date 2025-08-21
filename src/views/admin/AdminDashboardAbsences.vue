@@ -27,7 +27,7 @@
           />
         </div>
         <!-- Add Absence Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -101,7 +101,7 @@
     </DataTable>
 
     <!-- Add/Update Modal -->
-    <Dialog
+    <!-- <Dialog
       v-model:visible="showModal"
       :header="isUpdateMode ? 'Modifier Absence' : 'Ajouter Absence'"
       modal
@@ -152,7 +152,7 @@
           <Button :label="isUpdateMode ? 'Modifier' : 'Ajouter'" severity="success" type="submit" />
         </div>
       </form>
-    </Dialog>
+    </Dialog> -->
 
     <!-- Delete Confirmation Modal -->
     <Dialog
@@ -175,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive, computed } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 import { useAppStore } from '@/stores/app.store'
 import { useAbsenceEnums } from '@/composables/useAbsenceEnums'
 import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper.vue'
@@ -186,36 +186,23 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dialog from 'primevue/dialog'
-import Dropdown from 'primevue/dropdown'
-import Textarea from 'primevue/textarea'
+
 import { useToast } from 'primevue/usetoast'
 import { useAbsencesStore } from '@/stores/absence.store'
 
 const appStore = useAppStore()
 const absencesStore = useAbsencesStore()
 
-const { getAbsenceTypeName, getAbsenceStatusName, absenceTypes } = useAbsenceEnums()
+const { getAbsenceTypeName, getAbsenceStatusName } = useAbsenceEnums()
 const toast = useToast()
 
 // Modal state
 const showModal = ref(false)
 const showDeleteModal = ref(false)
-const isUpdateMode = ref(false)
 const selectedAbsenceId = ref<number | null>(null)
 const searchQuery = ref('')
-
-const formData = reactive({
-  startDate: '', // ISO string (e.g., 2025-07-26T12:20:00.000Z)
-  startDateDisplay: '', // YYYY-MM-DD for input (e.g., 2025-07-26)
-  endDate: '',
-  endDateDisplay: '',
-  absenceType: 0, // Default to Vacation
-  reason: ''
-})
-
 computed(() => {
   if (!searchQuery.value) return absencesStore.absences
-
   const query = searchQuery.value.toLowerCase()
   return absencesStore.absences.filter(
     (absence) =>
@@ -245,105 +232,48 @@ const formatDate = (dateString: string) => {
   })
 }
 
-// Modal functions
-const openAddModal = () => {
-  isUpdateMode.value = false
-  const now = new Date()
-  const todayISO = now.toISOString() // e.g., 2025-07-26T12:20:00.000Z
-  const todayDate = todayISO.split('T')[0] // e.g., 2025-07-26
-  Object.assign(formData, {
-    startDate: todayISO,
-    startDateDisplay: todayDate,
-    endDate: todayISO,
-    endDateDisplay: todayDate,
-    absenceType: 0, // Vacation
-    reason: ''
-  })
-  showModal.value = true
-}
-
-const openUpdateModal = (absence: any) => {
-  if (!absence || !absence.id) {
-    console.error('Invalid absence object:', absence)
-    toast.add({
-      severity: 'error',
-      summary: 'Erreur',
-      detail: "Impossible de charger les données de l'absence",
-      life: 3000
-    })
-    return
-  }
-  isUpdateMode.value = true
-  selectedAbsenceId.value = absence.id
-  const startDate = absence.startDate
-    ? new Date(absence.startDate).toISOString()
-    : new Date().toISOString()
-  const endDate = absence.endDate
-    ? new Date(absence.endDate).toISOString()
-    : new Date().toISOString()
-  Object.assign(formData, {
-    startDate,
-    startDateDisplay: startDate.split('T')[0],
-    endDate,
-    endDateDisplay: endDate.split('T')[0],
-    absenceType: absence.absenceType ?? 0,
-    reason: absence.reason || ''
-  })
-  showModal.value = true
-}
-
-const openDeleteModal = (id: number) => {
-  selectedAbsenceId.value = id
-  showDeleteModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-  selectedAbsenceId.value = null
-}
-
 const closeDeleteModal = () => {
   showDeleteModal.value = false
   selectedAbsenceId.value = null
 }
 
-const submitForm = async () => {
-  try {
-    const data = {
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      absenceType: formData.absenceType,
-      reason: formData.reason,
-      id: selectedAbsenceId.value!
-    }
-    if (isUpdateMode.value && selectedAbsenceId.value) {
-      // await absencesStore.editAbsence(selectedAbsenceId.value, data)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence mise à jour avec succès',
-      //   life: 3000
-      // })
-    } else {
-      // await absencesStore.addAbsence(data)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence créée avec succès',
-      //   life: 3000
-      // })
-    }
-    closeModal()
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Erreur',
-      detail: "Échec de l'enregistrement de l'absence",
-      life: 3000
-    })
-  }
-}
+// const submitForm = async () => {
+//   try {
+//     const data = {
+//       startDate: formData.startDate,
+//       endDate: formData.endDate,
+//       absenceType: formData.absenceType,
+//       reason: formData.reason,
+//       id: selectedAbsenceId.value!
+//     }
+//     if (isUpdateMode.value && selectedAbsenceId.value) {
+//       // await absencesStore.editAbsence(selectedAbsenceId.value, data)
+//       // toast.add({
+//       //   severity: 'success',
+//       //   summary: 'Succès',
+//       //   detail: 'Absence mise à jour avec succès',
+//       //   life: 3000
+//       // })
+//     } else {
+//       // await absencesStore.addAbsence(data)
+//       // toast.add({
+//       //   severity: 'success',
+//       //   summary: 'Succès',
+//       //   detail: 'Absence créée avec succès',
+//       //   life: 3000
+//       // })
+//     }
+//     closeModal()
+//   } catch (error) {
+//     console.error('Error submitting form:', error)
+//     toast.add({
+//       severity: 'error',
+//       summary: 'Erreur',
+//       detail: "Échec de l'enregistrement de l'absence",
+//       life: 3000
+//     })
+//   }
+// }
 
 const confirmDelete = async () => {
   if (selectedAbsenceId.value) {
@@ -367,31 +297,6 @@ const confirmDelete = async () => {
   }
   closeDeleteModal()
 }
-
-// Watchers to sync startDateDisplay with startDate
-watch(
-  () => formData.startDateDisplay,
-  (newDate) => {
-    if (newDate) {
-      const [year, month, day] = newDate.split('-')
-      const date = new Date(formData.startDate || new Date())
-      date.setFullYear(parseInt(year), parseInt(month) - 1, parseInt(day))
-      formData.startDate = date.toISOString()
-    }
-  }
-)
-
-watch(
-  () => formData.endDateDisplay,
-  (newDate) => {
-    if (newDate) {
-      const [year, month, day] = newDate.split('-')
-      const date = new Date(formData.endDate || new Date())
-      date.setFullYear(parseInt(year), parseInt(month) - 1, parseInt(day))
-      formData.endDate = date.toISOString()
-    }
-  }
-)
 </script>
 
 <style scoped>

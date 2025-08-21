@@ -32,7 +32,7 @@
           />
         </div>
         <!-- Add Certification Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>

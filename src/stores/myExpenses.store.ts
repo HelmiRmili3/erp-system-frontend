@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Expense } from '@/models/expense.model'
+import type { CreateExpense, Expense } from '@/models/expense.model'
 import {
   createExpense,
   updateExpense,
@@ -9,7 +9,7 @@ import {
   getCurrentUserExpenses
 } from '@/services/expense.service'
 
-export const useMyExpensesStore = defineStore('expenses', () => {
+export const useMyExpensesStore = defineStore('myexpenses', () => {
   const expenses = ref<Expense[]>([])
   const loading = ref(false)
   const currentPage = ref(1)
@@ -18,17 +18,17 @@ export const useMyExpensesStore = defineStore('expenses', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
+  const setPageAndSize = async (page: number, size: number, search: string = '') => {
     currentPage.value = page
-    pageSize.value = perPage
+    pageSize.value = size
     searchQuery.value = search
     {
-      await fetchCurrentUserExpenses()
+      await fetchCurrentUserExpenses(page, size)
     }
   }
 
   // Create a new expense
-  const addExpense = async (data: Partial<Expense>) => {
+  const addExpense = async (data: CreateExpense) => {
     loading.value = true
     try {
       const response = await createExpense(data)
@@ -88,14 +88,13 @@ export const useMyExpensesStore = defineStore('expenses', () => {
   }
 
   // Fetch current user's expenses with pagination and search
-  const fetchCurrentUserExpenses = async () => {
+  const fetchCurrentUserExpenses = async (
+    page: number = currentPage.value,
+    size: number = pageSize.value
+  ) => {
     loading.value = true
     try {
-      const response = await getCurrentUserExpenses({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
+      const response = await getCurrentUserExpenses(page, size)
       expenses.value = response.data.data
       totalRecords.value = response.data.recordsTotal || response.data.data.length
     } catch (error) {

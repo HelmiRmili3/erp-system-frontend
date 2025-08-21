@@ -653,7 +653,7 @@ const onSubmit = async () => {
       console.log(user)
       const result = await authStore.register(user)
 
-      if (result?.data.succeeded) {
+      if (result.succeeded) {
         toast.add({
           life: 5000,
           severity: 'success',
@@ -663,10 +663,9 @@ const onSubmit = async () => {
         resetUser()
         router.push({ name: 'AdminDashboard' })
       } else {
-        // eslint-disable-next-line no-unsafe-optional-chaining
-        const { message, errors } = result?.data!
+        const { errors } = result
         if (errors && errors.length) {
-          errors.forEach((err: string) => {
+          errors.forEach((err) => {
             toast.add({
               life: 5000,
               severity: 'error',
@@ -679,7 +678,7 @@ const onSubmit = async () => {
             life: 5000,
             severity: 'error',
             summary: 'Error',
-            detail: message || 'Registration failed'
+            detail: 'Registration failed'
           })
         }
       }

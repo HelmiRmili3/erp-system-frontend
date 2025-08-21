@@ -11,11 +11,11 @@ import { api, normalApi } from '@/plugins/axios'
 // Register a new user
 const register = async (userData: RegisterModel) => {
   const payload = { data: userData }
-  console.log('Sending payload:', JSON.stringify(payload, null, 2))
+  // console.log('Sending payload:', JSON.stringify(payload, null, 2))
   try {
-    const response = await normalApi.value!.post<Response<User>>('/api/Auth/register', payload)
-    console.log('Registration successful:', response.data)
-    return response
+    const response = await normalApi.value!.post<Response<User>>('Auth/register', payload)
+    // console.log('Registration successful:', response.data)
+    return response.data
   } catch (error: any) {
     console.error('Registration failed:', error)
     console.error('Backend validation errors:', JSON.stringify(error.response?.data, null, 2))
@@ -40,7 +40,7 @@ const refresh = async (refreshToken: string) => {
 // Change password
 const resetPassword = async (data: ResetPasswordModel) => {
   const response = await api.value!.post<Response<void>>('Auth/change-password', data)
-  return response.data
+  return response
 }
 
 // Get current user

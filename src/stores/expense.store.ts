@@ -1,13 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Expense } from '@/models/expense.model'
-import {
-  createExpense,
-  updateExpense,
-  getAllExpenses,
-  deleteExpense,
-  getExpenseById
-} from '@/services/expense.service'
+import { updateExpense, getExpenseById, getAllExpenses } from '@/services/expense.service'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const expenses = ref<Expense[]>([])
@@ -18,31 +12,16 @@ export const useExpensesStore = defineStore('expenses', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
+  const setPageAndSize = async (page: number, size: number, search: string = '') => {
     currentPage.value = page
-    pageSize.value = perPage
+    pageSize.value = size
     searchQuery.value = search
     {
-      await fetchExpenses()
+      await fetchAllExpenses(page, size)
     }
   }
 
-  // Create a new expense
-  const addExpense = async (data: Partial<Expense>) => {
-    loading.value = true
-    try {
-      const response = await createExpense(data)
-      expenses.value.push(response.data.data)
-      return response.data.data
-    } catch (error) {
-      console.error('Error creating expense:', error)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Update an existing expense
+  //  Update an existing expense
   const editExpense = async (data: Partial<Expense>) => {
     loading.value = true
     try {
@@ -62,35 +41,19 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   // Fetch all expenses with pagination and search
-  const fetchExpenses = async () => {
+  const fetchAllExpenses = async (
+    page: number = currentPage.value,
+    size: number = pageSize.value
+  ) => {
     loading.value = true
     try {
-      const response = await getAllExpenses({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
+      const response = await getAllExpenses(page, size)
       expenses.value = response.data.data
       totalRecords.value = response.data.recordsTotal || response.data.data.length
     } catch (error) {
       console.error('Error fetching expenses:', error)
       expenses.value = []
       totalRecords.value = 0
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Delete an expense
-  const removeExpense = async (id: number) => {
-    loading.value = true
-    try {
-      await deleteExpense(id)
-      expenses.value = expenses.value.filter((exp) => exp.id !== id)
-      return true
-    } catch (error) {
-      console.error('Error deleting expense:', error)
-      return false
     } finally {
       loading.value = false
     }
@@ -115,10 +78,8 @@ export const useExpensesStore = defineStore('expenses', () => {
     totalRecords,
     searchQuery,
     setPageAndSize,
-    addExpense,
     editExpense,
-    fetchExpenses,
-    removeExpense,
+    fetchAllExpenses,
     getExpense
   }
 })

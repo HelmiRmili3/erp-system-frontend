@@ -1,28 +1,43 @@
-import type { Expense } from '@/models/expense.model'
+import type { CreateExpense, Expense } from '@/models/expense.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
 
-interface PaginationParams {
-  page?: number
-  perPage?: number
-  search?: string
-}
+// interface PaginationParams {
+//   page?: number
+//   perPage?: number
+//   search?: string
+// }
 
-const createExpense = (data: Partial<Expense>) => {
-  return api.value!.post<Response<Expense>>('Expenses', data)
+const createExpense = (data: CreateExpense) => {
+  const formData = new FormData()
+
+  // Append fields with the exact names expected by the API
+  formData.append('Expense.Description', data.description)
+  formData.append('Expense.Amount', data.amount.toString())
+  formData.append('Expense.ExpenseDate', data.expenseDate)
+  formData.append('Expense.Category', data.category)
+  formData.append('File', data.image)
+
+  // Debug: Log the FormData contents
+  console.log('FormData contents:')
+  for (const [key, value] of formData.entries()) {
+    console.log(key, value)
+  }
+
+  return api.value!.post<Response<Expense>>('Expenses', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 const updateExpense = (data: Partial<Expense>) => {
   return api.value!.put<Response<Expense>>('Expenses', data)
 }
 
-const getAllExpenses = (params: PaginationParams = {}) => {
+const getAllExpenses = (currentPage: number, pageSize: number, search?: string) => {
   return api.value!.get<Response<Expense[]>>('Expenses', {
-    params: {
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search
-    }
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
 }
 
@@ -34,13 +49,9 @@ const getExpenseById = (id: number) => {
   return api.value!.get<Response<Expense>>(`Expenses/${id}`)
 }
 
-const getCurrentUserExpenses = (params: PaginationParams = {}) => {
+const getCurrentUserExpenses = (currentPage: number, pageSize: number, search?: string) => {
   return api.value!.get<Response<Expense[]>>('Expenses/me', {
-    params: {
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search
-    }
+    params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
 }
 
