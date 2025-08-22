@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import type { Attendance } from '@/models/attendance.model'
 import { markAttendance, getCurrentUserAttendances } from '@/services/attendance.service'
 
-export const useMyAttendancesStore = defineStore('attendances', () => {
+export const useMyAttendancesStore = defineStore('myattendances', () => {
   const attendances = ref<Attendance[]>([])
   const loading = ref(false)
   const currentPage = ref(1)

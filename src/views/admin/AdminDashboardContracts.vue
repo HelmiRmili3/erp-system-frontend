@@ -278,8 +278,8 @@ const formData = reactive({
 })
 
 // Fetch contracts when component is mounted
-onMounted(() => {
-  contractsStore.fetchContracts()
+onMounted(async () => {
+  await contractsStore.fetchContracts()
   appStore.setLoading(false)
 })
 

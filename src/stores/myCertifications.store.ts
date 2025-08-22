@@ -18,20 +18,12 @@ export const useMyCertificationsStore = defineStore('certifications', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (
-    page: number,
-    perPage: number,
-    search: string = '',
-    fetchUserCertifications: boolean = false
-  ) => {
+  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    if (fetchUserCertifications) {
-      await fetchCurrentUserCertifications()
-    } else {
-      await fetchCurrentUserCertifications()
-    }
+
+    await fetchCurrentUserCertifications()
   }
 
   // Create a new certification

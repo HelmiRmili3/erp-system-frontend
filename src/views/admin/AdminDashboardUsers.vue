@@ -288,8 +288,8 @@ const formData = reactive({
 })
 
 /* ---------- Lifecycle ---------- */
-onMounted(() => {
-  adminStore.fetchUsers()
+onMounted(async () => {
+  await adminStore.fetchUsers()
   appStore.setLoading(false)
 })
 

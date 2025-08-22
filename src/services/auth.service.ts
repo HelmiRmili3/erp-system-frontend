@@ -7,11 +7,9 @@ const register = async (userData: any) => {
   const payload = { data: userData }
   try {
     const response = await api.value!.post<Response<User>>('Auth/register', payload)
-    console.log('Registration successful:', response.data)
     return response.data
   } catch (error: any) {
-    console.error('Registration failed:', error)
-    console.error('Backend validation errors:', JSON.stringify(error.response?.data, null, 2))
+    console.error('Registration failed:', JSON.stringify(error.response?.data, null, 2))
     throw error
   }
 }

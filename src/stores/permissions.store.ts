@@ -36,7 +36,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
         perPage: size,
         search
       })
-      console.log('response : ', response)
       permissions.value = response.data.data
       totalRecords.value = response.data.recordsTotal || response.data.data.length
     } catch (error) {

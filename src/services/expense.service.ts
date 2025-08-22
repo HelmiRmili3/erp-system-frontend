@@ -2,12 +2,6 @@ import type { CreateExpense, Expense } from '@/models/expense.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
 
-// interface PaginationParams {
-//   page?: number
-//   perPage?: number
-//   search?: string
-// }
-
 const createExpense = (data: CreateExpense) => {
   const formData = new FormData()
 
@@ -19,10 +13,10 @@ const createExpense = (data: CreateExpense) => {
   formData.append('File', data.image)
 
   // Debug: Log the FormData contents
-  console.log('FormData contents:')
-  for (const [key, value] of formData.entries()) {
-    console.log(key, value)
-  }
+  // console.log('FormData contents:')
+  // for (const [key, value] of formData.entries()) {
+  //   console.log(key, value)
+  // }
 
   return api.value!.post<Response<Expense>>('Expenses', formData, {
     headers: {

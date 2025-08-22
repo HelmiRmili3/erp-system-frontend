@@ -18,20 +18,12 @@ export const useContractsStore = defineStore('contracts', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (
-    page: number,
-    perPage: number,
-    search: string = '',
-    fetchUserContracts: boolean = false
-  ) => {
+  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    if (fetchUserContracts) {
-      await fetchContracts()
-    } else {
-      await fetchContracts()
-    }
+
+    await fetchContracts()
   }
 
   // Create a new contract

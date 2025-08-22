@@ -242,8 +242,8 @@ const formData = reactive({
 })
 
 // Fetch certifications when component is mounted
-onMounted(() => {
-  certificationsStore.fetchCurrentUserCertifications()
+onMounted(async () => {
+  await certificationsStore.fetchCurrentUserCertifications()
   appStore.setLoading(false)
 })
 

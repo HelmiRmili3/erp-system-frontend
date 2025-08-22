@@ -271,8 +271,8 @@ const formData = reactive({
 })
 
 // Fetch expenses when component is mounted
-onMounted(() => {
-  expensesStore.fetchCurrentUserExpenses(expensesStore.currentPage, expensesStore.pageSize) // Updated method call
+onMounted(async () => {
+  await expensesStore.fetchCurrentUserExpenses(expensesStore.currentPage, expensesStore.pageSize) // Updated method call
   appStore.setLoading(false)
 })
 

@@ -215,8 +215,8 @@ computed(() => {
 })
 
 // Fetch absences when component is mounted
-onMounted(() => {
-  absencesStore.fetchAbsences(absencesStore.currentPage, absencesStore.pageSize)
+onMounted(async () => {
+  await absencesStore.fetchAbsences(absencesStore.currentPage, absencesStore.pageSize)
   appStore.setLoading(false)
 })
 const onPage = async (event: any) => {

@@ -22,9 +22,7 @@ export const useMyExpensesStore = defineStore('myexpenses', () => {
     currentPage.value = page
     pageSize.value = size
     searchQuery.value = search
-    {
-      await fetchCurrentUserExpenses(page, size)
-    }
+    await fetchCurrentUserExpenses(page, size)
   }
 
   // Create a new expense

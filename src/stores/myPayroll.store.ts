@@ -22,9 +22,7 @@ export const useMyPayrollsStore = defineStore('payrolls', () => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    {
-      await fetchCurrentUserPayrolls()
-    }
+    await fetchCurrentUserPayrolls()
   }
 
   // Create a new payroll

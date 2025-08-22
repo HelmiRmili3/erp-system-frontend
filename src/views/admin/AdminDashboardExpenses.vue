@@ -169,8 +169,8 @@ const expensesStore = useExpensesStore() // Updated store reference
 const showDetailsModal = ref(false)
 const selectedExpense = ref<any>(null)
 
-onMounted(() => {
-  expensesStore.fetchAllExpenses(expensesStore.currentPage, expensesStore.pageSize)
+onMounted(async () => {
+  await expensesStore.fetchAllExpenses(expensesStore.currentPage, expensesStore.pageSize)
   appStore.setLoading(false)
 })
 

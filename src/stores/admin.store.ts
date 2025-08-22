@@ -59,18 +59,6 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  // /* ---------- Permissions ---------- */
-  // const fetchPermissions = async () => {
-  //   loading.value = true
-  //   try {
-  //     permissions.value = (await getAllPermissions()).data.data
-  //   } catch (e) {
-  //     console.error(e)
-  //   } finally {
-  //     loading.value = false
-  //   }
-  // }
-
   /* ---------- Roles + Permissions ---------- */
   const fetchRolesWithPermissions = async () => {
     loading.value = true
@@ -89,8 +77,6 @@ export const useAdminStore = defineStore('admin', () => {
 
   const assignRoles = (d: { userId: string; roleIds: string[] }) =>
     assignRolesToUser(d).then((r) => r.data.data)
-  // const removePermissions = (d: { role: string; permissions: string[] }) =>
-  //   removePermissionsFromRole(d).then((r) => r.data)
 
   return {
     roles,

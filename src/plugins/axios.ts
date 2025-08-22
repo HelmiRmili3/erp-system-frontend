@@ -124,6 +124,7 @@ import { computed, ref, type App } from 'vue'
 import axios, { type AxiosInstance } from 'axios'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth.store'
+import { refresh } from '@/services/auth.service'
 
 const internalApi = ref<AxiosInstance>()
 const normalApi = ref<AxiosInstance>()
@@ -205,10 +206,11 @@ export function createAxiosInstances(baseURL: string) {
             const refreshToken = localStorage.getItem('refreshToken')
             if (!refreshToken) throw new Error('No refresh token found')
 
-            const response = await axios.post(`${baseURL}/api/Auth/refresh`, {
-              token: refreshToken
-            })
-            const newAccessToken = response.data.data.accessToken
+            // const response = await axios.post(`${baseURL}/api/Auth/refresh`, {
+            //   token: refreshToken
+            // })
+            const response = await refresh(refreshToken)
+            const newAccessToken = response.data.accessToken
 
             localStorage.setItem('token', newAccessToken)
             token.value = newAccessToken

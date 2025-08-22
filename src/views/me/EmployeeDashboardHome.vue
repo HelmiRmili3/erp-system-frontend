@@ -4,9 +4,12 @@
 
 <script lang="ts" setup>
 import { useAppStore } from '@/stores/app.store'
+import { onMounted } from 'vue'
 
 const appStore = useAppStore()
-appStore.setLoading(false)
+onMounted(() => {
+  appStore.setLoading(false)
+})
 </script>
 
 <style></style>

@@ -427,8 +427,8 @@ const formData = reactive({
 })
 
 // Fetch attendances when component is mounted
-onMounted(() => {
-  attendancesStore.fetchCurrentUserAttendances()
+onMounted(async () => {
+  await attendancesStore.fetchCurrentUserAttendances()
   appStore.setLoading(false)
 })
 

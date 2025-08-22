@@ -319,8 +319,8 @@ const formData = reactive({
 })
 
 // Fetch payrolls when component is mounted
-onMounted(() => {
-  payrollsStore.fetchPayrolls()
+onMounted(async () => {
+  await payrollsStore.fetchPayrolls()
   appStore.setLoading(false)
 })
 

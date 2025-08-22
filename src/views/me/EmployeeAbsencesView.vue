@@ -229,8 +229,8 @@ const formData = reactive({
 // })
 
 // Fetch absences when component is mounted
-onMounted(() => {
-  absencesStore.fetchCurrentUserAbsences(absencesStore.currentPage, absencesStore.pageSize)
+onMounted(async () => {
+  await absencesStore.fetchCurrentUserAbsences(absencesStore.currentPage, absencesStore.pageSize)
   appStore.setLoading(false)
 })
 const onPage = async (event: any) => {

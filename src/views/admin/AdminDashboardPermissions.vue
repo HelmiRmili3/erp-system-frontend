@@ -76,8 +76,8 @@ const permissionsStore = usePermissionsStore()
 const searchQuery = ref('')
 
 /* ---------- Lifecycle ---------- */
-onMounted(() => {
-  permissionsStore.fetchAllPermissions(
+onMounted(async () => {
+  await permissionsStore.fetchAllPermissions(
     permissionsStore.currentPage,
     permissionsStore.pageSize,
     searchQuery.value
