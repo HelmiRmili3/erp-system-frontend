@@ -84,6 +84,7 @@ const router = createRouter({
           component: () => import('@/views/admin/AdminDashboardUsers.vue'),
           meta: {
             roles: ['Administrator']
+            // permissions: ['Users.View']
           }
         },
         {
@@ -91,7 +92,8 @@ const router = createRouter({
           name: 'AdminDashboardAbsences',
           component: () => import('@/views/admin/AdminDashboardAbsences.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Absences.View']
           }
         },
         {
@@ -99,7 +101,8 @@ const router = createRouter({
           name: 'AdminAttendances',
           component: () => import('@/views/admin/AdminDashboardAttendances.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Attendances.View']
           }
         },
         {
@@ -107,7 +110,8 @@ const router = createRouter({
           name: 'AdminContracts',
           component: () => import('@/views/admin/AdminDashboardContracts.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Contracts.View']
           }
         },
         {
@@ -115,7 +119,8 @@ const router = createRouter({
           name: 'AdminCertifications',
           component: () => import('@/views/admin/AdminDashboardCertifications.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Certifications.View']
           }
         },
         {
@@ -123,7 +128,8 @@ const router = createRouter({
           name: 'AdminExpenses',
           component: () => import('@/views/admin/AdminDashboardExpenses.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Expenses.View']
           }
         },
         {
@@ -131,7 +137,8 @@ const router = createRouter({
           name: 'AdminPayrolls',
           component: () => import('@/views/admin/AdminDashboardPayroll.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Payrolls.View']
           }
         },
         {
@@ -148,7 +155,8 @@ const router = createRouter({
           name: 'AdminDashboardPermissions',
           component: () => import('@/views/admin/AdminDashboardPermissions.vue'),
           meta: {
-            roles: ['Administrator']
+            roles: ['Administrator'],
+            permissions: ['Roles.View']
           }
         }
       ]
@@ -173,7 +181,8 @@ const router = createRouter({
           name: 'EmployeeAbsencesView',
           component: () => import('@/views/me/EmployeeAbsencesView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Absences.View']
           }
         },
         {
@@ -181,7 +190,8 @@ const router = createRouter({
           name: 'EmployeeAttendancesView',
           component: () => import('@/views/me/EmployeeAttendancesView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Attendances.View']
           }
         },
         {
@@ -189,7 +199,8 @@ const router = createRouter({
           name: 'EmployeeContractsView',
           component: () => import('@/views/me/EmployeeContractsView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Contracts.View']
           }
         },
         {
@@ -197,7 +208,8 @@ const router = createRouter({
           name: 'EmployeeCertificationsView',
           component: () => import('@/views/me/EmployeeCertificationsView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Certifications.View']
           }
         },
         {
@@ -205,7 +217,8 @@ const router = createRouter({
           name: 'EmployeeExpensesView',
           component: () => import('@/views/me/EmployeeExpensesView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Expenses.View']
           }
         },
         {
@@ -213,7 +226,8 @@ const router = createRouter({
           name: 'EmployeePayrollsView',
           component: () => import('@/views/me/EmployeePayrollView.vue'),
           meta: {
-            roles: ['Employee']
+            roles: ['Employee'],
+            permissions: ['Payrolls.View']
           }
         }
       ]

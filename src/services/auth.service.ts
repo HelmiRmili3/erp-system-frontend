@@ -1,17 +1,10 @@
-import type {
-  LoginModel,
-  RegisterModel,
-  ResetPasswordModel,
-  LoginResult,
-  Response
-} from '@/models/auth.model'
+import type { LoginModel, ResetPasswordModel, LoginResult, Response } from '@/models/auth.model'
 import type { User } from '@/models/user.model'
-import { api, normalApi } from '@/plugins/axios'
+import { api } from '@/plugins/axios'
 
 // Register a new user
 const register = async (userData: any) => {
   const payload = { data: userData }
-  // console.log('Sending payload:', JSON.stringify(payload, null, 2))
   try {
     const response = await api.value!.post<Response<User>>('Auth/register', payload)
     console.log('Registration successful:', response.data)
@@ -50,9 +43,9 @@ const me = async () => {
   return response.data
 }
 
-const googleSignIn = async (id: string) => {
-  const response = await api.value!.get<Response<User>>('Auth/me')
-  return response.data
-}
+// const googleSignIn = async (id: string) => {
+//   const response = await api.value!.get<Response<User>>('Auth/me')
+//   return response.data
+//}
 
-export { register, login, refresh, resetPassword, me, googleSignIn }
+export { register, login, refresh, resetPassword, me }

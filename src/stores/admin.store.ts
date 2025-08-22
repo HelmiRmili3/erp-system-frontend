@@ -1,12 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Permission, Role, User, RolePermissions } from '@/models/admin.model'
+import type { Role, User, RolePermissions } from '@/models/admin.model'
 import {
   createRole,
   assignRolesToUser,
-  removePermissionsFromRole,
   deleteRole,
-  getAllPermissions,
   getAllRoles,
   getRolesWithPermissions,
   getAllUsers
@@ -14,7 +12,6 @@ import {
 
 export const useAdminStore = defineStore('admin', () => {
   const roles = ref<Role[]>([])
-  const permissions = ref<Permission[]>([])
   const users = ref<User[]>([])
   const rolesPermissions = ref<RolePermissions[]>([])
   const loading = ref(false)
@@ -62,17 +59,17 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  /* ---------- Permissions ---------- */
-  const fetchPermissions = async () => {
-    loading.value = true
-    try {
-      permissions.value = (await getAllPermissions()).data.data
-    } catch (e) {
-      console.error(e)
-    } finally {
-      loading.value = false
-    }
-  }
+  // /* ---------- Permissions ---------- */
+  // const fetchPermissions = async () => {
+  //   loading.value = true
+  //   try {
+  //     permissions.value = (await getAllPermissions()).data.data
+  //   } catch (e) {
+  //     console.error(e)
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
 
   /* ---------- Roles + Permissions ---------- */
   const fetchRolesWithPermissions = async () => {
@@ -88,16 +85,15 @@ export const useAdminStore = defineStore('admin', () => {
 
   /* ---------- Mutations ---------- */
   const addRole = (d: { name: string }) => createRole(d).then((r) => r.data.data)
+  const removeRole = (name: string) => deleteRole({ role: name })
 
   const assignRoles = (d: { userId: string; roleIds: string[] }) =>
     assignRolesToUser(d).then((r) => r.data.data)
-  const removePermissions = (d: { role: string; permissions: string[] }) =>
-    removePermissionsFromRole(d).then((r) => r.data)
-  const removeRole = (name: string) => deleteRole({ role: name })
+  // const removePermissions = (d: { role: string; permissions: string[] }) =>
+  //   removePermissionsFromRole(d).then((r) => r.data)
 
   return {
     roles,
-    permissions,
     users,
     rolesPermissions,
     loading,
@@ -105,13 +101,11 @@ export const useAdminStore = defineStore('admin', () => {
     pageSize,
     totalRecords,
     fetchRoles,
-    fetchPermissions,
     fetchUsers,
     setPageAndSize,
     fetchRolesWithPermissions,
     addRole,
     assignRoles,
-    removePermissions,
     removeRole
   }
 })

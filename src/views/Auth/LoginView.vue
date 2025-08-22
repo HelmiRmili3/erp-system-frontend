@@ -76,14 +76,14 @@
         />
       </div>
     </form>
-    <div class="my-6 text-center text-gray-400">
+    <!-- <div class="my-6 text-center text-gray-400">
       <div>
         Don't have an account?
         <RouterLink :to="{ name: 'Register' }">
           <Button link label="Register" style="color: #f86a2e; font-weight: 600" />
         </RouterLink>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -228,8 +228,6 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue'
-import { useAppStore } from '@/stores/app.store'
-import { useAdminStore } from '@/stores/admin.store'
 import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from './components/AdminDashboardOrders/SectionHeader.vue'
 import UsersFilledIcon from '@/assets/svg/users.svg'
@@ -242,7 +240,10 @@ import Dropdown from 'primevue/dropdown'
 import Calendar from 'primevue/calendar'
 import Password from 'primevue/password'
 import { useToast } from 'primevue/usetoast'
+/* ---------- Stores import ---------- */
 import { useAuthStore } from '@/stores/auth.store'
+import { useAppStore } from '@/stores/app.store'
+import { useAdminStore } from '@/stores/admin.store'
 
 /* ---------- Stores ---------- */
 const appStore = useAppStore()

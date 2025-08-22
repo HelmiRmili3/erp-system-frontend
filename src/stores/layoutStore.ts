@@ -46,6 +46,7 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           icon: 'users',
           to: '/admin/users',
           role: ['Administrator']
+          // permission: ['Users.View']
         }
       ]
     },
@@ -57,42 +58,48 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           label: 'Absences',
           icon: 'eye',
           to: '/admin/absences',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Absences.View']
         },
         {
           id: 'Attendances',
           label: 'Attendances',
           icon: 'categories',
           to: '/admin/attendances',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Attendances.View']
         },
         {
           id: 'Contracts',
           label: 'Contracts',
           icon: 'contact',
           to: '/admin/Contracts',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Contracts.View']
         },
         {
           id: 'Certifications',
           label: 'Certifications',
           icon: 'categories',
           to: '/admin/certifications',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Certifications.View']
         },
         {
           id: 'Expenses',
           label: 'Expenses',
           icon: 'extras',
           to: '/admin/expenses',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Expenses.View']
         },
         {
           id: 'Payrolls',
           label: 'Payrolls',
           icon: 'products',
           to: '/admin/payrolls',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Payrolls.View']
         }
       ]
     },
@@ -104,13 +111,15 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           label: 'Roles',
           icon: 'settings',
           to: '/admin/roles',
-          role: ['Administrator']
+          role: ['Administrator'],
+          permission: ['Roles.View']
         },
         {
           id: 'permissions',
           label: 'Permissions',
           icon: 'settings',
           to: '/admin/permissions',
+          role: ['Administrator'],
           permission: ['Roles.View']
         }
       ]
@@ -123,42 +132,48 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           label: 'Absences',
           icon: 'categories',
           to: '/me/absences',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Absences.View']
         },
         {
           id: 'Attendances',
           label: 'Attendances',
           icon: 'eye',
           to: '/me/attendances',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Attendances.View']
         },
         {
           id: 'Contracts',
           label: 'Contracts',
           icon: 'contact',
           to: '/me/Contracts',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Contracts.View']
         },
         {
           id: 'Certifications',
           label: 'Certifications',
           icon: 'categories',
           to: '/me/certifications',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Certifications.View']
         },
         {
           id: 'Expenses',
           label: 'Expenses',
           icon: 'extras',
           to: '/me/expenses',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Expenses.View']
         },
         {
           id: 'Payrolls',
           label: 'Payrolls',
           icon: 'products',
           to: '/me/payrolls',
-          role: ['Employee']
+          role: ['Employee'],
+          permission: ['Payrolls.View']
         }
       ]
     }
