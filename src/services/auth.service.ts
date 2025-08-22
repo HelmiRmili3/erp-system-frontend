@@ -9,12 +9,12 @@ import type { User } from '@/models/user.model'
 import { api, normalApi } from '@/plugins/axios'
 
 // Register a new user
-const register = async (userData: RegisterModel) => {
+const register = async (userData: any) => {
   const payload = { data: userData }
   // console.log('Sending payload:', JSON.stringify(payload, null, 2))
   try {
-    const response = await normalApi.value!.post<Response<User>>('Auth/register', payload)
-    // console.log('Registration successful:', response.data)
+    const response = await api.value!.post<Response<User>>('Auth/register', payload)
+    console.log('Registration successful:', response.data)
     return response.data
   } catch (error: any) {
     console.error('Registration failed:', error)
@@ -31,9 +31,10 @@ const login = async (data: LoginModel) => {
 
 // Refresh access token
 const refresh = async (refreshToken: string) => {
-  const response = await api.value!.post<Response<LoginResult>>('/Auth/refresh', {
+  const response = await api.value!.post<Response<LoginResult>>('Auth/refresh', {
     token: refreshToken
   })
+  console.log('refresh route data : ', response)
   return response.data
 }
 

@@ -28,13 +28,12 @@ const assignPermissionsToRole = (data: { role: string; permissions: string[] }) 
   console.log('data', data)
   api.value!.post<Response<any>>('Admin/assign-permissions-to-role', data)
 }
-
-const assignRolesToUser = (data: { userId: string; roleIds: string[] }) =>
-  api.value!.post<Response<any>>('Admin/assign-roles-to-user', data)
-
 /* DELETE */
 const removePermissionsFromRole = (data: { role: string; permissions: string[] }) =>
   api.value!.delete<Response<any>>('Admin/remove-permissions-from-role', { data })
+
+const assignRolesToUser = (data: { userId: string; roleIds: string[] }) =>
+  api.value!.post<Response<any>>('Admin/assign-roles-to-user', data)
 
 const deleteRole = (data: { role: string }) =>
   api.value!.delete<Response<any>>('Admin/role', { data })

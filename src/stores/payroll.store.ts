@@ -19,22 +19,32 @@ export const usePayrollsStore = defineStore('payrolls', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (
-    page: number,
-    perPage: number,
-    search: string = '',
-    fetchUserPayrolls: boolean = false
-  ) => {
+  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    if (fetchUserPayrolls) {
-      await fetchCurrentUserPayrolls()
-    } else {
-      await fetchPayrolls()
-    }
+    await fetchPayrolls()
   }
 
+  // Fetch all payrolls with pagination and search
+  const fetchPayrolls = async () => {
+    loading.value = true
+    try {
+      const response = await getAllPayrolls({
+        page: currentPage.value,
+        perPage: pageSize.value,
+        search: searchQuery.value
+      })
+      payrolls.value = response.data.data
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
+    } catch (error) {
+      console.error('Error fetching payrolls:', error)
+      payrolls.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
   // Create a new payroll
   const addPayroll = async (data: Partial<Payroll>) => {
     loading.value = true
@@ -65,26 +75,6 @@ export const usePayrollsStore = defineStore('payrolls', () => {
     } catch (error) {
       console.error('Error updating payroll:', error)
       return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Fetch all payrolls with pagination and search
-  const fetchPayrolls = async () => {
-    loading.value = true
-    try {
-      const response = await getAllPayrolls({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      payrolls.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching payrolls:', error)
-      payrolls.value = []
-      totalRecords.value = 0
     } finally {
       loading.value = false
     }

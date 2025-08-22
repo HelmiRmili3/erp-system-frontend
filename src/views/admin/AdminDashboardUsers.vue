@@ -1,5 +1,6 @@
 <template>
   <DashboardWrapper>
+    <!-- Header -->
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
       <SectionHeader title="Gestion des Employees">
         <template #icon>
@@ -8,31 +9,28 @@
       </SectionHeader>
     </div>
 
+    <!-- Toolbar -->
     <div class="h-[20px]"></div>
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
-        <div class="flex flex-row gap-2.5 align-center">
-          <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-            >{{ adminStore.totalRecords }} éléments</span
-          >
-        </div>
+        <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5">
+          {{ adminStore.totalRecords }} éléments
+        </span>
       </div>
       <div class="flex justify-start items-center gap-4">
-        <!-- Search Input -->
-        <div class="relative">
-          <InputText
-            v-model="searchQuery"
-            placeholder="Rechercher..."
-            class="pl-10 py-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-        <!-- Add Absence Button -->
+        <!-- Search -->
+        <InputText
+          v-model="searchQuery"
+          placeholder="Rechercher..."
+          class="pl-10 py-2 border border-gray-300 rounded-lg"
+        />
+        <!-- Add -->
         <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
       </div>
     </div>
     <div class="h-[20px]"></div>
 
-    <!-- Users DataTable -->
+    <!-- Table -->
     <DataTable
       :value="adminStore.users"
       class="p-datatable-sm"
@@ -47,13 +45,10 @@
       scrollable
       scrollHeight="calc(100vh - 250px)"
     >
-      <!-- Basic identity -->
       <Column field="fullName" header="Nom complet" sortable style="min-width: 160px" />
       <Column field="email" header="Email" sortable style="min-width: 180px" />
       <Column field="jobTitle" header="Poste" sortable style="min-width: 140px" />
       <Column field="department" header="Département" sortable style="min-width: 140px" />
-
-      <!-- Contract & Status -->
       <Column field="contractType" header="Contrat" sortable style="min-width: 120px" />
       <Column field="status" header="Statut" sortable style="min-width: 100px" />
 
@@ -76,7 +71,7 @@
       <Column header="Permissions" style="min-width: 120px">
         <template #body="{ data }">
           <Button
-            label="See More"
+            label="Voir"
             text
             severity="info"
             @click="openPermissionsModal(data)"
@@ -109,6 +104,7 @@
         </template>
       </Column>
 
+      <!-- Empty -->
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
@@ -130,15 +126,52 @@
           <InputText v-model="formData.firstName" placeholder="Prénom" required />
           <InputText v-model="formData.lastName" placeholder="Nom" required />
         </div>
-        <InputText v-model="formData.email" type="email" placeholder="Email" required />
+
+        <div class="grid grid-cols-2 gap-3">
+          <InputText v-model="formData.email" type="email" placeholder="Email" required />
+          <InputText v-model="formData.userName" placeholder="Nom d’utilisateur" required />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <Password v-model="formData.password" placeholder="Mot de passe" toggleMask required />
+          <InputText v-model="formData.phone" placeholder="Téléphone" />
+        </div>
+
         <InputText v-model="formData.jobTitle" placeholder="Poste" required />
         <InputText v-model="formData.department" placeholder="Département" />
         <InputText v-model="formData.address" placeholder="Adresse" />
-        <InputText v-model="formData.phoneNumber" placeholder="Téléphone" />
-        <InputText v-model="formData.contractType" placeholder="Type de contrat" />
-        <InputText v-model="formData.status" placeholder="Statut" />
-        <InputText type="date" v-model="formData.birthDate" placeholder="Date de naissance" />
-        <InputText type="date" v-model="formData.hireDate" placeholder="Date d’embauche" />
+
+        <div class="grid grid-cols-2 gap-3">
+          <Calendar
+            v-model="formData.birthDate"
+            dateFormat="yy-mm-dd"
+            placeholder="Date de naissance"
+            showIcon
+          />
+          <Calendar
+            v-model="formData.hireDate"
+            dateFormat="yy-mm-dd"
+            placeholder="Date d’embauche"
+            showIcon
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <Dropdown
+            v-model="formData.contractType"
+            :options="contractTypes"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Type de contrat"
+          />
+          <Dropdown
+            v-model="formData.status"
+            :options="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Statut"
+          />
+        </div>
 
         <div class="flex justify-end gap-2 mt-4">
           <Button label="Annuler" severity="secondary" text @click="closeModal" />
@@ -205,11 +238,16 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dialog from 'primevue/dialog'
+import Dropdown from 'primevue/dropdown'
+import Calendar from 'primevue/calendar'
+import Password from 'primevue/password'
 import { useToast } from 'primevue/usetoast'
+import { useAuthStore } from '@/stores/auth.store'
 
 /* ---------- Stores ---------- */
 const appStore = useAppStore()
 const adminStore = useAdminStore()
+const authStore = useAuthStore()
 const toast = useToast()
 
 /* ---------- State ---------- */
@@ -221,18 +259,31 @@ const selectedUserId = ref<string | null>(null)
 const selectedUser = ref<any>(null)
 const searchQuery = ref('')
 
+const contractTypes = [
+  { label: 'CDI', value: 0 },
+  { label: 'CDD', value: 1 },
+  { label: 'Stage', value: 2 }
+]
+
+const statusOptions = [
+  { label: 'Actif', value: 0 },
+  { label: 'Inactif', value: 1 }
+]
+
 const formData = reactive({
+  email: '',
+  userName: '',
+  password: '',
   firstName: '',
   lastName: '',
-  birthDate: '',
+  birthDate: null as Date | null,
   address: '',
-  email: '',
+  phone: '',
   jobTitle: '',
   department: '',
-  hireDate: '',
-  contractType: '',
-  status: '',
-  phoneNumber: ''
+  hireDate: null as Date | null,
+  contractType: 0,
+  status: 0
 })
 
 /* ---------- Lifecycle ---------- */
@@ -253,22 +304,22 @@ watch(searchQuery, () => {
 })
 
 /* ---------- Helpers ---------- */
-const formatDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('fr-FR') : '')
-
 const openAddModal = () => {
   isUpdateMode.value = false
   Object.assign(formData, {
+    email: '',
+    userName: '',
+    password: '',
     firstName: '',
     lastName: '',
-    birthDate: '',
+    birthDate: null,
     address: '',
-    email: '',
+    phone: '',
     jobTitle: '',
     department: '',
-    hireDate: '',
-    contractType: '',
-    status: '',
-    phoneNumber: ''
+    hireDate: null,
+    contractType: 0,
+    status: 0
   })
   showModal.value = true
 }
@@ -276,7 +327,21 @@ const openAddModal = () => {
 const openUpdateModal = (user: any) => {
   isUpdateMode.value = true
   selectedUserId.value = user.id
-  Object.assign(formData, user)
+  Object.assign(formData, {
+    email: user.email,
+    userName: user.userName,
+    password: '',
+    firstName: user.firstName,
+    lastName: user.lastName,
+    birthDate: user.birthDate ? new Date(user.birthDate) : null,
+    address: user.address,
+    phone: user.phone,
+    jobTitle: user.jobTitle,
+    department: user.department,
+    hireDate: user.hireDate ? new Date(user.hireDate) : null,
+    contractType: user.contractType,
+    status: user.status
+  })
   showModal.value = true
 }
 
@@ -308,8 +373,14 @@ const closePermissionsModal = () => {
 /* ---------- CRUD ---------- */
 const submitForm = async () => {
   try {
+    const formattedData = {
+      ...formData,
+      birthDate: formData.birthDate ? formData.birthDate.toISOString() : new Date().toISOString(),
+      hireDate: formData.hireDate ? formData.hireDate.toISOString() : new Date().toISOString()
+    }
+
     if (isUpdateMode.value && selectedUserId.value) {
-      // await adminStore.updateUser(selectedUserId.value, formData) // implement as needed
+      // await adminStore.updateUser(selectedUserId.value, formattedData)
       toast.add({
         severity: 'success',
         summary: 'Succès',
@@ -317,12 +388,14 @@ const submitForm = async () => {
         life: 3000
       })
     } else {
-      // await adminStore.addUser(formData) // implement as needed
+      await authStore.register(formattedData)
       toast.add({ severity: 'success', summary: 'Succès', detail: 'Utilisateur créé', life: 3000 })
     }
+
     await adminStore.fetchUsers()
     closeModal()
-  } catch {
+  } catch (err) {
+    console.error('submitForm error:', err)
     toast.add({ severity: 'error', summary: 'Erreur', detail: 'Opération échouée', life: 3000 })
   }
 }
@@ -330,7 +403,7 @@ const submitForm = async () => {
 const confirmDelete = async () => {
   if (!selectedUserId.value) return
   try {
-    // await adminStore.removeUser(selectedUserId.value) // implement as needed
+    // await adminStore.removeUser(selectedUserId.value)
     toast.add({
       severity: 'success',
       summary: 'Succès',

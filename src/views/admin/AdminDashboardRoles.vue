@@ -37,17 +37,17 @@
       :rowsPerPageOptions="[5, 10, 20, 50]"
       @page="onPage"
       tableStyle="min-width: 1000px"
-      scrollable
-      scrollHeight="calc(100vh - 250px)"
     >
       <Column field="name" header="Rôle" sortable style="width: 150px" />
+
+      <!-- Permissions layout: 5 per row horizontally -->
       <Column header="Permissions" style="min-width: 280px">
         <template #body="{ data: role }">
-          <div class="flex gap-1 flex-nowrap overflow-x-auto">
+          <div class="grid grid-cols-5 gap-2">
             <span
               v-for="p in role.permissions"
               :key="p.id"
-              class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs whitespace-nowrap"
+              class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs text-center"
             >
               {{ p.name }}
             </span>
@@ -96,7 +96,6 @@
     >
       <form @submit.prevent="submitForm" class="flex flex-col gap-3">
         <InputText v-model="formData.name" placeholder="Nom" required />
-        <!-- <Textarea v-model="formData.description" placeholder="Description" rows="4" required /> -->
 
         <label class="text-sm font-medium">Permissions</label>
         <MultiSelect
@@ -146,18 +145,15 @@ const formData = reactive({
   permissions: [] as string[]
 })
 
-/* ---------- Lifecycle ---------- */
 onMounted(async () => {
   await store.init()
   appStore.setLoading(false)
 })
 
-/* ---------- Pagination ---------- */
 const onPage = (e: any) => {
   store.setPageAndSize(e.page + 1, e.rows)
 }
 
-/* ---------- Helpers ---------- */
 const openAddModal = () => {
   isUpdateMode.value = false
   Object.assign(formData, { name: '', description: '', permissionIds: [] })
@@ -166,7 +162,6 @@ const openAddModal = () => {
 
 const openUpdateModal = (role: any) => {
   isUpdateMode.value = true
-
   selectedRoleName.value = role.name
   Object.assign(formData, {
     name: role.name,
@@ -174,11 +169,6 @@ const openUpdateModal = (role: any) => {
   })
   showModal.value = true
 }
-
-// const openDeleteModal = (name: string) => {
-//   selectedRoleName.value = name
-//   showDeleteModal.value = true
-// }
 
 const closeModal = () => {
   showModal.value = false
@@ -190,11 +180,9 @@ const closeDeleteModal = () => {
   selectedRoleName.value = null
 }
 
-/* ---------- CRUD ---------- */
 const submitForm = async () => {
   try {
     if (isUpdateMode.value && selectedRoleName.value) {
-      /* TODO: update endpoint */
       await store.removePermissions(formData.name, formData.permissions)
       toast.add({ severity: 'success', summary: 'Succès', detail: 'Rôle modifié', life: 3000 })
     } else {

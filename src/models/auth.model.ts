@@ -23,43 +23,6 @@ export class ResetPasswordModel {
   confirm_password: string = ''
 }
 
-// export interface LoginResult {
-//   accessToken: string
-//   expiresIn: number
-//   refreshToken: string
-//   tokenType: string
-// }
-
-// export interface User {
-//   id: string
-//   email: string
-//   userName: string
-//   firstName: string
-//   lastName: string
-//   birthDate: string | null
-//   address: string | null
-//   phone: string | null
-//   jobTitle: string
-//   department: string
-//   hireDate: string | null
-//   contractType: number | null
-//   status: number
-//   supervisorId: string | null
-//   supervisorFullName?: string
-//   roles: string[]
-//   permissions: string[]
-// }
-
-// export interface Response<T> {
-//   succeeded: boolean
-//   message: string
-//   errors: string[]
-//   data: T
-//   exception: string | null
-//   searchMetadata: any | null
-//   correlationId: string | null
-// }
-
 export interface LoginModel {
   email: string
   password: string
@@ -81,21 +44,6 @@ export interface RegisterModel {
   status: number
 }
 
-// export interface RegisterModel {
-//   email: string;
-//   userName: string;
-//   password: string;
-//   firstName: string;
-//   lastName: string;
-//   birthDate: string | null;
-//   address: string | null;
-//   phone: string | null;
-//   jobTitle: string;
-//   department: string;
-//   hireDate: string | null;
-//   contractType: number | null;
-//   status: number;
-// }
 export interface ResetPasswordModel {
   oldPassword: string
   newPassword: string
