@@ -55,12 +55,9 @@
             @click="userMenuClick"
           >
             <template v-if="authStore.isAuthenticated">
-              <Avatar
-                image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
-                shape="circle"
-              />
+              <Avatar image="https://avatar.iran.liara.run/public/17" shape="circle" />
               <span class="flex items-center font-bold">
-                <span>{{ authStore.fullName }}</span>
+                <span>{{ authStore.user?.userName }}</span>
               </span>
             </template>
             <template v-else>
@@ -127,19 +124,19 @@ const items = ref([
     label: 'Manage Categories',
     icon: 'pi pi-tags',
     link: '/manage-categories',
-    visible: computed(() => authStore.isAuthenticated && authStore.isAdmin)
+    visible: computed(() => authStore.isAuthenticated)
   },
   {
     label: 'Manage Extras',
     icon: 'pi pi-plus',
     link: '/extras',
-    visible: computed(() => authStore.isAuthenticated && authStore.isAdmin)
+    visible: computed(() => authStore.isAuthenticated)
   },
   {
     label: 'Manage Extras Category',
     icon: 'pi pi-plus',
     link: '/extras-category',
-    visible: computed(() => authStore.isAuthenticated && authStore.isAdmin)
+    visible: computed(() => authStore.isAuthenticated)
   }
 ] as MenuItem[])
 

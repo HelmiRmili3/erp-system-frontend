@@ -163,7 +163,7 @@ import { useExpensesStore } from '@/stores/expense.store'
 const { getExpenseStatusName } = useExpenseEnums()
 
 const appStore = useAppStore()
-const expensesStore = useExpensesStore() // Updated store reference
+const expensesStore = useExpensesStore()
 
 // Modal state
 const showDetailsModal = ref(false)

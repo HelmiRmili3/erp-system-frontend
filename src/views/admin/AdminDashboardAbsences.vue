@@ -175,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAppStore } from '@/stores/app.store'
 import { useAbsenceEnums } from '@/composables/useAbsenceEnums'
 import DashboardWrapper from './components/AdminDashboardOrders/DashboardWrapper.vue'
@@ -197,7 +197,7 @@ const { getAbsenceTypeName, getAbsenceStatusName } = useAbsenceEnums()
 const toast = useToast()
 
 // Modal state
-const showModal = ref(false)
+// const showModal = ref(false)
 const showDeleteModal = ref(false)
 const selectedAbsenceId = ref<number | null>(null)
 const searchQuery = ref('')

@@ -7,7 +7,7 @@
       <span class="text-[#5F6C7B] text-[10px]">{{ subtitle }}</span>
     </div>
     <div
-      class="w-[59px] h-[31px]"
+      class="w-[48px] h-[48px]"
       :style="`background: url(${pathToFullUrl(logo)}); background-size: cover; background-position: center; object-fit: cover;`"
     ></div>
   </div>
@@ -15,7 +15,7 @@
 
 <script setup>
 const pathToFullUrl = (path) => {
-  if (!path) return 'https://placehold.co/48x48'
+  if (!path) return 'https://avatar.iran.liara.run/public/17'
   return import.meta.env.VITE_BASE_URL + '/files/' + path
 }
 

@@ -26,7 +26,6 @@ const createAbsence = (data: CreateAbsence) => api.value!.post<Response<Absence>
 
 const updateAbsence = (id: number, data: UpdateAbsence) =>
   api.value!.put<Response<Absence>>(`Absences/${id}`, data)
-
 const deleteAbsence = (id: number) => api.value!.delete<Response<any>>(`Absences/${id}`)
 
 export {

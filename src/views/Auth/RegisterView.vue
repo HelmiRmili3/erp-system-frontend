@@ -5,7 +5,7 @@
   >
     <h1 class="text-2xl font-bold mb-2">Register</h1>
     <p class="text-gray-400 mb-5">Create your account</p>
-    <form @submit.prevent="onSubmit">
+    <form @submit.prevent="">
       <!-- Username -->
       <FloatLabel class="w-full mt-5" variant="on">
         <IconField>
@@ -374,12 +374,8 @@
 <script lang="ts" setup>
 import { required, maxLength, minLength, numeric, email, sameAs } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
-import type { ErrorObject } from '@vuelidate/core'
 import { computed, reactive, ref, onMounted } from 'vue'
 import type { RegisterModel } from '@/models/auth.model'
-import { useToast } from 'primevue/usetoast'
-import { useAuthStore } from '@/stores/auth.store'
-import { useRouter } from 'vue-router'
 import ProfileIcon from '@/components/icons/ProfileIcon.vue'
 import EmailIcon from '@/components/icons/EmailIcon.vue'
 import PhoneIcon from '@/components/icons/PhoneIcon.vue'
@@ -396,10 +392,8 @@ import AddressIcon from '@/components/icons/AddressIcon.vue'
 const { type } = useBreakpoints()
 const isMobile = computed(() => type.value === 'mobile')
 
-const toast = useToast()
 const isSubmitting = ref(false)
-const router = useRouter()
-const authStore = useAuthStore()
+
 const appStore = useAppStore()
 
 const oneYearAgo = new Date()
@@ -614,119 +608,26 @@ onMounted(() => {
   }
 })
 
-const resetUser = () => {
-  Object.assign(user, {
-    email: '',
-    userName: '',
-    password: '',
-    confirm_password: '',
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    jobTitle: '',
-    department: '',
-    hireDate: '',
-    contractType: 0,
-    status: 0
-  })
-  confirmPassword.value = ''
-  v$.value.$reset()
-}
-
-const onSubmit = async () => {
-  // Force validation
-  await v$.value.$validate()
-  // Debug validation state
-  console.log('Validation state:', {
-    invalid: v$.value.$invalid,
-    errors: v$.value.$errors,
-    firstName: v$.value.user.firstName.$errors,
-    userName: v$.value.user.userName.$errors,
-    email: v$.value.user.email.$errors,
-    confirmPassword: v$.value.confirmPassword.$errors
-  })
-  if (!v$.value.$invalid && !isSubmitting.value) {
-    isSubmitting.value = true
-    try {
-      console.log(user)
-      const result = await authStore.register(user)
-
-      if (result.succeeded) {
-        toast.add({
-          life: 5000,
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Registration successful!'
-        })
-        resetUser()
-        router.push({ name: 'AdminDashboard' })
-      } else {
-        const { errors } = result
-        if (errors && errors.length) {
-          errors.forEach((err) => {
-            toast.add({
-              life: 5000,
-              severity: 'error',
-              summary: 'Validation Error',
-              detail: err
-            })
-          })
-        } else {
-          toast.add({
-            life: 5000,
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Registration failed'
-          })
-        }
-      }
-    } catch (error: any) {
-      if (error.response?.data) {
-        const { message, errors } = error.response.data
-        if (errors && errors.length) {
-          errors.forEach((err: string) => {
-            toast.add({
-              life: 5000,
-              severity: 'error',
-              summary: 'Validation Error',
-              detail: err
-            })
-          })
-        } else {
-          toast.add({
-            life: 5000,
-            severity: 'error',
-            summary: 'Error',
-            detail: message || 'Registration failed'
-          })
-        }
-      } else {
-        toast.add({
-          life: 5000,
-          severity: 'error',
-          summary: 'Error',
-          detail: error.message || 'Registration failed'
-        })
-      }
-    } finally {
-      isSubmitting.value = false
-    }
-  } else {
-    // Show specific validation errors
-    const errors = v$.value.$errors as ErrorObject[]
-    const errorMessages = errors.map((error) => error.$message)
-    errorMessages.forEach((message) => {
-      toast.add({
-        life: 5000,
-        severity: 'error',
-        summary: 'Validation Error',
-        detail: message
-      })
-    })
-  }
-}
+// const resetUser = () => {
+//   Object.assign(user, {
+//     email: '',
+//     userName: '',
+//     password: '',
+//     confirm_password: '',
+//     firstName: '',
+//     lastName: '',
+//     birthDate: '',
+//     address: '',
+//     phone: '',
+//     jobTitle: '',
+//     department: '',
+//     hireDate: '',
+//     contractType: 0,
+//     status: 0
+//   })
+//   confirmPassword.value = ''
+//   v$.value.$reset()
+// }
 </script>
 
 <style lang="scss">

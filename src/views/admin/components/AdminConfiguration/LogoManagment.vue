@@ -57,7 +57,6 @@
 </template>
 
 <script setup lang="ts">
-import submitSvg from '@/assets/svg/submit.svg'
 import { ref } from 'vue'
 
 defineProps<{

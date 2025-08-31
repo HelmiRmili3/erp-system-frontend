@@ -13,7 +13,7 @@
         v-tooltip.bottom="'Save Changes'"
       >
         <!-- <submitSvg /> -->
-         <i class="pi pi-check"></i>
+        <i class="pi pi-check"></i>
       </button>
     </div>
     <div v-if="loading" class="absolute inset-0 bg-white/50 flex items-center justify-center">
@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import submitSvg from '@/assets/svg/submit.svg'
 import { ref, watch } from 'vue'
 
 interface ValidationRule {

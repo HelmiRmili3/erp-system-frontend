@@ -334,14 +334,14 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      contractType: formData.contractType,
-      startDate: formData.startDate,
-      endDate: formData.endDate || null,
-      fileUrl: formData.fileUrl || null,
-      status: formData.status
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   contractType: formData.contractType,
+    //   startDate: formData.startDate,
+    //   endDate: formData.endDate || null,
+    //   fileUrl: formData.fileUrl || null,
+    //   status: formData.status
+    // }
     // await contractsStore.addContract(data)
     toast.add({
       severity: 'success',

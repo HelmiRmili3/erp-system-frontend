@@ -198,7 +198,7 @@ const resendResetPasswordAction = async () => {
     canRerequestToken.value = false
   } catch (error: any) {
     const {
-      data: { status, message }
+      data: { message }
     } = error.response
     toast.add({ life: 5000, severity: 'error', summary: 'Error', detail: message })
   }

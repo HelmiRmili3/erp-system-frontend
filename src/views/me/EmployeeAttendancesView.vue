@@ -501,28 +501,28 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      attendanceDay: formData.attendanceDay,
-      checkIn: formData.checkIn
-        ? `${formData.attendanceDayDisplay}T${formData.checkIn}:00.000Z`
-        : '',
-      checkInMethod: formData.checkInMethod,
-      checkInLatitude: formData.checkInLatitude,
-      checkInLongitude: formData.checkInLongitude,
-      checkInDeviceId: formData.checkInDeviceId,
-      checkInIpAddress: formData.checkInIpAddress,
-      isCheckInByAdmin: formData.isCheckInByAdmin,
-      checkOut: formData.checkOut
-        ? `${formData.attendanceDayDisplay}T${formData.checkOut}:00.000Z`
-        : '',
-      checkOutMethod: formData.checkOutMethod,
-      checkOutLatitude: formData.checkOutLatitude,
-      checkOutLongitude: formData.checkOutLongitude,
-      checkOutDeviceId: formData.checkOutDeviceId,
-      checkOutIpAddress: formData.checkOutIpAddress,
-      isCheckOutByAdmin: formData.isCheckOutByAdmin
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   attendanceDay: formData.attendanceDay,
+    //   checkIn: formData.checkIn
+    //     ? `${formData.attendanceDayDisplay}T${formData.checkIn}:00.000Z`
+    //     : '',
+    //   checkInMethod: formData.checkInMethod,
+    //   checkInLatitude: formData.checkInLatitude,
+    //   checkInLongitude: formData.checkInLongitude,
+    //   checkInDeviceId: formData.checkInDeviceId,
+    //   checkInIpAddress: formData.checkInIpAddress,
+    //   isCheckInByAdmin: formData.isCheckInByAdmin,
+    //   checkOut: formData.checkOut
+    //     ? `${formData.attendanceDayDisplay}T${formData.checkOut}:00.000Z`
+    //     : '',
+    //   checkOutMethod: formData.checkOutMethod,
+    //   checkOutLatitude: formData.checkOutLatitude,
+    //   checkOutLongitude: formData.checkOutLongitude,
+    //   checkOutDeviceId: formData.checkOutDeviceId,
+    //   checkOutIpAddress: formData.checkOutIpAddress,
+    //   isCheckOutByAdmin: formData.isCheckOutByAdmin
+    // }
     // await attendancesStore.addAttendance(data)
     toast.add({
       severity: 'success',

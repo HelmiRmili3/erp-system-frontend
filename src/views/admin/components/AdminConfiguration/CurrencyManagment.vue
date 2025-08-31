@@ -40,7 +40,6 @@
 </template>
 
 <script setup lang="ts">
-import submitSvg from '@/assets/svg/submit.svg'
 import { currencies } from '@/models/configuration.model'
 import { ref, watch } from 'vue'
 
@@ -58,7 +57,7 @@ const hasChanges = ref(false)
 
 watch(
   () => [props.currency],
-  (newProps) => {
+  () => {
     localCurrency.value = props.currency
     hasChanges.value = false
   },

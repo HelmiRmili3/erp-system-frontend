@@ -296,13 +296,13 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      name: formData.name,
-      authority: formData.authority,
-      dateObtained: formData.dateObtained,
-      fileUrl: formData.fileUrl || null
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   name: formData.name,
+    //   authority: formData.authority,
+    //   dateObtained: formData.dateObtained,
+    //   fileUrl: formData.fileUrl || null
+    // }
     // await certificationsStore.addCertification(data)
     toast.add({
       severity: 'success',

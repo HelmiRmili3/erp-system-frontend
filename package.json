@@ -62,6 +62,7 @@
     "postcss": "^8.4.45",
     "prettier": "^3.2.5",
     "rollup": "^4.29.1",
+    "sass": "^1.91.0",
     "sass-embedded": "^1.80.4",
     "tailwindcss": "^3.4.10",
     "typescript": "~5.4.0",

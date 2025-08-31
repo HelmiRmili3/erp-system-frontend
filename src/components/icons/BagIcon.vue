@@ -36,11 +36,4 @@
     />
   </svg>
 </template>
-<script setup>
-const props = defineProps({
-  color: {
-    type: String,
-    default: '#FAFAFA'
-  }
-})
-</script>
+<script setup></script>

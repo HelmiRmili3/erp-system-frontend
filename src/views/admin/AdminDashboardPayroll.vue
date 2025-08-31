@@ -76,7 +76,7 @@
           <div>{{ formatAmount(data.netSalary) }}</div>
         </template>
       </Column>
-      <Column field="fileUrl" header="Fichier" style="min-width: 150px">
+      <!-- <Column field="fileUrl" header="Fichier" style="min-width: 150px">
         <template #body="{ data }">
           <a
             v-if="data.fileUrl && data.fileUrl !== 'string'"
@@ -87,12 +87,12 @@
           >
           <span v-else>N/A</span>
         </template>
-      </Column>
-      <Column field="isViewedByEmployee" header="Statut" sortable style="min-width: 120px">
+      </Column> -->
+      <!-- <Column field="isViewedByEmployee" header="Statut" sortable style="min-width: 120px">
         <template #body="{ data }">
           <div>{{ getViewStatusName(data.isViewedByEmployee) }}</div>
         </template>
-      </Column>
+      </Column> -->
       <Column header="Détails" style="min-width: 120px">
         <template #body="{ data }">
           <Button
@@ -378,16 +378,16 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      period: formData.period,
-      baseSalary: parseFloat(formData.baseSalary.toString()),
-      bonuses: parseFloat(formData.bonuses.toString()),
-      deductions: parseFloat(formData.deductions.toString()),
-      netSalary: parseFloat(formData.netSalary.toString()),
-      fileUrl: formData.fileUrl || null,
-      isViewedByEmployee: formData.isViewedByEmployee
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   period: formData.period,
+    //   baseSalary: parseFloat(formData.baseSalary.toString()),
+    //   bonuses: parseFloat(formData.bonuses.toString()),
+    //   deductions: parseFloat(formData.deductions.toString()),
+    //   netSalary: parseFloat(formData.netSalary.toString()),
+    //   fileUrl: formData.fileUrl || null,
+    //   isViewedByEmployee: formData.isViewedByEmployee
+    // }
     // await payrollsStore.addPayroll(data)
     toast.add({
       severity: 'success',

@@ -73,7 +73,7 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           id: 'Contracts',
           label: 'Contracts',
           icon: 'contact',
-          to: '/admin/Contracts',
+          to: '/admin/contracts',
           role: ['Administrator'],
           permission: ['Contracts.View']
         },
@@ -147,7 +147,7 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           id: 'Contracts',
           label: 'Contracts',
           icon: 'contact',
-          to: '/me/Contracts',
+          to: '/me/contracts',
           role: ['Employee'],
           permission: ['Contracts.View']
         },

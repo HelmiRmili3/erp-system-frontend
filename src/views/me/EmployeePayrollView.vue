@@ -341,22 +341,22 @@ const formatAmount = (amount: number) => {
 }
 
 // Modal functions
-const openAddModal = () => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  Object.assign(formData, {
-    userId: '',
-    period: `${year}-${month}`,
-    baseSalary: 0,
-    bonuses: 0,
-    deductions: 0,
-    netSalary: 0,
-    fileUrl: '',
-    isViewedByEmployee: false
-  })
-  showAddModal.value = true
-}
+// const openAddModal = () => {
+//   const now = new Date()
+//   const year = now.getFullYear()
+//   const month = String(now.getMonth() + 1).padStart(2, '0')
+//   Object.assign(formData, {
+//     userId: '',
+//     period: `${year}-${month}`,
+//     baseSalary: 0,
+//     bonuses: 0,
+//     deductions: 0,
+//     netSalary: 0,
+//     fileUrl: '',
+//     isViewedByEmployee: false
+//   })
+//   showAddModal.value = true
+// }
 
 const closeAddModal = () => {
   showAddModal.value = false
@@ -374,16 +374,16 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      period: formData.period,
-      baseSalary: parseFloat(formData.baseSalary.toString()),
-      bonuses: parseFloat(formData.bonuses.toString()),
-      deductions: parseFloat(formData.deductions.toString()),
-      netSalary: parseFloat(formData.netSalary.toString()),
-      fileUrl: formData.fileUrl || null,
-      isViewedByEmployee: formData.isViewedByEmployee
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   period: formData.period,
+    //   baseSalary: parseFloat(formData.baseSalary.toString()),
+    //   bonuses: parseFloat(formData.bonuses.toString()),
+    //   deductions: parseFloat(formData.deductions.toString()),
+    //   netSalary: parseFloat(formData.netSalary.toString()),
+    //   fileUrl: formData.fileUrl || null,
+    //   isViewedByEmployee: formData.isViewedByEmployee
+    // }
     // await payrollsStore.addPayroll(data)
     toast.add({
       severity: 'success',

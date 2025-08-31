@@ -43,7 +43,7 @@
       :rowsPerPageOptions="[5, 10, 20, 50]"
       @page="onPage"
       scrollable
-      scrollHeight="calc(100vh - 250px)"
+      scrollHeight="calc(100vh)"
     >
       <Column field="fullName" header="Nom complet" sortable style="min-width: 160px" />
       <Column field="email" header="Email" sortable style="min-width: 180px" />
@@ -92,6 +92,7 @@
               @click="openUpdateModal(data)"
               v-tooltip="'Modifier'"
             />
+            <Button icon="pi pi-add" rounded text severity="success" v-tooltip="'Add'" />
             <Button
               icon="pi pi-trash"
               rounded
@@ -125,11 +126,13 @@
         <div class="grid grid-cols-2 gap-3">
           <InputText v-model="formData.firstName" placeholder="Prénom" required />
           <InputText v-model="formData.lastName" placeholder="Nom" required />
+          <small v-if="submitted && errors.email" class="p-error">{{ errors.email }}</small>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <InputText v-model="formData.email" type="email" placeholder="Email" required />
           <InputText v-model="formData.userName" placeholder="Nom d’utilisateur" required />
+          <small v-if="submitted && errors.userName" class="p-error">{{ errors.userName }}</small>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
@@ -142,15 +145,17 @@
         <InputText v-model="formData.address" placeholder="Adresse" />
 
         <div class="grid grid-cols-2 gap-3">
-          <Calendar
+          <DatePicker
             v-model="formData.birthDate"
             dateFormat="yy-mm-dd"
+            :maxDate="maxDate"
             placeholder="Date de naissance"
             showIcon
           />
-          <Calendar
+          <DatePicker
             v-model="formData.hireDate"
             dateFormat="yy-mm-dd"
+            :maxDate="maxDate"
             placeholder="Date d’embauche"
             showIcon
           />
@@ -237,7 +242,6 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dialog from 'primevue/dialog'
 import Dropdown from 'primevue/dropdown'
-import Calendar from 'primevue/calendar'
 import Password from 'primevue/password'
 import { useToast } from 'primevue/usetoast'
 /* ---------- Stores import ---------- */
@@ -259,6 +263,8 @@ const isUpdateMode = ref(false)
 const selectedUserId = ref<string | null>(null)
 const selectedUser = ref<any>(null)
 const searchQuery = ref('')
+const maxDate = ref(new Date())
+const submitted = ref(false)
 
 const contractTypes = [
   { label: 'CDI', value: 0 },
@@ -286,7 +292,39 @@ const formData = reactive({
   contractType: 0,
   status: 0
 })
+const errors = reactive({
+  email: '',
+  userName: ''
+})
+const validateForm = () => {
+  let isValid = true
 
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!formData.email) {
+    errors.email = 'Email est requis'
+    isValid = false
+  } else if (!emailRegex.test(formData.email)) {
+    errors.email = 'Format email invalide'
+    isValid = false
+  } else {
+    errors.email = ''
+  }
+
+  // Username validation
+  const usernameRegex = /^[a-zA-Z0-9]+$/
+  if (!formData.userName) {
+    errors.userName = "Nom d'utilisateur est requis"
+    isValid = false
+  } else if (!usernameRegex.test(formData.userName)) {
+    errors.userName = 'Peut seulement contenir des lettres ou des chiffres'
+    isValid = false
+  } else {
+    errors.userName = ''
+  }
+
+  return isValid
+}
 /* ---------- Lifecycle ---------- */
 onMounted(async () => {
   await adminStore.fetchUsers()
@@ -373,6 +411,8 @@ const closePermissionsModal = () => {
 
 /* ---------- CRUD ---------- */
 const submitForm = async () => {
+  submitted.value = true
+  if (!validateForm()) return
   try {
     const formattedData = {
       ...formData,

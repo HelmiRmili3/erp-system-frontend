@@ -37,7 +37,11 @@
         <div class="flex justify-center items-center flex-row rounded-3xl">
           <div class="flex justify-center items-center flex-row">
             <div class="bg-[#FDC28C]"></div>
-            <img src="https://placehold.co/48x48" />
+            <img
+              src="https://avatar.iran.liara.run/public/17"
+              class="w-10 h-10 rounded-full object-cover"
+              alt="User Avatar"
+            />
           </div>
         </div>
         <div class="flex justify-start items-start flex-col">
@@ -56,7 +60,6 @@
 
 <script setup lang="ts">
 import SearchIcon from './searchIcon.svg'
-import NotificationIcon from './notificationIcon.svg'
 import ChevronDownIcon from './chevronDownIcon.svg'
 import { useAuthStore } from '../../../../stores/auth.store'
 import { useRouter } from 'vue-router'

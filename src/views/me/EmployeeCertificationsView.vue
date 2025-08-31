@@ -265,20 +265,20 @@ const formatDate = (dateString: string) => {
 }
 
 // Modal functions
-const openAddModal = () => {
-  const now = new Date()
-  const todayISO = now.toISOString()
-  const todayDate = todayISO.split('T')[0]
-  Object.assign(formData, {
-    userId: '',
-    name: '',
-    authority: '',
-    dateObtained: todayISO,
-    dateObtainedDisplay: todayDate,
-    fileUrl: ''
-  })
-  showAddModal.value = true
-}
+// const openAddModal = () => {
+//   const now = new Date()
+//   const todayISO = now.toISOString()
+//   const todayDate = todayISO.split('T')[0]
+//   Object.assign(formData, {
+//     userId: '',
+//     name: '',
+//     authority: '',
+//     dateObtained: todayISO,
+//     dateObtainedDisplay: todayDate,
+//     fileUrl: ''
+//   })
+//   showAddModal.value = true
+// }
 
 const closeAddModal = () => {
   showAddModal.value = false
@@ -296,13 +296,13 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    const data = {
-      userId: formData.userId,
-      name: formData.name,
-      authority: formData.authority,
-      dateObtained: formData.dateObtained,
-      fileUrl: formData.fileUrl || null
-    }
+    // const data = {
+    //   userId: formData.userId,
+    //   name: formData.name,
+    //   authority: formData.authority,
+    //   dateObtained: formData.dateObtained,
+    //   fileUrl: formData.fileUrl || null
+    // }
     // await certificationsStore.addCertification(data)
     toast.add({
       severity: 'success',

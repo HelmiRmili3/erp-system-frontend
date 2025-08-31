@@ -1,130 +1,7 @@
-// import { computed, ref, type App } from 'vue'
-// import axios from 'axios'
-// import type { AxiosInstance } from 'axios'
-// import router from '@/router'
-// import { useAuthStore } from '@/stores/auth.store'
-// const internalApi = ref<AxiosInstance>()
-// const api = computed<AxiosInstance>({
-//   get: () => {
-//     if (!internalApi.value) {
-//       const baseURL = localStorage.getItem('baseURL')
-//       const config = {
-//         baseURL: `${baseURL}/api/`,
-//         withCredentials: true // Required for session-based authentication
-//       }
-
-//       internalApi.value = axios.create(config)
-
-//       // Set up request interceptor for API.value instance
-//       api.value.interceptors.request.use(
-//         async (config) => {
-//           const token = localStorage.getItem('token')
-//           if (token) {
-//             config.headers.Authorization = token
-//           }
-//           return config
-//         },
-//         (error) => Promise.reject(error)
-//       )
-
-//       // Set up response interceptor for API.value instance
-//       api.value.interceptors.response.use(
-//         (response) => response,
-//         (error) => {
-//           if (error.response && error.response.status === 401) {
-//             const authStore = useAuthStore()
-//             authStore.logout()
-//             router.push({ name: 'Login' })
-//           }
-//           return Promise.reject(error)
-//         }
-//       )
-//     }
-//     return internalApi.value
-//   },
-//   set: (value) => {
-//     internalApi.value = value
-//   }
-// })
-// const normalApi = ref<AxiosInstance>()
-// const noBaseUrlApi = ref<AxiosInstance>()
-// const token = ref(localStorage.getItem('token'))
-
-// /**
-//  * Function to create Axios instances after configuration is loaded.
-//  * @param baseURL The base URL from the configuration.
-//  */
-// export function createAxiosInstances(baseURL: string) {
-//   // Remove trailing slash from baseURL if present
-//   if (baseURL.endsWith('/')) {
-//     baseURL = baseURL.slice(0, -1)
-//   }
-
-//   localStorage.setItem('baseURL', baseURL)
-
-//   const config = {
-//     baseURL: `${baseURL}/api/`,
-//     withCredentials: true // Required for session-based authentication
-//   }
-
-//   const normalConfig = {
-//     baseURL: baseURL,
-//     withCredentials: true
-//   }
-
-//   const noBaseUrlConfig = {
-//     withCredentials: true
-//   }
-
-//   api.value = axios.create(config)
-//   normalApi.value = axios.create(normalConfig)
-//   noBaseUrlApi.value = axios.create(noBaseUrlConfig)
-
-//   // Set up request interceptor for API.value instance
-//   api.value.interceptors.request.use(
-//     async (config) => {
-//       const token = localStorage.getItem('token')
-//       if (token) {
-//         config.headers.Authorization = token
-//       }
-//       return config
-//     },
-//     (error) => Promise.reject(error)
-//   )
-
-//   // Set up response interceptor for API.value instance
-//   api.value.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//       if (error.response && error.response.status === 401) {
-//         const authStore = useAuthStore()
-//         authStore.logout()
-//         router.push({ name: 'Login' })
-//       }
-//       return Promise.reject(error)
-//     }
-//   )
-// }
-
-// export default {
-//   install: (app: App) => {
-//     if (!api.value || !normalApi.value || !noBaseUrlApi.value) {
-//       throw new Error(
-//         'Axios instances have not been created yet. Please call createAxiosInstances(baseURL) before installing the plugin.'
-//       )
-//     }
-//     app.config.globalProperties.$axios = normalApi
-//     app.config.globalProperties.$api = api
-//     app.config.globalProperties.$noBaseUrlApi = noBaseUrlApi
-//   }
-// }
-
-// export { api, normalApi, noBaseUrlApi, token }
 import { computed, ref, type App } from 'vue'
 import axios, { type AxiosInstance } from 'axios'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth.store'
-import { refresh } from '@/services/auth.service'
 
 const internalApi = ref<AxiosInstance>()
 const normalApi = ref<AxiosInstance>()
@@ -206,11 +83,10 @@ export function createAxiosInstances(baseURL: string) {
             const refreshToken = localStorage.getItem('refreshToken')
             if (!refreshToken) throw new Error('No refresh token found')
 
-            // const response = await axios.post(`${baseURL}/api/Auth/refresh`, {
-            //   token: refreshToken
-            // })
-            const response = await refresh(refreshToken)
-            const newAccessToken = response.data.accessToken
+            const response = await axios.post(`${baseURL}/api/Auth/refresh`, {
+              token: refreshToken
+            })
+            const newAccessToken = response.data.data.accessToken
 
             localStorage.setItem('token', newAccessToken)
             token.value = newAccessToken
