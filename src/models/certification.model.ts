@@ -1,3 +1,5 @@
+import type { User } from './common.model'
+
 export interface Certification {
   id: number
   userId: string
@@ -5,4 +7,5 @@ export interface Certification {
   authority: string
   dateObtained: string
   fileUrl: string
+  user: User
 }

@@ -1,3 +1,5 @@
+import type { User } from './common.model'
+
 export interface Payroll {
   id: number
   userId: string
@@ -8,4 +10,5 @@ export interface Payroll {
   netSalary: number
   fileUrl: string
   isViewedByEmployee: boolean
+  user: User
 }

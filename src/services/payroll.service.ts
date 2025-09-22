@@ -8,16 +8,16 @@ interface PaginationParams {
   search?: string
 }
 
-const createPayroll = (data: Partial<Payroll>) => {
-  return api.value!.post<Response<Payroll>>('Payrolls', data)
+const createPayroll = (data: FormData) => {
+  return api.post<Response<Payroll>>('Payrolls', data)
 }
 
 const updatePayroll = (data: Partial<Payroll>) => {
-  return api.value!.put<Response<Payroll>>('Payrolls', data)
+  return api.put<Response<Payroll>>('Payrolls', data)
 }
 
 const getAllPayrolls = (params: PaginationParams = {}) => {
-  return api.value!.get<Response<Payroll[]>>('Payrolls', {
+  return api.get<Response<Payroll[]>>('Payrolls', {
     params: {
       page: params.page,
       perPage: params.perPage,
@@ -27,15 +27,15 @@ const getAllPayrolls = (params: PaginationParams = {}) => {
 }
 
 const deletePayroll = (id: number) => {
-  return api.value!.delete<Response<any>>(`Payrolls/${id}`)
+  return api.delete<Response<any>>(`Payrolls/${id}`)
 }
 
 const getPayrollById = (id: number) => {
-  return api.value!.get<Response<Payroll>>(`Payrolls/${id}`)
+  return api.get<Response<Payroll>>(`Payrolls/${id}`)
 }
 
 const getCurrentUserPayrolls = (params: PaginationParams = {}) => {
-  return api.value!.get<Response<Payroll[]>>('Payrolls/me', {
+  return api.get<Response<Payroll[]>>('Payrolls/me', {
     params: {
       page: params.page,
       perPage: params.perPage,

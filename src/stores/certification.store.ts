@@ -27,10 +27,10 @@ export const useCertificationsStore = defineStore('certifications', () => {
   }
 
   // Create a new certification
-  const addCertification = async (data: Partial<Certification>) => {
+  const addCertification = async (formData: FormData) => {
     loading.value = true
     try {
-      const response = await createCertification(data)
+      const response = await createCertification(formData)
       certifications.value.push(response.data.data)
       return response.data.data
     } catch (error) {

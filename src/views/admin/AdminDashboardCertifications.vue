@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Certifications">
+      <SectionHeader title="Employees Certifications Management">
         <template>
           <CertificationsIcon />
         </template>
@@ -12,7 +12,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ certificationsStore.totalRecords }} éléments</span
+          >{{ certificationsStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -41,7 +41,6 @@
     <DataTable
       :value="certificationsStore.certifications"
       class="p-datatable-sm"
-      :loading="certificationsStore.loading"
       :rows="certificationsStore.pageSize"
       :totalRecords="certificationsStore.totalRecords"
       :lazy="true"
@@ -53,8 +52,23 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
-      <Column field="id" header="ID" sortable style="min-width: 100px" />
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" />
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="
+                data.user?.fileUrl
+                  ? appStore.baseURL + data.user.fileUrl
+                  : 'https://avatar.iran.liara.run/public/17'
+              "
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user?.userName || 'Unknown' }}</span>
+          </div>
+        </template>
+      </Column>
+
       <Column field="name" header="Nom" sortable style="min-width: 200px" />
       <Column field="authority" header="Autorité" sortable style="min-width: 150px" />
       <Column field="dateObtained" header="Date Obtenue" sortable style="min-width: 150px">
@@ -107,11 +121,9 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <InputText
+            <UserSelectDropdown
               v-model="formData.userId"
-              placeholder="ID de l'utilisateur"
-              required
-              class="border border-gray-300 rounded-lg p-2"
+              placeholder="Sélectionner un utilisateur"
             />
           </div>
           <div class="flex flex-col gap-2">
@@ -144,14 +156,11 @@
             />
           </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <label for="fileUrl" class="text-sm font-medium text-gray-700">URL du Fichier</label>
-          <InputText
-            v-model="formData.fileUrl"
-            placeholder="URL du fichier (optionnel)"
-            class="border border-gray-300 rounded-lg p-2"
-          />
-        </div>
+        <FilePicker
+          v-model="formData.file"
+          label="Sélectionner un fichier"
+          accept=".pdf,.doc,.docx,.jpg,.png"
+        />
         <div class="flex justify-end gap-2">
           <Button label="Annuler" severity="secondary" text @click="closeAddModal" />
           <Button label="Ajouter" severity="success" type="submit" />
@@ -212,6 +221,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, reactive } from 'vue'
 import { useAppStore } from '@/stores/app.store'
+import UserSelectDropdown from '@/components/common/UserSelectDropdown.vue'
+import FilePicker from '@/components/common/FilePicker.vue'
+
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
 import DataTable from 'primevue/datatable'
@@ -238,7 +250,7 @@ const formData = reactive({
   authority: '',
   dateObtained: '', // ISO string (e.g., 2023-10-15T00:00:00Z)
   dateObtainedDisplay: '', // YYYY-MM-DD for input (e.g., 2023-10-15)
-  fileUrl: ''
+  file: null
 })
 
 // Fetch certifications when component is mounted
@@ -275,7 +287,7 @@ const openAddModal = () => {
     authority: '',
     dateObtained: todayISO,
     dateObtainedDisplay: todayDate,
-    fileUrl: ''
+    file: null
   })
   showAddModal.value = true
 }
@@ -293,23 +305,27 @@ const closeDetailsModal = () => {
   showDetailsModal.value = false
   selectedCertification.value = null
 }
-
 const submitForm = async () => {
   try {
-    // const data = {
-    //   userId: formData.userId,
-    //   name: formData.name,
-    //   authority: formData.authority,
-    //   dateObtained: formData.dateObtained,
-    //   fileUrl: formData.fileUrl || null
-    // }
-    // await certificationsStore.addCertification(data)
+    const formPayload = new FormData()
+    formPayload.append('Certification.UserId', formData.userId)
+    formPayload.append('Certification.Name', formData.name)
+    formPayload.append('Certification.Authority', formData.authority)
+    formPayload.append('Certification.DateObtained', formData.dateObtained)
+
+    if (formData.file) {
+      formPayload.append('File', formData.file) // actual file selected
+    }
+
+    await certificationsStore.addCertification(formPayload)
+
     toast.add({
       severity: 'success',
       summary: 'Succès',
       detail: 'Certification créée avec succès',
       life: 3000
     })
+
     await certificationsStore.fetchCertifications()
     closeAddModal()
   } catch (error) {
@@ -322,6 +338,35 @@ const submitForm = async () => {
     })
   }
 }
+
+// const submitForm = async () => {
+//   try {
+//     // const data = {
+//     //   userId: formData.userId,
+//     //   name: formData.name,
+//     //   authority: formData.authority,
+//     //   dateObtained: formData.dateObtained,
+//     //   fileUrl: formData.fileUrl || null
+//     // }
+//     // await certificationsStore.addCertification(data)
+//     toast.add({
+//       severity: 'success',
+//       summary: 'Succès',
+//       detail: 'Certification créée avec succès',
+//       life: 3000
+//     })
+//     await certificationsStore.fetchCertifications()
+//     closeAddModal()
+//   } catch (error) {
+//     console.error('Error submitting form:', error)
+//     toast.add({
+//       severity: 'error',
+//       summary: 'Erreur',
+//       detail: "Échec de l'enregistrement de la certification",
+//       life: 3000
+//     })
+//   }
+// }
 
 // Watcher to sync dateObtainedDisplay with dateObtained
 watch(

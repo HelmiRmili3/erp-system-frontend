@@ -11,7 +11,7 @@
 
     <!-- Toolbar -->
     <div class="flex justify-between items-center flex-row">
-      <span class="text-[#494949] text-xs font-medium"> {{ store.totalRecords }} éléments </span>
+      <span class="text-[#494949] text-xs font-medium"> {{ store.totalRecords }} records </span>
 
       <div class="flex gap-4">
         <InputText
@@ -29,7 +29,6 @@
     <DataTable
       :value="filteredRoles"
       class="p-datatable-sm"
-      :loading="store.loading"
       :rows="store.pageSize"
       :totalRecords="store.totalRecords"
       :first="(store.currentPage - 1) * store.pageSize"

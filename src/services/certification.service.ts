@@ -8,16 +8,16 @@ interface PaginationParams {
   search?: string
 }
 
-const createCertification = (data: Partial<Certification>) => {
-  return api.value!.post<Response<Certification>>('Certifications', data)
+const createCertification = (data: FormData) => {
+  return api.post<Response<Certification>>('Certifications', data)
 }
 
 const updateCertification = (data: Partial<Certification>) => {
-  return api.value!.put<Response<Certification>>('Certifications', data)
+  return api.put<Response<Certification>>('Certifications', data)
 }
 
 const getAllCertifications = (params: PaginationParams = {}) => {
-  return api.value!.get<Response<Certification[]>>('Certifications', {
+  return api.get<Response<Certification[]>>('Certifications', {
     params: {
       page: params.page,
       perPage: params.perPage,
@@ -27,15 +27,15 @@ const getAllCertifications = (params: PaginationParams = {}) => {
 }
 
 const deleteCertification = (id: number) => {
-  return api.value!.delete<Response<any>>(`Certifications/${id}`)
+  return api.delete<Response<any>>(`Certifications/${id}`)
 }
 
 const getCertificationById = (id: number) => {
-  return api.value!.get<Response<Certification>>(`Certifications/${id}`)
+  return api.get<Response<Certification>>(`Certifications/${id}`)
 }
 
 const getCurrentUserCertifications = (params: PaginationParams = {}) => {
-  return api.value!.get<Response<Certification[]>>('Certifications/me', {
+  return api.get<Response<Certification[]>>('Certifications/me', {
     params: {
       page: params.page,
       perPage: params.perPage,

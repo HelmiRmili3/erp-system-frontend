@@ -22,11 +22,11 @@ export const useMyContractsStore = defineStore('contracts', () => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-    await fetchCurrentUserContracts()
+    await fetchUserContracts()
   }
 
   // Create a new contract
-  const addContract = async (data: Partial<Contract>) => {
+  const addContract = async (data: FormData) => {
     loading.value = true
     try {
       const response = await createContract(data)
@@ -86,7 +86,7 @@ export const useMyContractsStore = defineStore('contracts', () => {
   }
 
   // Fetch current user's contracts with pagination and search
-  const fetchCurrentUserContracts = async () => {
+  const fetchUserContracts = async () => {
     loading.value = true
     try {
       const response = await getCurrentUserContracts({
@@ -117,6 +117,6 @@ export const useMyContractsStore = defineStore('contracts', () => {
     editContract,
     removeContract,
     getContract,
-    fetchCurrentUserContracts
+    fetchUserContracts
   }
 })

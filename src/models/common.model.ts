@@ -10,5 +10,12 @@ export interface ApiResponse<T> {
 }
 
 export type IsLoadable<T extends object> = T & {
-  isLoading: boolean;
-};
+  isLoading: boolean
+}
+
+export interface User {
+  id: string
+  email: string
+  userName: string
+  firstUrl: string
+}

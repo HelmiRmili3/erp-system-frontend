@@ -14,7 +14,7 @@
     <!-- Toolbar -->
     <div class="flex justify-between items-center flex-row">
       <span class="text-[#494949] text-xs font-medium">
-        {{ permissionsStore.totalRecords }} éléments
+        {{ permissionsStore.totalRecords }} records
       </span>
 
       <div class="flex gap-4">
@@ -32,7 +32,6 @@
     <DataTable
       :value="permissionsStore.permissions"
       class="p-datatable-sm"
-      :loading="permissionsStore.loading"
       :rows="permissionsStore.pageSize"
       :totalRecords="permissionsStore.totalRecords"
       :first="(permissionsStore.currentPage - 1) * permissionsStore.pageSize"

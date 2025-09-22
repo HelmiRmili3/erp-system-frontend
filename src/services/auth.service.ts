@@ -6,7 +6,7 @@ import { api } from '@/plugins/axios'
 const register = async (userData: any) => {
   const payload = { data: userData }
   try {
-    const response = await api.value!.post<Response<User>>('Auth/register', payload)
+    const response = await api.post<Response<User>>('Auth/register', payload)
     return response.data
   } catch (error: any) {
     console.error('Registration failed:', JSON.stringify(error.response?.data, null, 2))
@@ -16,13 +16,13 @@ const register = async (userData: any) => {
 
 // Login a user
 const login = async (data: LoginModel) => {
-  const response = await api.value!.post<Response<LoginResult>>('Auth/login', data)
+  const response = await api.post<Response<LoginResult>>('Auth/login', data)
   return response.data
 }
 
 // Refresh access token
 const refresh = async (refreshToken: string) => {
-  const response = await api.value!.post<Response<LoginResult>>('Auth/refresh', {
+  const response = await api.post<Response<LoginResult>>('Auth/refresh', {
     token: refreshToken
   })
   console.log('refresh route data : ', response)
@@ -31,19 +31,14 @@ const refresh = async (refreshToken: string) => {
 
 // Change password
 const resetPassword = async (data: ResetPasswordModel) => {
-  const response = await api.value!.post<Response<void>>('Auth/change-password', data)
+  const response = await api.post<Response<void>>('Auth/change-password', data)
   return response
 }
 
 // Get current user
 const me = async () => {
-  const response = await api.value!.get<Response<User>>('Auth/me')
+  const response = await api.get<Response<User>>('Auth/me')
   return response.data
 }
-
-// const googleSignIn = async (id: string) => {
-//   const response = await api.value!.get<Response<User>>('Auth/me')
-//   return response.data
-//}
 
 export { register, login, refresh, resetPassword, me }

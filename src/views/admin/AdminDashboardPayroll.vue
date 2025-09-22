@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Paies">
+      <SectionHeader title="Employee Payroll Management">
         <template>
           <PayrollsIcon />
         </template>
@@ -12,7 +12,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ payrollsStore.totalRecords }} éléments</span
+          >{{ payrollsStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -37,7 +37,6 @@
     <DataTable
       :value="payrollsStore.payrolls"
       class="p-datatable-sm"
-      :loading="payrollsStore.loading"
       :rows="payrollsStore.pageSize"
       :totalRecords="payrollsStore.totalRecords"
       :lazy="true"
@@ -49,8 +48,22 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
-      <Column field="id" header="ID" sortable style="min-width: 100px" />
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" />
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="
+                data.user?.fileUrl
+                  ? appStore.baseURL + data.user.fileUrl
+                  : 'https://avatar.iran.liara.run/public/17'
+              "
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user?.userName || 'Unknown' }}</span>
+          </div>
+        </template>
+      </Column>
       <Column field="period" header="Période" sortable style="min-width: 120px">
         <template #body="{ data }">
           <div>{{ formatPeriod(data.period) }}</div>
@@ -76,23 +89,6 @@
           <div>{{ formatAmount(data.netSalary) }}</div>
         </template>
       </Column>
-      <!-- <Column field="fileUrl" header="Fichier" style="min-width: 150px">
-        <template #body="{ data }">
-          <a
-            v-if="data.fileUrl && data.fileUrl !== 'string'"
-            :href="`${appStore.baseURL + data.fileUrl}`"
-            target="_blank"
-            class="text-blue-600 hover:underline"
-            >Voir PDF</a
-          >
-          <span v-else>N/A</span>
-        </template>
-      </Column> -->
-      <!-- <Column field="isViewedByEmployee" header="Statut" sortable style="min-width: 120px">
-        <template #body="{ data }">
-          <div>{{ getViewStatusName(data.isViewedByEmployee) }}</div>
-        </template>
-      </Column> -->
       <Column header="Détails" style="min-width: 120px">
         <template #body="{ data }">
           <Button
@@ -123,22 +119,21 @@
       <form @submit.prevent="submitForm" class="flex flex-col gap-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <InputText
+            <label for="userId" class="text-sm font-medium text-gray-700">Employees</label>
+            <UserSelectDropdown
               v-model="formData.userId"
-              placeholder="ID de l'utilisateur"
-              required
-              class="border border-gray-300 rounded-lg p-2"
+              placeholder="Sélectionner un utilisateur"
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="period" class="text-sm font-medium text-gray-700">Période</label>
-            <InputText
-              v-model="formData.period"
+            <label for="period" class="text-sm font-medium text-gray-700">Month</label>
+            <Calendar
+              id="period"
+              :v-model="formData.period"
+              view="month"
+              dateFormat="yy-mm"
               placeholder="YYYY-MM"
-              pattern="\d{4}-\d{2}"
-              required
-              class="border border-gray-300 rounded-lg p-2"
+              showIcon
             />
           </div>
         </div>
@@ -147,56 +142,53 @@
             <label for="baseSalary" class="text-sm font-medium text-gray-700"
               >Salaire de Base</label
             >
-            <InputText
-              type="number"
-              :v-model="formData.baseSalary"
+            <InputNumber
+              v-model="formData.baseSalary"
+              :min="0"
+              mode="decimal"
               placeholder="Salaire de base"
               required
-              class="border border-gray-300 rounded-lg p-2"
             />
           </div>
           <div class="flex flex-col gap-2">
             <label for="bonuses" class="text-sm font-medium text-gray-700">Bonus</label>
-            <InputText
-              type="number"
-              :v-model="formData.bonuses"
+            <InputNumber
+              v-model="formData.bonuses"
+              :min="0"
+              mode="decimal"
               placeholder="Bonus"
               required
-              class="border border-gray-300 rounded-lg p-2"
             />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label for="deductions" class="text-sm font-medium text-gray-700">Déductions</label>
-            <InputText
-              type="number"
-              :v-model="formData.deductions"
+            <InputNumber
+              v-model="formData.deductions"
+              :min="0"
+              mode="decimal"
               placeholder="Déductions"
               required
-              class="border border-gray-300 rounded-lg p-2"
             />
           </div>
           <div class="flex flex-col gap-2">
             <label for="netSalary" class="text-sm font-medium text-gray-700">Salaire Net</label>
-            <InputText
-              type="number"
-              :v-model="formData.netSalary"
+            <InputNumber
+              v-model="formData.netSalary"
+              :min="0"
+              mode="decimal"
               placeholder="Salaire net"
               required
-              class="border border-gray-300 rounded-lg p-2"
             />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="fileUrl" class="text-sm font-medium text-gray-700">URL du Fichier</label>
-            <InputText
-              v-model="formData.fileUrl"
-              placeholder="URL du fichier (optionnel)"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
+          <FilePicker
+            v-model="formData.file"
+            label="Sélectionner un fichier"
+            accept=".pdf,.doc,.docx,.jpg,.png"
+          />
           <div class="flex flex-col gap-2">
             <label for="isViewedByEmployee" class="text-sm font-medium text-gray-700"
               >Vu par l'employé</label
@@ -290,6 +282,7 @@ import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeade
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
+import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import Dialog from 'primevue/dialog'
@@ -314,7 +307,7 @@ const formData = reactive({
   bonuses: 0,
   deductions: 0,
   netSalary: 0,
-  fileUrl: '',
+  file: null,
   isViewedByEmployee: false
 })
 
@@ -341,7 +334,7 @@ const formatPeriod = (period: string) => {
 }
 
 const formatAmount = (amount: number) => {
-  return amount ? `$${amount.toFixed(2)}` : 'N/A'
+  return amount ? `DT ${amount.toFixed(2)}` : 'N/A'
 }
 
 // Modal functions
@@ -356,7 +349,7 @@ const openAddModal = () => {
     bonuses: 0,
     deductions: 0,
     netSalary: 0,
-    fileUrl: '',
+    file: null,
     isViewedByEmployee: false
   })
   showAddModal.value = true
@@ -378,23 +371,34 @@ const closeDetailsModal = () => {
 
 const submitForm = async () => {
   try {
-    // const data = {
-    //   userId: formData.userId,
-    //   period: formData.period,
-    //   baseSalary: parseFloat(formData.baseSalary.toString()),
-    //   bonuses: parseFloat(formData.bonuses.toString()),
-    //   deductions: parseFloat(formData.deductions.toString()),
-    //   netSalary: parseFloat(formData.netSalary.toString()),
-    //   fileUrl: formData.fileUrl || null,
-    //   isViewedByEmployee: formData.isViewedByEmployee
-    // }
-    // await payrollsStore.addPayroll(data)
+    const formPayload = new FormData()
+
+    formPayload.append('Payroll.UserId', formData.userId)
+    formPayload.append('Payroll.Period', formData.period)
+    formPayload.append('Payroll.BaseSalary', String(formData.baseSalary))
+    formPayload.append('Payroll.Bonuses', String(formData.bonuses))
+    formPayload.append('Payroll.Deductions', String(formData.deductions))
+    formPayload.append('Payroll.NetSalary', String(formData.netSalary))
+    if (formData.file) {
+      formPayload.append('File', formData.file)
+    }
+    formPayload.append('Payroll.IsViewedByEmployee', String(formData.isViewedByEmployee))
+
+    console.log('FormData contents:')
+    for (const [key, value] of formPayload.entries()) {
+      console.log(key, value)
+    }
+
+    // Call store action
+    await payrollsStore.addPayroll(formPayload)
+
     toast.add({
       severity: 'success',
       summary: 'Succès',
       detail: 'Paie créée avec succès',
       life: 3000
     })
+
     await payrollsStore.fetchPayrolls()
     closeAddModal()
   } catch (error) {

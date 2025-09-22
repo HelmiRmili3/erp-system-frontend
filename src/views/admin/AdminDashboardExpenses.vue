@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Dépenses">
+      <SectionHeader title="Employee Expenses Management">
         <template>
           <ExpensesIcon />
         </template>
@@ -12,7 +12,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ expensesStore.totalRecords }} éléments</span
+          >{{ expensesStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -34,7 +34,6 @@
     <DataTable
       :value="expensesStore.expenses"
       class="p-datatable-sm"
-      :loading="expensesStore.loading"
       :rows="expensesStore.pageSize"
       :totalRecords="expensesStore.totalRecords"
       :lazy="true"
@@ -46,6 +45,18 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="`${appStore.baseURL + data.user.fileUrl}`"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user.userName }}</span>
+          </div>
+        </template>
+      </Column>
       <Column field="description" header="Description" sortable style="min-width: 200px" />
       <Column field="amount" header="Montant" sortable style="min-width: 120px">
         <template #body="{ data }">

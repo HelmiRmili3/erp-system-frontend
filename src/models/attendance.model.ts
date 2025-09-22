@@ -1,3 +1,5 @@
+import type { User } from './common.model'
+
 export interface Attendance {
   id: number
   userId: string
@@ -16,4 +18,5 @@ export interface Attendance {
   checkOutDeviceId: string | null
   checkOutIpAddress: string | null
   isCheckOutByAdmin: boolean
+  user: User
 }

@@ -1,8 +1,7 @@
-```vue
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Contrats">
+      <SectionHeader title="Contract Management">
         <template>
           <ContractsIcon />
         </template>
@@ -13,18 +12,22 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ contractsStore.totalRecords }} éléments</span
+          >{{ mycontractsStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
         <!-- Search Input -->
         <div class="relative">
           <InputText
-            v-model="contractsStore.searchQuery"
+            v-model="mycontractsStore.searchQuery"
             placeholder="Rechercher..."
             class="pl-10 py-2 border border-gray-300 rounded-lg"
             @input="
-              contractsStore.setPageAndSize(1, contractsStore.pageSize, contractsStore.searchQuery)
+              mycontractsStore.setPageAndSize(
+                1,
+                mycontractsStore.pageSize,
+                mycontractsStore.searchQuery
+              )
             "
           />
         </div>
@@ -36,11 +39,11 @@
 
     <!-- Contracts DataTable -->
     <DataTable
-      :value="contractsStore.contracts"
+      :value="mycontractsStore.contracts"
       class="p-datatable-sm"
-      :loading="contractsStore.loading"
-      :rows="contractsStore.pageSize"
-      :totalRecords="contractsStore.totalRecords"
+      :loading="mycontractsStore.loading"
+      :rows="mycontractsStore.pageSize"
+      :totalRecords="mycontractsStore.totalRecords"
       :lazy="true"
       stripedRows
       paginator
@@ -104,7 +107,7 @@
     </DataTable>
 
     <!-- Add Modal -->
-    <Dialog
+    <!-- <Dialog
       v-model:visible="showAddModal"
       header="Ajouter Contrat"
       modal
@@ -183,7 +186,7 @@
           <Button label="Ajouter" severity="success" type="submit" />
         </div>
       </form>
-    </Dialog>
+    </Dialog> -->
 
     <!-- Details Popup -->
     <Dialog
@@ -252,11 +255,11 @@ import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import Dialog from 'primevue/dialog'
 import { useToast } from 'primevue/usetoast'
-import { useMyContractsStore } from '@/stores/myContracts.store'
 import ContractsIcon from '@/components/icons/ContractsIcon.vue'
+import { useMyContractsStore } from '@/stores/myContracts.store'
 
 const appStore = useAppStore()
-const contractsStore = useMyContractsStore()
+const mycontractsStore = useMyContractsStore()
 const { contractTypes, employeeStatuses, getContractTypeName, getEmployeeStatusName } =
   useContractEnums()
 const toast = useToast()
@@ -279,14 +282,14 @@ const formData = reactive({
 
 // Fetch contracts when component is mounted
 onMounted(async () => {
-  await contractsStore.fetchCurrentUserContracts()
+  await mycontractsStore.fetchUserContracts()
   appStore.setLoading(false)
 })
 
 // Handle pagination
 const onPage = async (event: any) => {
   const { page, rows } = event // page is 0-based in PrimeVue
-  await contractsStore.setPageAndSize(page + 1, rows, contractsStore.searchQuery)
+  await mycontractsStore.setPageAndSize(page + 1, rows, mycontractsStore.searchQuery)
 }
 
 // Helper function to format dates
@@ -332,35 +335,35 @@ const closeDetailsModal = () => {
   selectedContract.value = null
 }
 
-const submitForm = async () => {
-  try {
-    // const data = {
-    //   userId: formData.userId,
-    //   contractType: formData.contractType,
-    //   startDate: formData.startDate,
-    //   endDate: formData.endDate || null,
-    //   fileUrl: formData.fileUrl || null,
-    //   status: formData.status
-    // }
-    // await contractsStore.addContract(data)
-    toast.add({
-      severity: 'success',
-      summary: 'Succès',
-      detail: 'Contrat créé avec succès',
-      life: 3000
-    })
-    await contractsStore.fetchCurrentUserContracts()
-    closeAddModal()
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Erreur',
-      detail: "Échec de l'enregistrement du contrat",
-      life: 3000
-    })
-  }
-}
+// const submitForm = async () => {
+//   try {
+//     // const data = {
+//     //   userId: formData.userId,
+//     //   contractType: formData.contractType,
+//     //   startDate: formData.startDate,
+//     //   endDate: formData.endDate || null,
+//     //   fileUrl: formData.fileUrl || null,
+//     //   status: formData.status
+//     // }
+//     // await contractsStore.addContract(data)
+//     toast.add({
+//       severity: 'success',
+//       summary: 'Succès',
+//       detail: 'Contrat créé avec succès',
+//       life: 3000
+//     })
+//     await contractsStore.fetchContracts()
+//     closeAddModal()
+//   } catch (error) {
+//     console.error('Error submitting form:', error)
+//     toast.add({
+//       severity: 'error',
+//       summary: 'Erreur',
+//       detail: "Échec de l'enregistrement du contrat",
+//       life: 3000
+//     })
+//   }
+// }
 
 // Watchers to sync date inputs with ISO strings
 watch(
@@ -413,4 +416,3 @@ watch(
   margin: 0 0.5rem;
 }
 </style>
-```

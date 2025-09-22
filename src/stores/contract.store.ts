@@ -27,10 +27,10 @@ export const useContractsStore = defineStore('contracts', () => {
   }
 
   // Create a new contract
-  const addContract = async (data: Partial<Contract>) => {
+  const addContract = async (formData: FormData) => {
     loading.value = true
     try {
-      const response = await createContract(data)
+      const response = await createContract(formData)
       contracts.value.push(response.data.data)
       return response.data.data
     } catch (error) {

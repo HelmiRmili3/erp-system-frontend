@@ -4,15 +4,15 @@ import { api } from '@/plugins/axios'
 import { deleteFile, uploadFile } from './file.service'
 
 const getAllConfigurations = () => {
-  return api.value!.get<Response<configuration[]>>('/configurations')
+  return api.get<Response<configuration[]>>('/configurations')
 }
 
 const getOneConfiguration = (key: string) => {
-  return api.value!.get<Response<configuration>>(`/configurations/${key}`)
+  return api.get<Response<configuration>>(`/configurations/${key}`)
 }
 
 const updateConfig = (key: string, value: string) => {
-  return api.value!.put<Response<configuration>>(`/configurations/${key}`, { key, value })
+  return api.put<Response<configuration>>(`/configurations/${key}`, { key, value })
 }
 
 const updateLogo = async (oldFile: string, file: File) => {

@@ -58,11 +58,11 @@
           </Button>
         </span>
       </div>
-      <div class="forget-password text-end" style="margin-top: 2rem">
+      <!-- <div class="forget-password text-end" style="margin-top: 2rem">
         <RouterLink :to="{ name: 'ForgotPassword' }">
           <Button link label="Forgot Password?" />
         </RouterLink>
-      </div>
+      </div> -->
       <!-- Submit Button -->
       <div class="mt-4 px-5 text-center">
         <Button

@@ -1,3 +1,5 @@
+import type { User } from './common.model'
+
 export interface Expense {
   id: number
   userId: string
@@ -7,6 +9,7 @@ export interface Expense {
   category: string
   status: number
   receiptPath: string
+  user: User
 }
 
 export interface CreateExpense {

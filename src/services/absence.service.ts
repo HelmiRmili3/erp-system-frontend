@@ -7,26 +7,26 @@ import { api } from '@/plugins/axios'
  * Admin endpoints
  * ---------------------------------------------------------- */
 const getAllAbsences = (currentPage: number, pageSize: number, search?: string) => {
-  return api.value!.get<Response<Absence[]>>('Absences', {
+  return api.get<Response<Absence[]>>('Absences', {
     params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
 }
-
-const getAbsenceById = (id: number) => api.value!.get<Response<Absence>>(`Absences/${id}`)
+const getAbsenceById = (id: number) => api.get<Response<Absence>>(`Absences/${id}`)
+const acceptAbsence = (id: string) => api.put<Response<Absence>>(`Absences/${id}/accept`)
+const rejectAbsence = (id: string) => api.put<Response<Absence>>(`Absences/${id}/reject`)
 
 /* ----------------------------------------------------------
  * User endpoints
  * ---------------------------------------------------------- */
 const getCurrentUserAbsences = (currentPage: number, pageSize: number, search?: string) =>
-  api.value!.get<Response<Absence[]>>('Absences/me', {
+  api.get<Response<Absence[]>>('Absences/me', {
     params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
-
-const createAbsence = (data: CreateAbsence) => api.value!.post<Response<Absence>>('Absences', data)
+const createAbsence = (data: CreateAbsence) => api.post<Response<Absence>>('Absences', data)
 
 const updateAbsence = (id: number, data: UpdateAbsence) =>
-  api.value!.put<Response<Absence>>(`Absences/${id}`, data)
-const deleteAbsence = (id: number) => api.value!.delete<Response<any>>(`Absences/${id}`)
+  api.put<Response<Absence>>(`Absences/${id}`, data)
+const deleteAbsence = (id: number) => api.delete<Response<any>>(`Absences/${id}`)
 
 export {
   getAllAbsences,
@@ -34,5 +34,7 @@ export {
   createAbsence,
   updateAbsence,
   deleteAbsence,
-  getCurrentUserAbsences
+  getCurrentUserAbsences,
+  acceptAbsence,
+  rejectAbsence
 }

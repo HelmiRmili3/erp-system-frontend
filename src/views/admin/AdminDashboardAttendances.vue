@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Présences">
+      <SectionHeader title="Employees Attendance Management">
         <template #icon>
           <AttendancesIcon />
         </template>
@@ -13,7 +13,7 @@
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <div class="flex flex-row gap-2.5 align-center">
           <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-            >{{ attendancesStore.totalRecords }} éléments</span
+            >{{ attendancesStore.totalRecords }} records</span
           >
         </div>
       </div>
@@ -43,7 +43,6 @@
     <DataTable
       :value="attendancesStore.attendances"
       class="p-datatable-sm"
-      :loading="attendancesStore.loading"
       :rows="attendancesStore.pageSize"
       :totalRecords="attendancesStore.totalRecords"
       :lazy="true"
@@ -54,8 +53,21 @@
       scrollable
       scrollHeight="calc(100vh - 250px)"
     >
-      <!-- Columns -->
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" />
+      <!-- Columns 
+      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" />-->
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="`${appStore.baseURL + data.user.fileUrl}`"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user.userName }}</span>
+          </div>
+        </template>
+      </Column>
+
       <Column field="attendanceDay" header="Date" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.attendanceDay) }}</div>

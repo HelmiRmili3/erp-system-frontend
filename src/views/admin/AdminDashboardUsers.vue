@@ -2,7 +2,7 @@
   <DashboardWrapper>
     <!-- Header -->
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Employees">
+      <SectionHeader title="Employees Management">
         <template #icon>
           <UsersFilledIcon />
         </template>
@@ -14,7 +14,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5">
-          {{ adminStore.totalRecords }} éléments
+          {{ adminStore.totalRecords }} records
         </span>
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -34,7 +34,6 @@
     <DataTable
       :value="adminStore.users"
       class="p-datatable-sm"
-      :loading="adminStore.loading"
       :rows="adminStore.pageSize"
       :totalRecords="adminStore.totalRecords"
       :lazy="true"
@@ -45,11 +44,38 @@
       scrollable
       scrollHeight="calc(100vh)"
     >
-      <Column field="fullName" header="Nom complet" sortable style="min-width: 160px" />
-      <Column field="email" header="Email" sortable style="min-width: 180px" />
+      <!-- <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="`${appStore.baseURL + data.fileUrl}`"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.fullName }}</span>
+          </div>
+        </template>
+      </Column> -->
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="
+                data.user?.fileUrl
+                  ? appStore.baseURL + data.fileUrl
+                  : 'https://avatar.iran.liara.run/public/17'
+              "
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.fullName || 'Unknown' }}</span>
+          </div>
+        </template>
+      </Column>
+      <!-- <Column field="email" header="Email" sortable style="min-width: 180px" /> -->
       <Column field="jobTitle" header="Poste" sortable style="min-width: 140px" />
       <Column field="department" header="Département" sortable style="min-width: 140px" />
-      <Column field="contractType" header="Contrat" sortable style="min-width: 120px" />
+      <!-- <Column field="contractType" header="Contrat" sortable style="min-width: 120px" /> -->
       <Column field="status" header="Statut" sortable style="min-width: 100px" />
 
       <!-- Roles -->

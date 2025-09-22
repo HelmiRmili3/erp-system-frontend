@@ -33,6 +33,7 @@ export interface User {
   updatedBy: string
   supervisorId: string
   supervisorFullName: string
+  fileUrl: string
   roles: string[]
   permissions: string[]
 }

@@ -1,0 +1,9 @@
+absence service
+admin service
+attendence service 
+auth service
+certification service
+contract service
+expense service
+payroll service
+permission service

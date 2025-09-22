@@ -2,7 +2,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Absence } from '@/models/absence.model'
-import { getAllAbsences } from '@/services/absence.service'
+import {
+  getAllAbsences,
+  acceptAbsence as acceptAbsenceService,
+  rejectAbsence as rejectAbsenceService
+} from '@/services/absence.service'
 
 export const useAbsencesStore = defineStore('absences', () => {
   const absences = ref<Absence[]>([])
@@ -12,16 +16,13 @@ export const useAbsencesStore = defineStore('absences', () => {
   const totalRecords = ref(0)
 
   /* ----------------------------------------------------------
-   * Fetch current user’s absences with server-side pagination
+   * Fetch all absences with server-side pagination
    * ---------------------------------------------------------- */
-  const fetchAbsences = async (
-    page: number = currentPage.value,
-    size: number = pageSize.value
-    // search?: string
-  ) => {
+  const fetchAbsences = async (page: number = currentPage.value, size: number = pageSize.value) => {
     loading.value = true
     try {
       const response = await getAllAbsences(page, size)
+      console.log('Absence response :', response)
       const payload = response.data
       absences.value = payload.data || []
       totalRecords.value = payload.recordsFiltered ?? payload.recordsTotal ?? 0
@@ -36,9 +37,6 @@ export const useAbsencesStore = defineStore('absences', () => {
     }
   }
 
-  /* ----------------------------------------------------------
-   * Helper that both updates local state AND re-fetches
-   * ---------------------------------------------------------- */
   const setPageAndSize = async (page: number, size: number) => {
     currentPage.value = page
     pageSize.value = size
@@ -46,27 +44,25 @@ export const useAbsencesStore = defineStore('absences', () => {
   }
 
   /* ----------------------------------------------------------
-   * CRUD helpers (unchanged, just call the same refresh logic)
+   * Approve / Reject Absences
    * ---------------------------------------------------------- */
-  // const getAbsence = async (id: number) => {
-  //   const { data } = await getAbsenceById(id)
-  //   return data?.data ?? null
-  // }
+  const acceptAbsence = async (id: string) => {
+    try {
+      await acceptAbsenceService(id)
+      await fetchAbsences()
+    } catch (e) {
+      console.error('Failed to accept absence', e)
+    }
+  }
 
-  // const addAbsence = async (payload: CreateAbsence) => {
-  //   await createAbsence(payload)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
-
-  // const editAbsence = async (id: number, payload: UpdateAbsence) => {
-  //   await updateAbsence(id, payload)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
-
-  // const removeAbsence = async (id: number) => {
-  //   await deleteAbsence(id)
-  //   await fetchAbsences(currentPage.value, pageSize.value)
-  // }
+  const rejectAbsence = async (id: string) => {
+    try {
+      await rejectAbsenceService(id)
+      await fetchAbsences()
+    } catch (e) {
+      console.error('Failed to reject absence', e)
+    }
+  }
 
   /* ---------------------------------------------------------- */
   return {
@@ -77,10 +73,7 @@ export const useAbsencesStore = defineStore('absences', () => {
     totalRecords,
     fetchAbsences,
     setPageAndSize,
-    // getAbsence,
-    // addAbsence,
-    // editAbsence,
-    // removeAbsence,
-    getAllAbsences
+    acceptAbsence,
+    rejectAbsence
   }
 })

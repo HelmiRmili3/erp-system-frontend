@@ -22,21 +22,15 @@ RUN npm run build
 # --- Runtime stage ---
 FROM nginx:alpine
 
-# Ensure /usr/share/nginx/html is writable
-RUN mkdir -p /usr/share/nginx/html
-
-# Copy built files
+# Copy built files from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy config template (with placeholder ${VITE_BASE_URL})
-COPY public/config.template.json /usr/share/nginx/html/config.template.json
+# Copy config template
+COPY --from=build /app/public/config.template.json /usr/share/nginx/html/config.template.json
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-
-# Optional: SPA routing
-COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -46,10 +46,10 @@ export const usePayrollsStore = defineStore('payrolls', () => {
     }
   }
   // Create a new payroll
-  const addPayroll = async (data: Partial<Payroll>) => {
+  const addPayroll = async (formData: FormData) => {
     loading.value = true
     try {
-      const response = await createPayroll(data)
+      const response = await createPayroll(formData)
       payrolls.value.push(response.data.data)
       return response.data.data
     } catch (error) {

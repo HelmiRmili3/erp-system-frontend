@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Paies">
+      <SectionHeader title="Payroll Management">
         <template>
           <PayrollsIcon />
         </template>
@@ -12,7 +12,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ payrollsStore.totalRecords }} éléments</span
+          >{{ payrollsStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">

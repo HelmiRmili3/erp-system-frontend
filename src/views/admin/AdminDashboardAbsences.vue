@@ -1,7 +1,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Absences">
+      <SectionHeader title="Employees Absences Management">
         <template #icon>
           <AbsencesFilledIcon />
         </template>
@@ -13,7 +13,7 @@
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <div class="flex flex-row gap-2.5 align-center">
           <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-            >{{ absencesStore.absences.length }} éléments</span
+            >{{ absencesStore.absences.length }} records</span
           >
         </div>
       </div>
@@ -26,8 +26,6 @@
             class="pl-10 py-2 border border-gray-300 rounded-lg"
           />
         </div>
-        <!-- Add Absence Button -->
-        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -35,7 +33,6 @@
     <DataTable
       :value="absencesStore.absences"
       class="p-datatable-sm"
-      :loading="absencesStore.loading"
       :rows="absencesStore.pageSize"
       :totalRecords="absencesStore.totalRecords"
       :lazy="true"
@@ -45,6 +42,18 @@
       @page="onPage"
     >
       <!-- Existing Columns and Templates -->
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="`${appStore.baseURL + data.user.fileUrl}`"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user.userName }}</span>
+          </div>
+        </template>
+      </Column>
       <Column field="startDate" header="Date de début" sortable style="width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.startDate) }}</div>
@@ -71,26 +80,26 @@
         </template>
       </Column>
       <Column header="Actions" style="width: 150px">
-        <!-- <template #body="{ data }">
+        <template #body="{ data }">
           <div class="flex gap-1">
             <Button
-              icon="pi pi-pencil"
+              icon="pi pi-check"
               rounded
               text
               severity="success"
-              @click="openUpdateModal(data)"
-              v-tooltip="'Modifier'"
+              @click="accept(data.id)"
+              v-tooltip="'Accepter'"
             />
             <Button
-              icon="pi pi-trash"
+              icon="pi pi-times"
               rounded
               text
               severity="danger"
-              @click="openDeleteModal(data.id)"
-              v-tooltip="'Supprimer'"
+              @click="reject(data.id)"
+              v-tooltip="'Rejeter'"
             />
           </div>
-        </template> -->
+        </template>
       </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
@@ -153,24 +162,6 @@
         </div>
       </form>
     </Dialog> -->
-
-    <!-- Delete Confirmation Modal -->
-    <Dialog
-      v-model:visible="showDeleteModal"
-      header="Confirmation de suppression"
-      modal
-      :style="{ width: '400px' }"
-      class="p-4"
-    >
-      <div class="flex flex-col items-center gap-4">
-        <i class="pi pi-exclamation-triangle text-3xl text-red-500"></i>
-        <p class="text-gray-700">Êtes-vous sûr de vouloir supprimer cette absence ?</p>
-        <div class="flex justify-end gap-2">
-          <Button label="Non" severity="secondary" text @click="closeDeleteModal" />
-          <Button label="Oui" severity="danger" @click="confirmDelete" />
-        </div>
-      </div>
-    </Dialog>
   </DashboardWrapper>
 </template>
 
@@ -231,72 +222,40 @@ const formatDate = (dateString: string) => {
     day: 'numeric'
   })
 }
+const accept = async (id: string) => {
+  await absencesStore.acceptAbsence(id)
+}
 
+const reject = async (id: string) => {
+  await absencesStore.rejectAbsence(id)
+}
 const closeDeleteModal = () => {
   showDeleteModal.value = false
   selectedAbsenceId.value = null
 }
 
-// const submitForm = async () => {
-//   try {
-//     const data = {
-//       startDate: formData.startDate,
-//       endDate: formData.endDate,
-//       absenceType: formData.absenceType,
-//       reason: formData.reason,
-//       id: selectedAbsenceId.value!
-//     }
-//     if (isUpdateMode.value && selectedAbsenceId.value) {
-//       // await absencesStore.editAbsence(selectedAbsenceId.value, data)
+// const confirmDelete = async () => {
+//   if (selectedAbsenceId.value) {
+//     try {
+//       // await absencesStore.removeAbsence(selectedAbsenceId.value)
 //       // toast.add({
 //       //   severity: 'success',
 //       //   summary: 'Succès',
-//       //   detail: 'Absence mise à jour avec succès',
+//       //   detail: 'Absence supprimée avec succès',
 //       //   life: 3000
 //       // })
-//     } else {
-//       // await absencesStore.addAbsence(data)
-//       // toast.add({
-//       //   severity: 'success',
-//       //   summary: 'Succès',
-//       //   detail: 'Absence créée avec succès',
-//       //   life: 3000
-//       // })
+//     } catch (error) {
+//       console.error('Error deleting absence:', error)
+//       toast.add({
+//         severity: 'error',
+//         summary: 'Erreur',
+//         detail: "Échec de la suppression de l'absence",
+//         life: 3000
+//       })
 //     }
-//     closeModal()
-//   } catch (error) {
-//     console.error('Error submitting form:', error)
-//     toast.add({
-//       severity: 'error',
-//       summary: 'Erreur',
-//       detail: "Échec de l'enregistrement de l'absence",
-//       life: 3000
-//     })
 //   }
+//   closeDeleteModal()
 // }
-
-const confirmDelete = async () => {
-  if (selectedAbsenceId.value) {
-    try {
-      // await absencesStore.removeAbsence(selectedAbsenceId.value)
-      // toast.add({
-      //   severity: 'success',
-      //   summary: 'Succès',
-      //   detail: 'Absence supprimée avec succès',
-      //   life: 3000
-      // })
-    } catch (error) {
-      console.error('Error deleting absence:', error)
-      toast.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: "Échec de la suppression de l'absence",
-        life: 3000
-      })
-    }
-  }
-  closeDeleteModal()
-}
 </script>
 
 <style scoped>

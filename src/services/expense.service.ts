@@ -18,7 +18,7 @@ const createExpense = (data: CreateExpense) => {
   //   console.log(key, value)
   // }
 
-  return api.value!.post<Response<Expense>>('Expenses', formData, {
+  return api.post<Response<Expense>>('Expenses', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -26,25 +26,25 @@ const createExpense = (data: CreateExpense) => {
 }
 
 const updateExpense = (data: Partial<Expense>) => {
-  return api.value!.put<Response<Expense>>('Expenses', data)
+  return api.put<Response<Expense>>('Expenses', data)
 }
 
 const getAllExpenses = (currentPage: number, pageSize: number, search?: string) => {
-  return api.value!.get<Response<Expense[]>>('Expenses', {
+  return api.get<Response<Expense[]>>('Expenses', {
     params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
 }
 
 const deleteExpense = (id: number) => {
-  return api.value!.delete<Response<any>>(`Expenses/${id}`)
+  return api.delete<Response<any>>(`Expenses/${id}`)
 }
 
 const getExpenseById = (id: number) => {
-  return api.value!.get<Response<Expense>>(`Expenses/${id}`)
+  return api.get<Response<Expense>>(`Expenses/${id}`)
 }
 
 const getCurrentUserExpenses = (currentPage: number, pageSize: number, search?: string) => {
-  return api.value!.get<Response<Expense[]>>('Expenses/me', {
+  return api.get<Response<Expense[]>>('Expenses/me', {
     params: { PageNumber: currentPage, PageSize: pageSize, search }
   })
 }

@@ -2,7 +2,7 @@
 <template>
   <DashboardWrapper>
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Contrats">
+      <SectionHeader title="Employees Contracts Management">
         <template>
           <ContractsIcon />
         </template>
@@ -13,7 +13,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ contractsStore.totalRecords }} éléments</span
+          >{{ contractsStore.totalRecords }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -38,7 +38,6 @@
     <DataTable
       :value="contractsStore.contracts"
       class="p-datatable-sm"
-      :loading="contractsStore.loading"
       :rows="contractsStore.pageSize"
       :totalRecords="contractsStore.totalRecords"
       :lazy="true"
@@ -50,8 +49,23 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
-      <Column field="id" header="ID" sortable style="min-width: 100px" />
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" />
+      <Column header="Employee" style="min-width: 200px">
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              :src="
+                data.user?.fileUrl
+                  ? appStore.baseURL + data.user.fileUrl
+                  : 'https://avatar.iran.liara.run/public/17'
+              "
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover border"
+            />
+            <span>{{ data.user?.userName || 'Unknown' }}</span>
+          </div>
+        </template>
+      </Column>
+
       <Column field="contractType" header="Type" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ getContractTypeName(data.contractType) }}</div>
@@ -102,7 +116,6 @@
         </div>
       </template>
     </DataTable>
-
     <!-- Add Modal -->
     <Dialog
       v-model:visible="showAddModal"
@@ -115,11 +128,9 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <InputText
+            <UserSelectDropdown
               v-model="formData.userId"
-              placeholder="ID de l'utilisateur"
-              required
-              class="border border-gray-300 rounded-lg p-2"
+              placeholder="Sélectionner un utilisateur"
             />
           </div>
           <div class="flex flex-col gap-2">
@@ -157,14 +168,12 @@
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="fileUrl" class="text-sm font-medium text-gray-700">URL du Fichier</label>
-            <InputText
-              v-model="formData.fileUrl"
-              placeholder="URL du fichier (optionnel)"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
+          <!-- File Picker -->
+          <FilePicker
+            v-model="formData.file"
+            label="Sélectionner un fichier"
+            accept=".pdf,.doc,.docx,.jpg,.png"
+          />
           <div class="flex flex-col gap-2">
             <label for="status" class="text-sm font-medium text-gray-700">Statut</label>
             <Dropdown
@@ -243,6 +252,8 @@
 import { ref, onMounted, watch, reactive } from 'vue'
 import { useAppStore } from '@/stores/app.store'
 import { useContractEnums } from '@/composables/useContractEnums'
+import UserSelectDropdown from '@/components/common/UserSelectDropdown.vue'
+import FilePicker from '@/components/common/FilePicker.vue'
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
 import DataTable from 'primevue/datatable'
@@ -273,7 +284,7 @@ const formData = reactive({
   startDateDisplay: '', // YYYY-MM-DD for input
   endDate: '', // ISO string
   endDateDisplay: '', // YYYY-MM-DD for input
-  fileUrl: '',
+  file: null,
   status: 0
 })
 
@@ -331,26 +342,39 @@ const closeDetailsModal = () => {
   showDetailsModal.value = false
   selectedContract.value = null
 }
-
 const submitForm = async () => {
   try {
-    // const data = {
-    //   userId: formData.userId,
-    //   contractType: formData.contractType,
-    //   startDate: formData.startDate,
-    //   endDate: formData.endDate || null,
-    //   fileUrl: formData.fileUrl || null,
-    //   status: formData.status
-    // }
-    // await contractsStore.addContract(data)
+    const formPayload = new FormData()
+
+    // Prefix fields with 'Contract.' to match the record
+    formPayload.append('Contract.UserId', formData.userId)
+    formPayload.append('Contract.ContractType', String(formData.contractType)) // 0,1,2
+    formPayload.append('Contract.StartDate', formData.startDate) // ISO string
+    if (formData.endDate) formPayload.append('Contract.EndDate', formData.endDate)
+    formPayload.append('Contract.Status', String(formData.status)) // 0,1,2
+
+    // File
+    if (formData.file) formPayload.append('File', formData.file) // match command property name
+
+    // Debug: log FormData contents
+    console.log('FormData contents:')
+    for (const [key, value] of formPayload.entries()) {
+      console.log(key, value)
+    }
+
+    // Call store action
+    await contractsStore.addContract(formPayload)
+
     toast.add({
       severity: 'success',
       summary: 'Succès',
       detail: 'Contrat créé avec succès',
       life: 3000
     })
-    await contractsStore.fetchContracts()
-    closeAddModal()
+
+    await contractsStore.fetchContracts().finally(() => {
+      showAddModal.value = false
+    })
   } catch (error) {
     console.error('Error submitting form:', error)
     toast.add({
@@ -361,7 +385,6 @@ const submitForm = async () => {
     })
   }
 }
-
 // Watchers to sync date inputs with ISO strings
 watch(
   () => formData.startDateDisplay,
