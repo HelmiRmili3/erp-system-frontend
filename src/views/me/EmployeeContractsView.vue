@@ -12,7 +12,7 @@
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
         <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ mycontractsStore.totalRecords }} records</span
+          >{{ filteredContracts.length }} records</span
         >
       </div>
       <div class="flex justify-start items-center gap-4">
@@ -22,29 +22,20 @@
             v-model="mycontractsStore.searchQuery"
             placeholder="Rechercher..."
             class="pl-10 py-2 border border-gray-300 rounded-lg"
-            @input="
-              mycontractsStore.setPageAndSize(
-                1,
-                mycontractsStore.pageSize,
-                mycontractsStore.searchQuery
-              )
-            "
+            @input="handleSearch"
           />
         </div>
-        <!-- Add Contract Button -->
-        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>
 
     <!-- Contracts DataTable -->
     <DataTable
-      :value="mycontractsStore.contracts"
+      :value="filteredContracts"
       class="p-datatable-sm"
       :loading="mycontractsStore.loading"
       :rows="mycontractsStore.pageSize"
-      :totalRecords="mycontractsStore.totalRecords"
-      :lazy="true"
+      :totalRecords="filteredContracts.length"
       stripedRows
       paginator
       :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -53,31 +44,29 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
-      <!-- <Column field="id" header="ID" sortable style="min-width: 100px" />
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" /> -->
       <Column field="contractType" header="Type" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ getContractTypeName(data.contractType) }}</div>
         </template>
       </Column>
-      <Column field="startDate" header="Date Début" sortable style="min-width: 150px">
+      <Column field="startDate" header="Start date" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.startDate) }}</div>
         </template>
       </Column>
-      <Column field="endDate" header="Date Fin" sortable style="min-width: 150px">
+      <Column field="endDate" header="End date" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.endDate) }}</div>
         </template>
       </Column>
-      <Column field="fileUrl" header="Fichier" style="min-width: 150px">
+      <Column field="fileUrl" header="Contract" style="min-width: 150px">
         <template #body="{ data }">
           <a
             v-if="data.fileUrl && data.fileUrl !== 'string'"
             :href="`${appStore.baseURL + data.fileUrl}`"
             target="_blank"
             class="text-blue-600 hover:underline"
-            >Voir PDF</a
+            >Open</a
           >
           <span v-else>N/A</span>
         </template>
@@ -87,14 +76,14 @@
           <div>{{ getEmployeeStatusName(data.status) }}</div>
         </template>
       </Column>
-      <Column header="Détails" style="min-width: 120px">
+      <Column header="Details" style="min-width: 120px">
         <template #body="{ data }">
           <Button
             label="See More"
             text
             severity="info"
             @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
+            v-tooltip="'See more'"
           />
         </template>
       </Column>
@@ -105,89 +94,6 @@
         </div>
       </template>
     </DataTable>
-
-    <!-- Add Modal -->
-    <!-- <Dialog
-      v-model:visible="showAddModal"
-      header="Ajouter Contrat"
-      modal
-      :style="{ width: '600px' }"
-      class="p-4"
-    >
-      <form @submit.prevent="submitForm" class="flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <InputText
-              v-model="formData.userId"
-              placeholder="ID de l'utilisateur"
-              required
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="contractType" class="text-sm font-medium text-gray-700"
-              >Type de Contrat</label
-            >
-            <Dropdown
-              v-model="formData.contractType"
-              :options="contractTypes"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Sélectionner un type"
-              required
-              class="border border-gray-300 rounded-lg"
-            />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="startDate" class="text-sm font-medium text-gray-700">Date Début</label>
-            <InputText
-              type="date"
-              v-model="formData.startDateDisplay"
-              required
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="endDate" class="text-sm font-medium text-gray-700">Date Fin</label>
-            <InputText
-              type="date"
-              v-model="formData.endDateDisplay"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="fileUrl" class="text-sm font-medium text-gray-700">URL du Fichier</label>
-            <InputText
-              v-model="formData.fileUrl"
-              placeholder="URL du fichier (optionnel)"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="status" class="text-sm font-medium text-gray-700">Statut</label>
-            <Dropdown
-              v-model="formData.status"
-              :options="employeeStatuses"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Sélectionner un statut"
-              required
-              class="border border-gray-300 rounded-lg"
-            />
-          </div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <Button label="Annuler" severity="secondary" text @click="closeAddModal" />
-          <Button label="Ajouter" severity="success" type="submit" />
-        </div>
-      </form>
-    </Dialog> -->
-
     <!-- Details Popup -->
     <Dialog
       v-model:visible="showDetailsModal"
@@ -198,14 +104,6 @@
     >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span>{{ selectedContract?.id || 'N/A' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
-            <span>{{ selectedContract?.userId || 'N/A' }}</span>
-          </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Type:</span>
             <span>{{ getContractTypeName(selectedContract?.contractType) }}</span>
@@ -243,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive } from 'vue'
+import { ref, onMounted, watch, reactive, computed } from 'vue'
 import { useAppStore } from '@/stores/app.store'
 import { useContractEnums } from '@/composables/useContractEnums'
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
@@ -252,7 +150,6 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import Dropdown from 'primevue/dropdown'
 import Dialog from 'primevue/dialog'
 import { useToast } from 'primevue/usetoast'
 import ContractsIcon from '@/components/icons/ContractsIcon.vue'
@@ -260,12 +157,10 @@ import { useMyContractsStore } from '@/stores/myContracts.store'
 
 const appStore = useAppStore()
 const mycontractsStore = useMyContractsStore()
-const { contractTypes, employeeStatuses, getContractTypeName, getEmployeeStatusName } =
-  useContractEnums()
+const { getContractTypeName, getEmployeeStatusName } = useContractEnums()
 const toast = useToast()
 
 // Modal state
-const showAddModal = ref(false)
 const showDetailsModal = ref(false)
 const selectedContract = ref<any>(null)
 
@@ -280,11 +175,43 @@ const formData = reactive({
   status: 0
 })
 
+// Safe filtered contracts to prevent errors
+const filteredContracts = computed(() => {
+  if (!Array.isArray(mycontractsStore.contracts)) {
+    console.warn('Contracts data is not an array:', mycontractsStore.contracts)
+    return []
+  }
+
+  // Filter out any non-object items (like numbers, strings, etc.)
+  const validContracts = mycontractsStore.contracts.filter(
+    (contract) =>
+      contract &&
+      typeof contract === 'object' &&
+      !Array.isArray(contract) &&
+      contract.id !== undefined // Ensure it has at least an id property
+  )
+
+  // Log any invalid items for debugging
+  if (validContracts.length !== mycontractsStore.contracts.length) {
+    const invalidItems = mycontractsStore.contracts.filter(
+      (item) => !item || typeof item !== 'object' || Array.isArray(item)
+    )
+    console.warn('Filtered out invalid contract items:', invalidItems)
+  }
+
+  return validContracts
+})
+
 // Fetch contracts when component is mounted
 onMounted(async () => {
   await mycontractsStore.fetchUserContracts()
   appStore.setLoading(false)
 })
+
+// Handle search with debounce
+const handleSearch = () => {
+  mycontractsStore.setPageAndSize(1, mycontractsStore.pageSize, mycontractsStore.searchQuery)
+}
 
 // Handle pagination
 const onPage = async (event: any) => {
@@ -294,35 +221,18 @@ const onPage = async (event: any) => {
 
 // Helper function to format dates
 const formatDate = (dateString: string) => {
-  return dateString
-    ? new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })
-    : 'N/A'
-}
+  if (!dateString) return 'N/A'
 
-// Modal functions
-// const openAddModal = () => {
-//   const now = new Date()
-//   const todayISO = now.toISOString()
-//   const todayDate = todayISO.split('T')[0]
-//   Object.assign(formData, {
-//     userId: '',
-//     contractType: 0,
-//     startDate: todayISO,
-//     startDateDisplay: todayDate,
-//     endDate: '',
-//     endDateDisplay: '',
-//     fileUrl: '',
-//     status: 0
-//   })
-//   showAddModal.value = true
-// }
-
-const closeAddModal = () => {
-  showAddModal.value = false
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'Invalid Date'
+  }
 }
 
 const openDetailsModal = (contract: any) => {
@@ -334,36 +244,6 @@ const closeDetailsModal = () => {
   showDetailsModal.value = false
   selectedContract.value = null
 }
-
-// const submitForm = async () => {
-//   try {
-//     // const data = {
-//     //   userId: formData.userId,
-//     //   contractType: formData.contractType,
-//     //   startDate: formData.startDate,
-//     //   endDate: formData.endDate || null,
-//     //   fileUrl: formData.fileUrl || null,
-//     //   status: formData.status
-//     // }
-//     // await contractsStore.addContract(data)
-//     toast.add({
-//       severity: 'success',
-//       summary: 'Succès',
-//       detail: 'Contrat créé avec succès',
-//       life: 3000
-//     })
-//     await contractsStore.fetchContracts()
-//     closeAddModal()
-//   } catch (error) {
-//     console.error('Error submitting form:', error)
-//     toast.add({
-//       severity: 'error',
-//       summary: 'Erreur',
-//       detail: "Échec de l'enregistrement du contrat",
-//       life: 3000
-//     })
-//   }
-// }
 
 // Watchers to sync date inputs with ISO strings
 watch(

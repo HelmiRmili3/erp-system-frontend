@@ -1,212 +1,4 @@
-// import { computed, ref, type App } from 'vue'
-// import axios, { type AxiosInstance } from 'axios'
-// import router from '@/router'
-// import { useAuthStore } from '@/stores/auth.store'
-
-// const internalApi = ref<AxiosInstance>()
-// const normalApi = ref<AxiosInstance>()
-// const noBaseUrlApi = ref<AxiosInstance>()
-// const token = ref(localStorage.getItem('token'))
-
-// let isRefreshing = false
-// let failedQueue: any[] = []
-
-// const processQueue = (error: any, newToken: string | null = null) => {
-//   failedQueue.forEach(({ resolve, reject }) => {
-//     if (error) reject(error)
-//     else resolve(newToken)
-//   })
-//   failedQueue = []
-// }
-
-// const api = computed<AxiosInstance>({
-//   get: () => {
-//     if (!internalApi.value) {
-//       throw new Error('Axios instance not created. Call createAxiosInstances(baseURL) first.')
-//     }
-//     return internalApi.value
-//   },
-//   set: (value) => {
-//     internalApi.value = value
-//   }
-// })
-
-// export function createAxiosInstances(baseURL: string) {
-//   if (baseURL.endsWith('/')) baseURL = baseURL.slice(0, -1)
-//   localStorage.setItem('baseURL', baseURL)
-
-//   const config = { baseURL: `${baseURL}/api/`, withCredentials: true }
-//   const normalConfig = { baseURL, withCredentials: true }
-//   const noBaseUrlConfig = { withCredentials: true }
-
-//   api.value = axios.create(config)
-//   normalApi.value = axios.create(normalConfig)
-//   noBaseUrlApi.value = axios.create(noBaseUrlConfig)
-
-//   const setupInterceptors = (instance: AxiosInstance) => {
-//     instance.interceptors.request.use(
-//       (config) => {
-//         const accessToken = localStorage.getItem('token')
-//         if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`
-//         return config
-//       },
-//       (error) => Promise.reject(error)
-//     )
-
-//     instance.interceptors.response.use(
-//       (response) => response,
-//       async (error) => {
-//         const authStore = useAuthStore()
-//         const originalRequest = error.config
-
-//         if (
-//           error.response?.status === 401 &&
-//           !originalRequest._retry &&
-//           !originalRequest.url?.includes('Auth/login') &&
-//           !originalRequest.url?.includes('Auth/refresh')
-//         ) {
-//           if (isRefreshing) {
-//             return new Promise((resolve, reject) => {
-//               failedQueue.push({ resolve, reject })
-//             })
-//               .then((newToken) => {
-//                 originalRequest.headers.Authorization = `Bearer ${newToken}`
-//                 return axios(originalRequest)
-//               })
-//               .catch((err) => Promise.reject(err))
-//           }
-
-//           originalRequest._retry = true
-//           isRefreshing = true
-
-//           try {
-//             const refreshToken = localStorage.getItem('refreshToken')
-//             if (!refreshToken) throw new Error('No refresh token found')
-
-//             const response = await axios.post(`${baseURL}/api/Auth/refresh`, {
-//               token: refreshToken
-//             })
-//             const newAccessToken = response.data.data.accessToken
-
-//             localStorage.setItem('token', newAccessToken)
-//             token.value = newAccessToken
-
-//             processQueue(null, newAccessToken)
-//             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
-//             return axios(originalRequest)
-//           } catch (err) {
-//             processQueue(err, null)
-//             authStore.logout()
-//             router.push({ name: 'Login' })
-//             return Promise.reject(err)
-//           } finally {
-//             isRefreshing = false
-//           }
-//         }
-
-//         return Promise.reject(error)
-//       }
-//     )
-//   }
-
-//   setupInterceptors(api.value)
-//   setupInterceptors(normalApi.value)
-//   setupInterceptors(noBaseUrlApi.value)
-// }
-
-// export default {
-//   install: (app: App) => {
-//     if (!api.value || !normalApi.value || !noBaseUrlApi.value) {
-//       throw new Error('Axios instances have not been created yet.')
-//     }
-//     app.config.globalProperties.$axios = normalApi
-//     app.config.globalProperties.$api = api
-//     app.config.globalProperties.$noBaseUrlApi = noBaseUrlApi
-//   }
-// }
-
-// export { api, normalApi, noBaseUrlApi, token }
-// import axios, { type AxiosInstance } from 'axios'
-// import router from '@/router'
-// import { useAuthStore } from '@/stores/auth.store'
-
-// let isRefreshing = false
-// let failedQueue: { resolve: Function; reject: Function }[] = []
-
-// const processQueue = (error: any, token: string | null = null) => {
-//   failedQueue.forEach(({ resolve, reject }) => {
-//     if (error) reject(error)
-//     else resolve(token)
-//   })
-//   failedQueue = []
-// }
-// // Create Axios instance
-// export const api: AxiosInstance = axios.create({
-//   baseURL: localStorage.getItem('baseURL') + '/api/',
-//   withCredentials: true
-// })
-
-// // Request interceptor: attach token
-// api.interceptors.request.use((config) => {
-//   const authStore = useAuthStore()
-//   const token = authStore.token
-//   if (token) config.headers.Authorization = `Bearer ${token}`
-//   return config
-// })
-
-// // Response interceptor: handle 401
-// api.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config
-//     const authStore = useAuthStore()
-
-//     if (
-//       error.response?.status === 401 &&
-//       !originalRequest._retry &&
-//       !originalRequest.url.includes('Auth/login') &&
-//       !originalRequest.url.includes('Auth/refresh')
-//     ) {
-//       if (isRefreshing) {
-//         return new Promise((resolve, reject) => {
-//           failedQueue.push({ resolve, reject })
-//         })
-//           .then((token) => {
-//             originalRequest.headers.Authorization = `Bearer ${token}`
-//             return api(originalRequest)
-//           })
-//           .catch((err) => Promise.reject(err))
-//       }
-
-//       originalRequest._retry = true
-//       isRefreshing = true
-
-//       try {
-//         const refreshToken = authStore.refreshToken
-//         if (!refreshToken) throw new Error('No refresh token found')
-
-//         const response = await api.post('Auth/refresh', { token: refreshToken })
-//         const newToken = response.data.data.accessToken
-
-//         authStore.setToken(newToken)
-//         processQueue(null, newToken)
-
-//         originalRequest.headers.Authorization = `Bearer ${newToken}`
-//         return api(originalRequest)
-//       } catch (err) {
-//         processQueue(err, null)
-//         authStore.logout()
-//         router.push({ name: 'Login' })
-//         return Promise.reject(err)
-//       } finally {
-//         isRefreshing = false
-//       }
-//     }
-
-//     return Promise.reject(error)
-//   }
-// )
-
+// plugins/axios.ts
 import axios, { type AxiosInstance } from 'axios'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth.store'
@@ -222,72 +14,144 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = []
 }
 
-export let api: AxiosInstance
+// Create the axios instance immediately
+export const api: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.endsWith('/')
+      ? import.meta.env.VITE_API_URL + 'api/'
+      : import.meta.env.VITE_API_URL + '/api/'
+    : 'http://localhost:5000/api/',
+  withCredentials: true,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
+  }
+})
 
-export function AxiosInstance(baseURL: string) {
-  api = axios.create({
-    baseURL: baseURL.endsWith('/') ? baseURL + 'api/' : baseURL + '/api/',
-    withCredentials: true
-  })
-
-  // Request interceptor
-  api.interceptors.request.use((config) => {
-    const authStore = useAuthStore()
-    const token = authStore.token
-    if (token) config.headers.Authorization = `Bearer ${token}`
-    return config
-  })
-
-  // Response interceptor
-  api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Use try-catch to avoid issues during SSR or before store is initialized
+    try {
       const authStore = useAuthStore()
+      const token = authStore.token
 
-      if (
-        error.response?.status === 401 &&
-        !originalRequest._retry &&
-        !originalRequest.url.includes('Auth/login') &&
-        !originalRequest.url.includes('Auth/refresh')
-      ) {
-        if (isRefreshing) {
-          return new Promise((resolve, reject) => {
-            failedQueue.push({ resolve, reject })
-          })
-            .then((token) => {
+      // Only add authorization if token exists and not already set
+      if (token && !config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    } catch (error) {
+      console.warn('Auth store not available during request setup')
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// Response interceptor with automatic retry
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config
+
+    // Check if it's a 401 error and should attempt refresh
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes('/Auth/login') &&
+      !originalRequest.url?.includes('/Auth/refresh')
+    ) {
+      // If already refreshing, add to queue
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token: string) => {
               originalRequest.headers.Authorization = `Bearer ${token}`
-              return api(originalRequest)
-            })
-            .catch((err) => Promise.reject(err))
-        }
-
-        originalRequest._retry = true
-        isRefreshing = true
-
-        try {
-          const refreshToken = authStore.refreshToken
-          if (!refreshToken) throw new Error('No refresh token found')
-
-          const response = await api.post('Auth/refresh', { token: refreshToken })
-          const newToken = response.data.data.accessToken
-
-          authStore.setToken(newToken)
-          processQueue(null, newToken)
-
-          originalRequest.headers.Authorization = `Bearer ${newToken}`
-          return api(originalRequest)
-        } catch (err) {
-          processQueue(err, null)
-          authStore.logout()
-          router.push({ name: 'Login' })
-          return Promise.reject(err)
-        } finally {
-          isRefreshing = false
-        }
+              resolve(api(originalRequest))
+            },
+            reject
+          })
+        })
       }
 
-      return Promise.reject(error)
+      originalRequest._retry = true
+      isRefreshing = true
+
+      try {
+        const authStore = useAuthStore()
+        const refreshToken = authStore.refreshToken
+
+        if (!refreshToken) {
+          throw new Error('No refresh token available')
+        }
+
+        // Use fresh axios instance to avoid interceptor loop
+        const refreshInstance = axios.create({
+          baseURL: api.defaults.baseURL,
+          timeout: 10000
+        })
+
+        const response = await refreshInstance.post('Auth/refresh', {
+          token: refreshToken
+        })
+
+        const newToken = response.data.data?.accessToken || response.data.accessToken
+
+        if (!newToken) {
+          throw new Error('No access token received from refresh')
+        }
+
+        // Update store and storage
+        authStore.setToken(newToken)
+
+        // Update the original request header
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+
+        // Process queued requests
+        processQueue(null, newToken)
+
+        // Retry the original request immediately
+        return api(originalRequest)
+      } catch (refreshError: any) {
+        // Refresh failed - clear auth and redirect
+        processQueue(refreshError, null)
+
+        const authStore = useAuthStore()
+        authStore.logout()
+
+        // Redirect to login if not already there
+        if (router.currentRoute.value.name !== 'Login') {
+          router.push({ name: 'Login' })
+        }
+
+        return Promise.reject(refreshError)
+      } finally {
+        isRefreshing = false
+      }
     }
-  )
+
+    // For other errors, reject immediately
+    return Promise.reject(error)
+  }
+)
+
+// Vue plugin installation
+export default {
+  install: (app: any) => {
+    // Make api available globally via app.config.globalProperties
+    app.config.globalProperties.$api = api
+
+    // Also provide it for composition API usage
+    app.provide('api', api)
+
+    // Make it available as global property for options API
+    app.config.globalProperties.api = api
+  }
 }
+
+// Optional: Export a function to check if axios is ready
+export const isAxiosReady = () => !!api

@@ -52,17 +52,14 @@
       scrollable
       scrollHeight="calc(100vh - 250px)"
     >
-      <!-- Columns -->
-      <!-- <Column field="id" header="ID" sortable style="min-width: 100px" />
-      <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" /> -->
-      <Column field="name" header="Nom" sortable style="min-width: 200px" />
-      <Column field="authority" header="Autorité" sortable style="min-width: 150px" />
-      <Column field="dateObtained" header="Date Obtenue" sortable style="min-width: 150px">
+      <Column field="name" header="Name" sortable style="min-width: 200px" />
+      <Column field="authority" header="Authority" sortable style="min-width: 150px" />
+      <Column field="dateObtained" header="Date Obtained" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.dateObtained) }}</div>
         </template>
       </Column>
-      <Column field="fileUrl" header="Fichier" style="min-width: 150px">
+      <Column field="fileUrl" header="File" style="min-width: 150px">
         <template #body="{ data }">
           <a
             v-if="data.fileUrl"
@@ -71,26 +68,26 @@
             rel="noopener"
             class="text-blue-600 hover:underline"
           >
-            Voir PDF
+            Open
           </a>
           <span v-else>N/A</span>
         </template>
       </Column>
-      <Column header="Détails" style="min-width: 120px">
+      <Column header="Details" style="min-width: 120px">
         <template #body="{ data }">
           <Button
-            label="See More"
+            label="More"
             text
             severity="info"
             @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
+            v-tooltip="'See the file'"
           />
         </template>
       </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
-          <p class="mt-2 text-gray-500">Aucune certification trouvée</p>
+          <p class="mt-2 text-gray-500">No certification found</p>
         </div>
       </template>
     </DataTable>
@@ -169,14 +166,6 @@
     >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span>{{ selectedCertification?.id || 'N/A' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
-            <span>{{ selectedCertification?.userId || 'N/A' }}</span>
-          </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Nom:</span>
             <span>{{ selectedCertification?.name || 'N/A' }}</span>

@@ -9,11 +9,19 @@ interface PaginationParams {
 }
 
 const createCertification = (data: FormData) => {
-  return api.post<Response<Certification>>('Certifications', data)
+  return api.post<Response<Certification>>('Certifications', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 const updateCertification = (data: Partial<Certification>) => {
-  return api.put<Response<Certification>>('Certifications', data)
+  return api.put<Response<Certification>>('Certifications', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 const getAllCertifications = (params: PaginationParams = {}) => {

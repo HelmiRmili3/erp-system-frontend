@@ -1,4 +1,4 @@
-import type { CreateExpense, Expense } from '@/models/expense.model'
+import type { CreateExpense, Expense, UpdateExpense } from '@/models/expense.model'
 import type { Response } from '@/models/response'
 import { api } from '@/plugins/axios'
 
@@ -12,12 +12,6 @@ const createExpense = (data: CreateExpense) => {
   formData.append('Expense.Category', data.category)
   formData.append('File', data.image)
 
-  // Debug: Log the FormData contents
-  // console.log('FormData contents:')
-  // for (const [key, value] of formData.entries()) {
-  //   console.log(key, value)
-  // }
-
   return api.post<Response<Expense>>('Expenses', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -25,8 +19,8 @@ const createExpense = (data: CreateExpense) => {
   })
 }
 
-const updateExpense = (data: Partial<Expense>) => {
-  return api.put<Response<Expense>>('Expenses', data)
+const updateExpense = (data: UpdateExpense) => {
+  return api.put<Response<Expense>>('Expenses', { expense: data })
 }
 
 const getAllExpenses = (currentPage: number, pageSize: number, search?: string) => {

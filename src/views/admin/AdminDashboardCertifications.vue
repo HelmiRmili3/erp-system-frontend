@@ -32,7 +32,7 @@
           />
         </div>
         <!-- Add Certification Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <Button icon="pi pi-plus" label="" severity="success" @click="openAddModal" />
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -76,7 +76,7 @@
           <div>{{ formatDate(data.dateObtained) }}</div>
         </template>
       </Column>
-      <Column field="fileUrl" header="Fichier" style="min-width: 150px">
+      <Column field="fileUrl" header="File" style="min-width: 150px">
         <template #body="{ data }">
           <a
             v-if="data.fileUrl"
@@ -85,7 +85,7 @@
             rel="noopener"
             class="text-blue-600 hover:underline"
           >
-            Voir PDF
+            Open
           </a>
           <span v-else>N/A</span>
         </template>
@@ -101,6 +101,28 @@
           />
         </template>
       </Column>
+      <Column header="Actions" style="width: 150px">
+        <template #body="{ data }">
+          <div class="flex gap-1">
+            <Button
+              icon="pi pi-pencil"
+              rounded
+              text
+              severity="success"
+              @click="updateCertificate(data)"
+              v-tooltip="'Modifier'"
+            />
+            <Button
+              icon="pi pi-trash"
+              rounded
+              text
+              severity="danger"
+              @click="deleteCertificate(data.id)"
+              v-tooltip="'Supprimer'"
+            />
+          </div>
+        </template>
+      </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
@@ -112,7 +134,7 @@
     <!-- Add Modal -->
     <Dialog
       v-model:visible="showAddModal"
-      header="Ajouter Certification"
+      header="Add Certification"
       modal
       :style="{ width: '600px' }"
       class="p-4"
@@ -120,34 +142,36 @@
       <form @submit.prevent="submitForm" class="flex flex-col gap-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <UserSelectDropdown
-              v-model="formData.userId"
-              placeholder="Sélectionner un utilisateur"
-            />
+            <label for="userId" class="text-sm font-medium text-gray-700">User</label>
+            <UserSelectDropdown v-model="formData.userId" placeholder="Select a user" />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="name" class="text-sm font-medium text-gray-700">Nom</label>
+            <label for="name" class="text-sm font-medium text-gray-700">Name</label>
             <InputText
               v-model="formData.name"
-              placeholder="Nom de la certification"
+              placeholder="Certification name"
               required
               class="border border-gray-300 rounded-lg p-2"
             />
           </div>
         </div>
+
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="authority" class="text-sm font-medium text-gray-700">Autorité</label>
+            <label for="authority" class="text-sm font-medium text-gray-700"
+              >Issuing Authority</label
+            >
             <InputText
               v-model="formData.authority"
-              placeholder="Autorité émettrice"
+              placeholder="Issuing authority"
               required
               class="border border-gray-300 rounded-lg p-2"
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="dateObtained" class="text-sm font-medium text-gray-700">Date Obtenue</label>
+            <label for="dateObtained" class="text-sm font-medium text-gray-700"
+              >Date Obtained</label
+            >
             <InputText
               type="date"
               v-model="formData.dateObtainedDisplay"
@@ -156,14 +180,16 @@
             />
           </div>
         </div>
+
         <FilePicker
           v-model="formData.file"
-          label="Sélectionner un fichier"
+          label="Select a file"
           accept=".pdf,.doc,.docx,.jpg,.png"
         />
+
         <div class="flex justify-end gap-2">
-          <Button label="Annuler" severity="secondary" text @click="closeAddModal" />
-          <Button label="Ajouter" severity="success" type="submit" />
+          <Button label="Cancel" severity="secondary" text @click="closeAddModal" />
+          <Button label="Add" severity="success" type="submit" />
         </div>
       </form>
     </Dialog>
@@ -178,13 +204,20 @@
     >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">ID:</span>
-            <span>{{ selectedCertification?.id || 'N/A' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
-            <span>{{ selectedCertification?.userId || 'N/A' }}</span>
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-gray-700">Employé:</span>
+            <div class="flex items-center gap-3">
+              <img
+                :src="
+                  selectedCertification?.user?.fileUrl
+                    ? appStore.baseURL + selectedCertification.user.fileUrl
+                    : 'https://avatar.iran.liara.run/public/17'
+                "
+                alt="Avatar"
+                class="w-8 h-8 rounded-full object-cover border"
+              />
+              <span>{{ selectedCertification?.user?.userName || 'Unknown' }}</span>
+            </div>
           </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Nom:</span>
@@ -295,7 +328,8 @@ const openAddModal = () => {
 const closeAddModal = () => {
   showAddModal.value = false
 }
-
+const updateCertificate = (data: any) => {}
+const deleteCertificate = (data: any) => {}
 const openDetailsModal = (certification: any) => {
   selectedCertification.value = certification
   showDetailsModal.value = true
@@ -308,10 +342,11 @@ const closeDetailsModal = () => {
 const submitForm = async () => {
   try {
     const formPayload = new FormData()
+
     formPayload.append('Certification.UserId', formData.userId)
     formPayload.append('Certification.Name', formData.name)
     formPayload.append('Certification.Authority', formData.authority)
-    formPayload.append('Certification.DateObtained', formData.dateObtained)
+    formPayload.append('Certification.DateObtained', new Date(formData.dateObtained).toISOString())
 
     if (formData.file) {
       formPayload.append('File', formData.file) // actual file selected

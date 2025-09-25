@@ -22,7 +22,7 @@
         <div class="relative">
           <InputText
             v-model="attendancesStore.searchQuery"
-            placeholder="Rechercher..."
+            placeholder="Search..."
             class="pl-10 py-2 border border-gray-300 rounded-lg"
             @input="
               attendancesStore.setPageAndSize(
@@ -33,8 +33,25 @@
             "
           />
         </div>
-        <!-- Add Attendance Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+
+        <!-- Dynamic Check In/Out Button based on nextOp -->
+        <Button
+          v-if="nextOp === 'checkin'"
+          icon="pi pi-sign-in"
+          label="Check In"
+          severity="success"
+          @click="openCheckInConfirmation"
+          v-tooltip="'Record your check-in'"
+        />
+
+        <Button
+          v-if="nextOp === 'checkout'"
+          icon="pi pi-sign-out"
+          label="Check Out"
+          severity="warning"
+          @click="openCheckOutConfirmation"
+          v-tooltip="'Record your check-out'"
+        />
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -55,7 +72,6 @@
       scrollHeight="calc(100vh - 250px)"
     >
       <!-- Columns -->
-      <!-- <Column field="userId" header="Utilisateur" sortable style="min-width: 160px" /> -->
       <Column field="attendanceDay" header="Date" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.attendanceDay) }}</div>
@@ -68,249 +84,160 @@
       </Column>
       <Column field="checkOut" header="Check-Out" sortable style="min-width: 150px">
         <template #body="{ data }">
-          <div>{{ formatTime(data.checkOut) }}</div>
+          <div>{{ formatTime(data.checkOut) || 'Not checked out' }}</div>
         </template>
       </Column>
-      <Column header="Détails" style="min-width: 120px">
+      <Column header="Status" style="min-width: 120px">
+        <template #body="{ data }">
+          <Tag :value="nextOp" :severity="getAttendanceSeverity(data)" />
+        </template>
+      </Column>
+      <Column header="Details" style="min-width: 120px">
         <template #body="{ data }">
           <Button
             label="See More"
             text
             severity="info"
             @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
+            v-tooltip="'View Details'"
           />
         </template>
       </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
-          <p class="mt-2 text-gray-500">Aucune présence trouvée</p>
+          <p class="mt-2 text-gray-500">No attendance found</p>
         </div>
       </template>
     </DataTable>
 
-    <!-- Add Modal -->
+    <!-- Check-In Confirmation Modal -->
     <Dialog
-      v-model:visible="showModal"
-      header="Ajouter Présence"
+      v-model:visible="showCheckInConfirmation"
+      header="Confirm Check-In"
       modal
-      :style="{ width: '600px' }"
+      :style="{ width: '500px' }"
       class="p-4"
     >
-      <form @submit.prevent="submitForm" class="flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="userId" class="text-sm font-medium text-gray-700">Utilisateur</label>
-            <InputText
-              v-model="formData.userId"
-              placeholder="ID de l'utilisateur"
-              required
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="attendanceDay" class="text-sm font-medium text-gray-700">Date</label>
-            <InputText
-              type="date"
-              v-model="formData.attendanceDayDisplay"
-              required
-              class="border border-gray-300 rounded-lg p-2"
-            />
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-info-circle text-2xl text-blue-500"></i>
+          <span class="text-lg font-medium">Confirm your check-in for today?</span>
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-lg">
+          <h4 class="font-semibold text-blue-800 mb-2">Check-In Details:</h4>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <span class="text-gray-600">Date:</span>
+            <span class="font-medium">{{ getCurrentDate() }}</span>
+
+            <span class="text-gray-600">Time:</span>
+            <span class="font-medium">{{ getCurrentTime() }}</span>
+
+            <span class="text-gray-600">User:</span>
+            <span class="font-medium">{{ authStore.user?.userName || 'Current User' }}</span>
+
+            <span class="text-gray-600">Method:</span>
+            <span class="font-medium">Web App</span>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkIn" class="text-sm font-medium text-gray-700">Check-In</label>
-            <InputText
-              type="time"
-              v-model="formData.checkIn"
-              placeholder="Heure de check-in"
-              required
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkInMethod" class="text-sm font-medium text-gray-700"
-              >Méthode Check-In</label
-            >
-            <Dropdown
-              v-model="formData.checkInMethod"
-              :options="checkInMethods"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Sélectionner une méthode"
-              class="border border-gray-300 rounded-lg"
-            />
+
+        <div class="flex justify-end gap-2 mt-4">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="closeCheckInConfirmation"
+            :disabled="isSubmitting"
+          />
+          <Button
+            label="Confirm Check-In"
+            severity="success"
+            @click="confirmCheckIn"
+            :loading="isSubmitting"
+          />
+        </div>
+      </div>
+    </Dialog>
+
+    <!-- Check-Out Confirmation Modal -->
+    <Dialog
+      v-model:visible="showCheckOutConfirmation"
+      header="Confirm Check-Out"
+      modal
+      :style="{ width: '500px' }"
+      class="p-4"
+    >
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-info-circle text-2xl text-orange-500"></i>
+          <span class="text-lg font-medium">Confirm your check-out for today?</span>
+        </div>
+
+        <div class="bg-orange-50 p-3 rounded-lg">
+          <h4 class="font-semibold text-orange-800 mb-2">Check-Out Details:</h4>
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <span class="text-gray-600">Date:</span>
+            <span class="font-medium">{{ getCurrentDate() }}</span>
+
+            <span class="text-gray-600">Time:</span>
+            <span class="font-medium">{{ getCurrentTime() }}</span>
+
+            <span class="text-gray-600">User:</span>
+            <span class="font-medium">{{ authStore.user?.userName || 'Current User' }}</span>
+
+            <span class="text-gray-600">Method:</span>
+            <span class="font-medium">Web App</span>
+
+            <!-- <span class="text-gray-600">Check-In Time:</span>
+            <span class="font-medium">{{ getLastCheckInTime() }}</span> -->
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkInLatitude" class="text-sm font-medium text-gray-700"
-              >Latitude Check-In</label
-            >
-            <InputNumber
-              v-model="formData.checkInLatitude"
-              placeholder="Latitude"
-              :step="0.000001"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkInLongitude" class="text-sm font-medium text-gray-700"
-              >Longitude Check-In</label
-            >
-            <InputNumber
-              v-model="formData.checkInLongitude"
-              placeholder="Longitude"
-              :step="0.000001"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
+
+        <div class="flex justify-end gap-2 mt-4">
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="closeCheckOutConfirmation"
+            :disabled="isSubmitting"
+          />
+          <Button
+            label="Confirm Check-Out"
+            severity="warning"
+            @click="confirmCheckOut"
+            :loading="isSubmitting"
+          />
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkInDeviceId" class="text-sm font-medium text-gray-700"
-              >Device ID Check-In</label
-            >
-            <InputText
-              v-model="formData.checkInDeviceId"
-              placeholder="Device ID"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkInIpAddress" class="text-sm font-medium text-gray-700"
-              >IP Check-In</label
-            >
-            <InputText
-              v-model="formData.checkInIpAddress"
-              placeholder="Adresse IP"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="isCheckInByAdmin" class="text-sm font-medium text-gray-700"
-            >Check-In par Admin</label
-          >
-          <Checkbox v-model="formData.isCheckInByAdmin" :binary="true" />
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkOut" class="text-sm font-medium text-gray-700">Check-Out</label>
-            <InputText
-              type="time"
-              v-model="formData.checkOut"
-              placeholder="Heure de check-out"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkOutMethod" class="text-sm font-medium text-gray-700"
-              >Méthode Check-Out</label
-            >
-            <Dropdown
-              v-model="formData.checkOutMethod"
-              :options="checkOutMethods"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Sélectionner une méthode"
-              class="border border-gray-300 rounded-lg"
-            />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkOutLatitude" class="text-sm font-medium text-gray-700"
-              >Latitude Check-Out</label
-            >
-            <InputNumber
-              v-model="formData.checkOutLatitude"
-              placeholder="Latitude"
-              :step="0.000001"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkOutLongitude" class="text-sm font-medium text-gray-700"
-              >Longitude Check-Out</label
-            >
-            <InputNumber
-              v-model="formData.checkOutLongitude"
-              placeholder="Longitude"
-              :step="0.000001"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="flex flex-col gap-2">
-            <label for="checkOutDeviceId" class="text-sm font-medium text-gray-700"
-              >Device ID Check-Out</label
-            >
-            <InputText
-              v-model="formData.checkOutDeviceId"
-              placeholder="Device ID"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-          <div class="flex flex-col gap-2">
-            <label for="checkOutIpAddress" class="text-sm font-medium text-gray-700"
-              >IP Check-Out</label
-            >
-            <InputText
-              v-model="formData.checkOutIpAddress"
-              placeholder="Adresse IP"
-              class="border border-gray-300 rounded-lg p-2"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="isCheckOutByAdmin" class="text-sm font-medium text-gray-700"
-            >Check-Out par Admin</label
-          >
-          <Checkbox v-model="formData.isCheckOutByAdmin" :binary="true" />
-        </div>
-        <div class="flex justify-end gap-2">
-          <Button label="Annuler" severity="secondary" text @click="closeModal" />
-          <Button label="Ajouter" severity="success" type="submit" />
-        </div>
-      </form>
+      </div>
     </Dialog>
 
     <!-- Details Popup -->
     <Dialog
       v-model:visible="showDetailsModal"
-      header="Détails de la Présence"
+      header="Attendance Details"
       modal
       :style="{ width: '600px' }"
       class="p-4"
     >
       <div class="flex flex-col gap-4">
-        <!-- User and Date -->
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
-            <span>{{ selectedAttendance?.userId || 'N/A' }}</span>
-          </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Date:</span>
             <span>{{ formatDate(selectedAttendance?.attendanceDay) }}</span>
           </div>
         </div>
         <hr class="border-gray-300" />
-        <!-- Check-In and Check-Out Split -->
         <div class="grid grid-cols-2 gap-4 relative">
-          <!-- Check-In Details (Left) -->
+          <!-- Check-In Details -->
           <div class="flex flex-col gap-2 pr-4">
             <h3 class="font-semibold text-lg">Check-In</h3>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Heure:</span>
+              <span class="font-medium text-gray-700">Time:</span>
               <span>{{ formatTime(selectedAttendance?.checkIn) }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Méthode:</span>
+              <span class="font-medium text-gray-700">Method:</span>
               <span>{{ getCheckInMethodName(selectedAttendance?.checkInMethod) }}</span>
             </div>
             <div class="flex justify-between">
@@ -326,26 +253,24 @@
               <span>{{ selectedAttendance?.checkInDeviceId || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Adresse IP:</span>
+              <span class="font-medium text-gray-700">IP Address:</span>
               <span>{{ selectedAttendance?.checkInIpAddress || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Par Admin:</span>
-              <span>{{ selectedAttendance?.isCheckInByAdmin ? 'Oui' : 'Non' }}</span>
+              <span class="font-medium text-gray-700">By Admin:</span>
+              <span>{{ selectedAttendance?.isCheckInByAdmin ? 'Yes' : 'No' }}</span>
             </div>
           </div>
-          <!-- Vertical Divider -->
-          <div class="absolute left-1/2 top-0 bottom-0 border-l border-gray-300"></div>
-          <!-- Check-Out Details (Right) -->
+          <!-- Check-Out Details -->
           <div class="flex flex-col gap-2 pl-4">
             <h3 class="font-semibold text-lg">Check-Out</h3>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Heure:</span>
-              <span>{{ formatTime(selectedAttendance?.checkOut) }}</span>
+              <span class="font-medium text-gray-700">Time:</span>
+              <span>{{ formatTime(selectedAttendance?.checkOut) || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Méthode:</span>
-              <span>{{ getCheckOutMethodName(selectedAttendance?.checkOutMethod) }}</span>
+              <span class="font-medium text-gray-700">Method:</span>
+              <span>{{ getCheckOutMethodName(selectedAttendance?.checkOutMethod) || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
               <span class="font-medium text-gray-700">Latitude:</span>
@@ -360,17 +285,17 @@
               <span>{{ selectedAttendance?.checkOutDeviceId || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Adresse IP:</span>
+              <span class="font-medium text-gray-700">IP Address:</span>
               <span>{{ selectedAttendance?.checkOutIpAddress || 'N/A' }}</span>
             </div>
             <div class="flex justify-between">
-              <span class="font-medium text-gray-700">Par Admin:</span>
-              <span>{{ selectedAttendance?.isCheckOutByAdmin ? 'Oui' : 'Non' }}</span>
+              <span class="font-medium text-gray-700">By Admin:</span>
+              <span>{{ selectedAttendance?.isCheckOutByAdmin ? 'Yes' : 'No' }}</span>
             </div>
           </div>
         </div>
         <div class="flex justify-end mt-4">
-          <Button label="Fermer" severity="secondary" text @click="closeDetailsModal" />
+          <Button label="Close" severity="secondary" text @click="closeDetailsModal" />
         </div>
       </div>
     </Dialog>
@@ -378,7 +303,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAppStore } from '@/stores/app.store'
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
@@ -386,45 +311,53 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import Dropdown from 'primevue/dropdown'
-import Checkbox from 'primevue/checkbox'
 import Dialog from 'primevue/dialog'
+import Tag from 'primevue/tag'
 import { useToast } from 'primevue/usetoast'
 import { useAttendanceEnums } from '@/composables/useAttendaceEnums'
 import AttendancesIcon from '@/components/icons/AttendancesIcon.vue'
 import { useMyAttendancesStore } from '@/stores/myAttendance.store'
+import { useAuthStore } from '@/stores/auth.store'
 
 const appStore = useAppStore()
+const authStore = useAuthStore()
 const attendancesStore = useMyAttendancesStore()
-const { getCheckInMethodName, getCheckOutMethodName, checkInMethods, checkOutMethods } =
-  useAttendanceEnums()
+const { getCheckInMethodName, getCheckOutMethodName } = useAttendanceEnums()
 const toast = useToast()
 
 // Modal state
-const showModal = ref(false)
+const showCheckInConfirmation = ref(false)
+const showCheckOutConfirmation = ref(false)
 const showDetailsModal = ref(false)
 const selectedAttendance = ref<any>(null)
+const isSubmitting = ref(false)
 
-const formData = reactive({
-  userId: '',
-  attendanceDay: '', // ISO string (e.g., 2025-08-04T00:00:00.000Z)
-  attendanceDayDisplay: '', // YYYY-MM-DD for input (e.g., 2025-08-04)
-  checkIn: '', // HH:mm
-  checkInMethod: 0,
-  checkInLatitude: 0,
-  checkInLongitude: 0,
-  checkInDeviceId: '',
-  checkInIpAddress: '',
-  isCheckInByAdmin: false,
-  checkOut: '', // HH:mm
-  checkOutMethod: 0,
-  checkOutLatitude: 0,
-  checkOutLongitude: 0,
-  checkOutDeviceId: '',
-  checkOutIpAddress: '',
-  isCheckOutByAdmin: false
-})
+// Get next operation from store
+const nextOp = computed(() => attendancesStore.getNextOperation())
+
+// Get the last check-in time for checkout confirmation
+
+const getAttendanceSeverity = (attendance: any) => {
+  if (attendance.checkIn && attendance.checkOut) return 'success'
+  if (attendance.checkIn && !attendance.checkOut) return 'warning'
+  return 'danger'
+}
+
+// Helper functions
+const getCurrentDate = () => {
+  return new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const getCurrentTime = () => {
+  return new Date().toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 // Fetch attendances when component is mounted
 onMounted(async () => {
@@ -434,11 +367,11 @@ onMounted(async () => {
 
 // Handle pagination
 const onPage = async (event: any) => {
-  const { page, rows } = event // page is 0-based
+  const { page, rows } = event
   await attendancesStore.setPageAndSize(page + 1, rows, attendancesStore.searchQuery)
 }
 
-// Helper functions to format dates and times
+// Format functions
 const formatDate = (dateString: string) => {
   return dateString
     ? new Date(dateString).toLocaleDateString('en-US', {
@@ -450,43 +383,33 @@ const formatDate = (dateString: string) => {
 }
 
 const formatTime = (timeString: string) => {
-  return timeString
-    ? new Date(`1970-01-01T${timeString}Z`).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    : ''
+  if (!timeString) return ''
+  // Handle both "HH:mm" and full ISO string formats
+  const timePart = timeString.includes('T')
+    ? timeString.split('T')[1].substring(0, 5)
+    : timeString.substring(0, 5)
+
+  return new Date(`1970-01-01T${timePart}Z`).toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 // Modal functions
-const openAddModal = () => {
-  const now = new Date()
-  const todayISO = now.toISOString()
-  const todayDate = todayISO.split('T')[0]
-  Object.assign(formData, {
-    userId: '',
-    attendanceDay: todayISO,
-    attendanceDayDisplay: todayDate,
-    checkIn: '',
-    checkInMethod: 0,
-    checkInLatitude: 0,
-    checkInLongitude: 0,
-    checkInDeviceId: '',
-    checkInIpAddress: '',
-    isCheckInByAdmin: false,
-    checkOut: '',
-    checkOutMethod: 0,
-    checkOutLatitude: 0,
-    checkOutLongitude: 0,
-    checkOutDeviceId: '',
-    checkOutIpAddress: '',
-    isCheckOutByAdmin: false
-  })
-  showModal.value = true
+const openCheckInConfirmation = () => {
+  showCheckInConfirmation.value = true
 }
 
-const closeModal = () => {
-  showModal.value = false
+const closeCheckInConfirmation = () => {
+  showCheckInConfirmation.value = false
+}
+
+const openCheckOutConfirmation = () => {
+  showCheckOutConfirmation.value = true
+}
+
+const closeCheckOutConfirmation = () => {
+  showCheckOutConfirmation.value = false
 }
 
 const openDetailsModal = (attendance: any) => {
@@ -499,62 +422,108 @@ const closeDetailsModal = () => {
   selectedAttendance.value = null
 }
 
-const submitForm = async () => {
-  try {
-    // const data = {
-    //   userId: formData.userId,
-    //   attendanceDay: formData.attendanceDay,
-    //   checkIn: formData.checkIn
-    //     ? `${formData.attendanceDayDisplay}T${formData.checkIn}:00.000Z`
-    //     : '',
-    //   checkInMethod: formData.checkInMethod,
-    //   checkInLatitude: formData.checkInLatitude,
-    //   checkInLongitude: formData.checkInLongitude,
-    //   checkInDeviceId: formData.checkInDeviceId,
-    //   checkInIpAddress: formData.checkInIpAddress,
-    //   isCheckInByAdmin: formData.isCheckInByAdmin,
-    //   checkOut: formData.checkOut
-    //     ? `${formData.attendanceDayDisplay}T${formData.checkOut}:00.000Z`
-    //     : '',
-    //   checkOutMethod: formData.checkOutMethod,
-    //   checkOutLatitude: formData.checkOutLatitude,
-    //   checkOutLongitude: formData.checkOutLongitude,
-    //   checkOutDeviceId: formData.checkOutDeviceId,
-    //   checkOutIpAddress: formData.checkOutIpAddress,
-    //   isCheckOutByAdmin: formData.isCheckOutByAdmin
-    // }
-    // await attendancesStore.addAttendance(data)
-    toast.add({
-      severity: 'success',
-      summary: 'Succès',
-      detail: 'Présence créée avec succès',
-      life: 3000
-    })
-    await attendancesStore.fetchCurrentUserAttendances()
-    closeModal()
-  } catch (error) {
-    console.error('Error submitting form:', error)
-    toast.add({
-      severity: 'error',
-      summary: 'Erreur',
-      detail: "Échec de l'enregistrement de la présence",
-      life: 3000
-    })
+// Generate fake data for API
+const generateCheckInData = () => {
+  const now = new Date()
+  const today = now.toISOString().split('T')[0] // YYYY-MM-DD
+  const currentTime = now.toTimeString().split(' ')[0].substring(0, 5) // HH:mm
+
+  return {
+    userId: authStore.user?.id,
+    attendanceDay: today,
+    checkIn: currentTime,
+    checkInMethod: 0, // Mobile App
+    checkInLatitude: 36.8065 + (Math.random() - 0.5) * 0.01,
+    checkInLongitude: 10.1815 + (Math.random() - 0.5) * 0.01,
+    checkInDeviceId: `DEV-${Math.floor(100000 + Math.random() * 900000)}`,
+    checkInIpAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+    isCheckInByAdmin: false
   }
 }
 
-// Watcher to sync attendanceDayDisplay with attendanceDay
-watch(
-  () => formData.attendanceDayDisplay,
-  (newDate) => {
-    if (newDate) {
-      const [year, month, day] = newDate.split('-')
-      const date = new Date(formData.attendanceDay || new Date())
-      date.setFullYear(parseInt(year), parseInt(month) - 1, parseInt(day))
-      formData.attendanceDay = date.toISOString()
-    }
+const generateCheckOutData = (existingCheckInData: any) => {
+  const now = new Date()
+  const currentTime = now.toTimeString().split(' ')[0] // HH:mm:ss
+
+  return {
+    ...existingCheckInData, // keep check-in intact
+    checkOut: currentTime,
+    checkOutMethod: 0, // Mobile App
+    checkOutLatitude: 36.8065 + (Math.random() - 0.5) * 0.01,
+    checkOutLongitude: 10.1815 + (Math.random() - 0.5) * 0.01,
+    checkOutDeviceId: `DEV-${Math.floor(100000 + Math.random() * 900000)}`,
+    checkOutIpAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+    isCheckOutByAdmin: false
   }
-)
+}
+
+const confirmCheckIn = async () => {
+  isSubmitting.value = true
+
+  try {
+    const checkInData = generateCheckInData()
+    await attendancesStore.addAttendance(checkInData)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Check-in recorded successfully',
+      life: 3000
+    })
+
+    await attendancesStore.fetchCurrentUserAttendances()
+    closeCheckInConfirmation()
+  } catch (error) {
+    console.error('Error recording check-in:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to record check-in',
+      life: 3000
+    })
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const confirmCheckOut = async () => {
+  isSubmitting.value = true
+
+  try {
+    // Find last attendance with checkIn but no checkOut
+    const lastCheckIn = attendancesStore.attendances
+      .slice()
+      .reverse()
+      .find((a) => a.checkIn && !a.checkOut)
+
+    if (!lastCheckIn) {
+      throw new Error('No check-in found for checkout')
+    }
+
+    const checkOutData = generateCheckOutData(lastCheckIn) // ✅ pass it here
+    await attendancesStore.addAttendance(checkOutData)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Check-out recorded successfully',
+      life: 3000
+    })
+
+    await attendancesStore.fetchCurrentUserAttendances()
+    closeCheckOutConfirmation()
+  } catch (error) {
+    console.error('Error recording check-out:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Failed to record check-out',
+      life: 3000
+    })
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
 
 <style scoped>

@@ -25,7 +25,7 @@
           class="pl-10 py-2 border border-gray-300 rounded-lg"
         />
         <!-- Add -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <Button icon="pi pi-plus" label="" severity="success" @click="openAddModal" />
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -79,7 +79,7 @@
       <Column field="status" header="Statut" sortable style="min-width: 100px" />
 
       <!-- Roles -->
-      <Column field="roles" header="Rôles" style="min-width: 160px">
+      <Column field="roles" header="Roles" style="min-width: 160px">
         <template #body="{ data }">
           <div class="flex flex-wrap gap-1">
             <span
@@ -97,7 +97,7 @@
       <Column header="Permissions" style="min-width: 120px">
         <template #body="{ data }">
           <Button
-            label="Voir"
+            label="See more"
             text
             severity="info"
             @click="openPermissionsModal(data)"
@@ -143,31 +143,31 @@
     <!-- Add / Edit Modal -->
     <Dialog
       v-model:visible="showModal"
-      :header="isUpdateMode ? 'Modifier Utilisateur' : 'Ajouter Utilisateur'"
+      :header="isUpdateMode ? 'Edit Employee' : 'Create Employee'"
       modal
       :style="{ width: '600px' }"
       class="p-4"
     >
       <form @submit.prevent="submitForm" class="flex flex-col gap-3">
         <div class="grid grid-cols-2 gap-3">
-          <InputText v-model="formData.firstName" placeholder="Prénom" required />
-          <InputText v-model="formData.lastName" placeholder="Nom" required />
+          <InputText v-model="formData.firstName" placeholder="First Name" required />
+          <InputText v-model="formData.lastName" placeholder="Name" required />
           <small v-if="submitted && errors.email" class="p-error">{{ errors.email }}</small>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <InputText v-model="formData.email" type="email" placeholder="Email" required />
-          <InputText v-model="formData.userName" placeholder="Nom d’utilisateur" required />
+          <InputText v-model="formData.userName" placeholder="User Name" required />
           <small v-if="submitted && errors.userName" class="p-error">{{ errors.userName }}</small>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <Password v-model="formData.password" placeholder="Mot de passe" toggleMask required />
-          <InputText v-model="formData.phone" placeholder="Téléphone" />
+          <Password v-model="formData.password" placeholder="Password" toggleMask required />
+          <InputText v-model="formData.phone" placeholder="Phone number" />
         </div>
 
         <InputText v-model="formData.jobTitle" placeholder="Poste" required />
-        <InputText v-model="formData.department" placeholder="Département" />
+        <InputText v-model="formData.department" placeholder="Departement" />
         <InputText v-model="formData.address" placeholder="Adresse" />
 
         <div class="grid grid-cols-2 gap-3">
@@ -175,14 +175,14 @@
             v-model="formData.birthDate"
             dateFormat="yy-mm-dd"
             :maxDate="maxDate"
-            placeholder="Date de naissance"
+            placeholder="Date of birth"
             showIcon
           />
           <DatePicker
             v-model="formData.hireDate"
             dateFormat="yy-mm-dd"
             :maxDate="maxDate"
-            placeholder="Date d’embauche"
+            placeholder="Hire date"
             showIcon
           />
         </div>
@@ -206,7 +206,7 @@
 
         <div class="flex justify-end gap-2 mt-4">
           <Button label="Annuler" severity="secondary" text @click="closeModal" />
-          <Button :label="isUpdateMode ? 'Modifier' : 'Ajouter'" severity="success" type="submit" />
+          <Button :label="isUpdateMode ? 'Edit' : 'Create'" severity="success" type="submit" />
         </div>
       </form>
     </Dialog>

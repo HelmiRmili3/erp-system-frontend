@@ -9,7 +9,11 @@ interface PaginationParams {
 }
 
 const createPayroll = (data: FormData) => {
-  return api.post<Response<Payroll>>('Payrolls', data)
+  return api.post<Response<Payroll>>('Payrolls', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 const updatePayroll = (data: Partial<Payroll>) => {

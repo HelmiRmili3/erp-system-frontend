@@ -46,7 +46,6 @@ export const useLayoutStore = defineStore('layoutStore', () => {
           icon: 'users',
           to: '/admin/users',
           role: ['Administrator']
-          // permission: ['Users.View']
         }
       ]
     },
@@ -183,24 +182,24 @@ export const useLayoutStore = defineStore('layoutStore', () => {
     const userPermissions = authStore.user?.permissions || []
     const userRoles = authStore.user?.roles || []
 
-    const hasMatch = (required?: string[], actual?: string[]) => {
-      if (!required || required.length === 0) return false
-      return required.some((r) => actual!.includes(r))
+    const hasPermission = (requiredPermissions?: string[]) => {
+      if (!requiredPermissions || requiredPermissions.length === 0) return true
+      return requiredPermissions.some((permission) => userPermissions.includes(permission))
+    }
+
+    const hasRole = (requiredRoles?: string[]) => {
+      if (!requiredRoles || requiredRoles.length === 0) return true
+      return requiredRoles.some((role) => userRoles.includes(role))
     }
 
     return rawMenuItems.value
       .map((section) => {
         const filteredItems = section.items.filter((item) => {
-          const requiresPermission = !!item.permission?.length
-          const requiresRole = !!item.role?.length
+          // User must have the required role AND permission (if specified)
+          const hasRequiredRole = hasRole(item.role)
+          const hasRequiredPermission = hasPermission(item.permission)
 
-          // Must meet permission if required
-          const hasPermission = !requiresPermission || hasMatch(item.permission, userPermissions)
-
-          // Must meet role if required
-          const hasRole = !requiresRole || hasMatch(item.role, userRoles)
-          const requiresAnything = requiresPermission || requiresRole
-          return requiresAnything && hasPermission && hasRole
+          return hasRequiredRole && hasRequiredPermission
         })
 
         return {
@@ -220,6 +219,28 @@ export const useLayoutStore = defineStore('layoutStore', () => {
     router.push(item.to)
   }
 
+  // Add a method to check if user can access a specific route
+  const canAccess = (routePath: string): boolean => {
+    const allMenuItems = rawMenuItems.value.flatMap((section) => section.items)
+    const menuItem = allMenuItems.find((item) => item.to === routePath)
+
+    if (!menuItem) return false
+
+    const userPermissions = authStore.user?.permissions || []
+    const userRoles = authStore.user?.roles || []
+
+    const hasRequiredPermission =
+      !menuItem.permission ||
+      menuItem.permission.length === 0 ||
+      menuItem.permission.some((p) => userPermissions.includes(p))
+    const hasRequiredRole =
+      !menuItem.role ||
+      menuItem.role.length === 0 ||
+      menuItem.role.some((r) => userRoles.includes(r))
+
+    return hasRequiredPermission && hasRequiredRole
+  }
+
   watch(isNavbarOpen, (newVal) => {
     localStorage.setItem('isNavbarOpen', JSON.stringify(newVal))
   })
@@ -228,6 +249,7 @@ export const useLayoutStore = defineStore('layoutStore', () => {
     isNavbarOpen,
     toggleNavbar,
     setActiveItem,
-    menuItems // this is now dynamically filtered
+    menuItems,
+    canAccess
   }
 })

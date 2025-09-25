@@ -20,7 +20,7 @@
         <div class="relative">
           <InputText
             v-model="payrollsStore.searchQuery"
-            placeholder="Rechercher..."
+            placeholder="Search..."
             class="pl-10 py-2 border border-gray-300 rounded-lg"
             @input="
               payrollsStore.setPageAndSize(1, payrollsStore.pageSize, payrollsStore.searchQuery)
@@ -28,7 +28,7 @@
           />
         </div>
         <!-- Add Payroll Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <Button icon="pi pi-plus" label="Add" severity="success" @click="openAddModal" />
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -64,46 +64,46 @@
           </div>
         </template>
       </Column>
-      <Column field="period" header="Période" sortable style="min-width: 120px">
+      <Column field="period" header="Period" sortable style="min-width: 120px">
         <template #body="{ data }">
           <div>{{ formatPeriod(data.period) }}</div>
         </template>
       </Column>
-      <Column field="baseSalary" header="Salaire de Base" sortable style="min-width: 150px">
+      <Column field="baseSalary" header="Base Salary" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatAmount(data.baseSalary) }}</div>
         </template>
       </Column>
-      <Column field="bonuses" header="Bonus" sortable style="min-width: 120px">
+      <Column field="bonuses" header="Bonuses" sortable style="min-width: 120px">
         <template #body="{ data }">
           <div>{{ formatAmount(data.bonuses) }}</div>
         </template>
       </Column>
-      <Column field="deductions" header="Déductions" sortable style="min-width: 120px">
+      <Column field="deductions" header="Deductions" sortable style="min-width: 120px">
         <template #body="{ data }">
           <div>{{ formatAmount(data.deductions) }}</div>
         </template>
       </Column>
-      <Column field="netSalary" header="Salaire Net" sortable style="min-width: 150px">
+      <Column field="netSalary" header="Net Salary" sortable style="min-width: 150px">
         <template #body="{ data }">
           <div>{{ formatAmount(data.netSalary) }}</div>
         </template>
       </Column>
-      <Column header="Détails" style="min-width: 120px">
+      <Column header="Details" style="min-width: 120px">
         <template #body="{ data }">
           <Button
-            label="Voir Détails"
+            label="View Details"
             text
             severity="info"
             @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
+            v-tooltip="'View Details'"
           />
         </template>
       </Column>
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
-          <p class="mt-2 text-gray-500">Aucune paie trouvée</p>
+          <p class="mt-2 text-gray-500">No payrolls found</p>
         </div>
       </template>
     </DataTable>
@@ -111,7 +111,7 @@
     <!-- Add Modal -->
     <Dialog
       v-model:visible="showAddModal"
-      header="Ajouter Paie"
+      header="Add Payroll"
       modal
       :style="{ width: '600px' }"
       class="p-4"
@@ -120,10 +120,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
             <label for="userId" class="text-sm font-medium text-gray-700">Employees</label>
-            <UserSelectDropdown
-              v-model="formData.userId"
-              placeholder="Sélectionner un utilisateur"
-            />
+            <UserSelectDropdown v-model="formData.userId" placeholder="Select a user" />
           </div>
           <div class="flex flex-col gap-2">
             <label for="period" class="text-sm font-medium text-gray-700">Month</label>
@@ -139,46 +136,44 @@
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="baseSalary" class="text-sm font-medium text-gray-700"
-              >Salaire de Base</label
-            >
+            <label for="baseSalary" class="text-sm font-medium text-gray-700">Base Salary</label>
             <InputNumber
               v-model="formData.baseSalary"
               :min="0"
               mode="decimal"
-              placeholder="Salaire de base"
+              placeholder="Base salary"
               required
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="bonuses" class="text-sm font-medium text-gray-700">Bonus</label>
+            <label for="bonuses" class="text-sm font-medium text-gray-700">Bonuses</label>
             <InputNumber
               v-model="formData.bonuses"
               :min="0"
               mode="decimal"
-              placeholder="Bonus"
+              placeholder="Bonuses"
               required
             />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="deductions" class="text-sm font-medium text-gray-700">Déductions</label>
+            <label for="deductions" class="text-sm font-medium text-gray-700">Deductions</label>
             <InputNumber
               v-model="formData.deductions"
               :min="0"
               mode="decimal"
-              placeholder="Déductions"
+              placeholder="Deductions"
               required
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="netSalary" class="text-sm font-medium text-gray-700">Salaire Net</label>
+            <label for="netSalary" class="text-sm font-medium text-gray-700">Net Salary</label>
             <InputNumber
               v-model="formData.netSalary"
               :min="0"
               mode="decimal"
-              placeholder="Salaire net"
+              placeholder="Net salary"
               required
             />
           </div>
@@ -186,27 +181,27 @@
         <div class="grid grid-cols-2 gap-4">
           <FilePicker
             v-model="formData.file"
-            label="Sélectionner un fichier"
+            label="Select a file"
             accept=".pdf,.doc,.docx,.jpg,.png"
           />
           <div class="flex flex-col gap-2">
             <label for="isViewedByEmployee" class="text-sm font-medium text-gray-700"
-              >Vu par l'employé</label
+              >Viewed by employee</label
             >
             <Dropdown
               v-model="formData.isViewedByEmployee"
               :options="viewStatuses"
               optionLabel="label"
               optionValue="value"
-              placeholder="Sélectionner un statut"
+              placeholder="Select a status"
               required
               class="border border-gray-300 rounded-lg"
             />
           </div>
         </div>
         <div class="flex justify-end gap-2">
-          <Button label="Annuler" severity="secondary" text @click="closeAddModal" />
-          <Button label="Ajouter" severity="success" type="submit" />
+          <Button label="Cancel" severity="secondary" text @click="closeAddModal" />
+          <Button label="Add" severity="success" type="submit" />
         </div>
       </form>
     </Dialog>
@@ -214,7 +209,7 @@
     <!-- Details Popup -->
     <Dialog
       v-model:visible="showDetailsModal"
-      header="Détails de la Paie"
+      header="Payroll Details"
       modal
       :style="{ width: '600px' }"
       class="p-4"
@@ -226,47 +221,47 @@
             <span>{{ selectedPayroll?.id || 'N/A' }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
+            <span class="font-medium text-gray-700">User:</span>
             <span>{{ selectedPayroll?.userId || 'N/A' }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Période:</span>
+            <span class="font-medium text-gray-700">Period:</span>
             <span>{{ formatPeriod(selectedPayroll?.period) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Salaire de Base:</span>
+            <span class="font-medium text-gray-700">Base Salary:</span>
             <span>{{ formatAmount(selectedPayroll?.baseSalary) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Bonus:</span>
+            <span class="font-medium text-gray-700">Bonuses:</span>
             <span>{{ formatAmount(selectedPayroll?.bonuses) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Déductions:</span>
+            <span class="font-medium text-gray-700">Deductions:</span>
             <span>{{ formatAmount(selectedPayroll?.deductions) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Salaire Net:</span>
+            <span class="font-medium text-gray-700">Net Salary:</span>
             <span>{{ formatAmount(selectedPayroll?.netSalary) }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Fichier:</span>
+            <span class="font-medium text-gray-700">File:</span>
             <a
               v-if="selectedPayroll?.fileUrl && selectedPayroll.fileUrl !== 'string'"
               :href="`${appStore.baseURL + selectedPayroll.fileUrl}`"
               target="_blank"
               class="text-blue-600 hover:underline"
-              >Voir PDF</a
+              >View PDF</a
             >
             <span v-else>N/A</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Statut:</span>
+            <span class="font-medium text-gray-700">Status:</span>
             <span>{{ getViewStatusName(selectedPayroll?.isViewedByEmployee) }}</span>
           </div>
         </div>
         <div class="flex justify-end mt-4">
-          <Button label="Fermer" severity="secondary" text @click="closeDetailsModal" />
+          <Button label="Close" severity="secondary" text @click="closeDetailsModal" />
         </div>
       </div>
     </Dialog>
@@ -394,8 +389,8 @@ const submitForm = async () => {
 
     toast.add({
       severity: 'success',
-      summary: 'Succès',
-      detail: 'Paie créée avec succès',
+      summary: 'Success',
+      detail: 'Payroll created successfully',
       life: 3000
     })
 
@@ -405,8 +400,8 @@ const submitForm = async () => {
     console.error('Error submitting form:', error)
     toast.add({
       severity: 'error',
-      summary: 'Erreur',
-      detail: "Échec de l'enregistrement de la paie",
+      summary: 'Error',
+      detail: 'Failed to save payroll',
       life: 3000
     })
   }

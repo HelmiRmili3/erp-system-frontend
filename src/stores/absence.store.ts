@@ -14,7 +14,15 @@ export const useAbsencesStore = defineStore('absences', () => {
   const currentPage = ref(1)
   const pageSize = ref(10)
   const totalRecords = ref(0)
+  const searchQuery = ref('')
 
+  const setPageAndSize = async (page: number, size: number, search: string = '') => {
+    currentPage.value = page
+    pageSize.value = size
+    searchQuery.value = search
+
+    await fetchAbsences(page, size)
+  }
   /* ----------------------------------------------------------
    * Fetch all absences with server-side pagination
    * ---------------------------------------------------------- */
@@ -22,7 +30,6 @@ export const useAbsencesStore = defineStore('absences', () => {
     loading.value = true
     try {
       const response = await getAllAbsences(page, size)
-      console.log('Absence response :', response)
       const payload = response.data
       absences.value = payload.data || []
       totalRecords.value = payload.recordsFiltered ?? payload.recordsTotal ?? 0
@@ -35,12 +42,6 @@ export const useAbsencesStore = defineStore('absences', () => {
     } finally {
       loading.value = false
     }
-  }
-
-  const setPageAndSize = async (page: number, size: number) => {
-    currentPage.value = page
-    pageSize.value = size
-    await fetchAbsences(page, size)
   }
 
   /* ----------------------------------------------------------

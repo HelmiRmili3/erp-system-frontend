@@ -25,20 +25,18 @@
 import LoadingSvg from '@/assets/loader.svg?component'
 import { useAppStore } from './stores/app.store'
 import { storeToRefs } from 'pinia'
-// import { useConfigurationsStore } from './stores/configurations.store'
+import { onMounted } from 'vue'
+const appStore = useAppStore()
 
 const { loading } = storeToRefs(useAppStore())
+onMounted(() => {
+  const init = async () => {
+    appStore.setLoading(true)
+    appStore.setLoading(false)
+  }
 
-const appStore = useAppStore()
-// const configurationStore = useConfigurationsStore()
-
-const init = async () => {
-  appStore.setLoading(true)
-  // await configurationStore.initConfigurations()
-  appStore.setLoading(false)
-}
-
-init()
+  init()
+})
 </script>
 
 <style>

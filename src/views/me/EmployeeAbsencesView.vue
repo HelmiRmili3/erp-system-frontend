@@ -27,13 +27,13 @@
           />
         </div>
         <!-- Add Absence Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <Button icon="pi pi-plus" label="" severity="success" @click="openAddModal" />
       </div>
     </div>
     <div class="h-[20px]"></div>
     <!-- Absences DataTable -->
     <DataTable
-      :value="absencesStore.absences"
+      :value="filteredAbsences"
       class="p-datatable-sm"
       :loading="absencesStore.loading"
       :rows="absencesStore.pageSize"
@@ -45,12 +45,12 @@
       @page="onPage"
     >
       <!-- Existing Columns and Templates -->
-      <Column field="startDate" header="Date de début" sortable style="width: 150px">
+      <Column field="startDate" header="Start Date" sortable style="width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.startDate) }}</div>
         </template>
       </Column>
-      <Column field="endDate" header="Date de fin" sortable style="width: 150px">
+      <Column field="endDate" header="End Date" sortable style="width: 150px">
         <template #body="{ data }">
           <div>{{ formatDate(data.endDate) }}</div>
         </template>
@@ -60,12 +60,12 @@
           <div>{{ getAbsenceTypeName(data.absenceType) }}</div>
         </template>
       </Column>
-      <Column field="statusType" header="Statut" sortable style="width: 120px">
+      <Column field="statusType" header="Status" sortable style="width: 120px">
         <template #body="{ data }">
           <div>{{ getAbsenceStatusName(data.statusType) }}</div>
         </template>
       </Column>
-      <Column field="reason" header="Raison" sortable style="min-width: 200px">
+      <Column field="reason" header="Reason" sortable style="min-width: 200px">
         <template #body="{ data }">
           <div>{{ data.reason }}</div>
         </template>
@@ -103,14 +103,14 @@
     <!-- Add/Update Modal -->
     <Dialog
       v-model:visible="showModal"
-      :header="isUpdateMode ? 'Modifier Absence' : 'Ajouter Absence'"
+      :header="isUpdateMode ? 'Edit Absence' : 'Add Absence'"
       modal
       :style="{ width: '500px' }"
       class="p-4"
     >
       <form @submit.prevent="submitForm" class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <label for="startDate" class="text-sm font-medium text-gray-700">Date de début</label>
+          <label for="startDate" class="text-sm font-medium text-gray-700">Start Date</label>
           <InputText
             type="date"
             v-model="formData.startDateDisplay"
@@ -119,7 +119,7 @@
           />
         </div>
         <div class="flex flex-col gap-2">
-          <label for="endDate" class="text-sm font-medium text-gray-700">Date de fin</label>
+          <label for="endDate" class="text-sm font-medium text-gray-700">End Date</label>
           <InputText
             type="date"
             v-model="formData.endDateDisplay"
@@ -128,18 +128,18 @@
           />
         </div>
         <div class="flex flex-col gap-2">
-          <label for="absenceType" class="text-sm font-medium text-gray-700">Type d'absence</label>
+          <label for="absenceType" class="text-sm font-medium text-gray-700">Absence Type</label>
           <Dropdown
             v-model="formData.absenceType"
             :options="absenceTypes"
             optionLabel="label"
             optionValue="value"
-            placeholder="Sélectionner un type"
+            placeholder="Select a type"
             class="border border-gray-300 rounded-lg"
           />
         </div>
         <div class="flex flex-col gap-2">
-          <label for="reason" class="text-sm font-medium text-gray-700">Raison</label>
+          <label for="reason" class="text-sm font-medium text-gray-700">Reason</label>
           <Textarea
             v-model="formData.reason"
             required
@@ -148,8 +148,8 @@
           />
         </div>
         <div class="flex justify-end gap-2">
-          <Button label="Annuler" severity="secondary" text @click="closeModal" />
-          <Button :label="isUpdateMode ? 'Modifier' : 'Ajouter'" severity="success" type="submit" />
+          <Button label="Cancel" severity="secondary" text @click="closeModal" />
+          <Button :label="isUpdateMode ? 'Update' : 'Add'" severity="success" type="submit" />
         </div>
       </form>
     </Dialog>
@@ -175,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive } from 'vue'
+import { ref, onMounted, watch, reactive, computed } from 'vue'
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
 import { useAppStore } from '@/stores/app.store'
@@ -213,20 +213,19 @@ const formData = reactive({
   reason: ''
 })
 
-// Filtered absences based on search
-// const filteredAbsences = computed(() => {
-//   if (!searchQuery.value) return absencesStore.absences
+const filteredAbsences = computed(() => {
+  if (!searchQuery.value) return absencesStore.absences
 
-//   const query = searchQuery.value.toLowerCase()
-//   return absencesStore.absences.filter(
-//     (absence) =>
-//       absence &&
-//       (getAbsenceTypeName(absence.absenceType)?.toLowerCase().includes(query) ||
-//         getAbsenceStatusName(absence.statusType)?.toLowerCase().includes(query) ||
-//         absence.reason?.toLowerCase().includes(query) ||
-//         absence.id.toString().includes(query))
-//   )
-// })
+  const query = searchQuery.value.toLowerCase()
+  return absencesStore.absences.filter(
+    (absence) =>
+      absence &&
+      (getAbsenceTypeName(absence.absenceType)?.toLowerCase().includes(query) ||
+        getAbsenceStatusName(absence.statusType)?.toLowerCase().includes(query) ||
+        absence.reason?.toLowerCase().includes(query) ||
+        absence.id.toString().includes(query))
+  )
+})
 
 // Fetch absences when component is mounted
 onMounted(async () => {
@@ -297,15 +296,35 @@ const openDeleteModal = (id: number) => {
   selectedAbsenceId.value = id
   showDeleteModal.value = true
 }
-
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  selectedAbsenceId.value = null
+}
 const closeModal = () => {
   showModal.value = false
   selectedAbsenceId.value = null
 }
-
-const closeDeleteModal = () => {
-  showDeleteModal.value = false
-  selectedAbsenceId.value = null
+const confirmDelete = async () => {
+  if (selectedAbsenceId.value) {
+    try {
+      await absencesStore.removeAbsence(selectedAbsenceId.value)
+      toast.add({
+        severity: 'success',
+        summary: 'Succès',
+        detail: 'Absence supprimée avec succès',
+        life: 3000
+      })
+    } catch (error) {
+      console.error('Error deleting absence:', error)
+      toast.add({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: "Échec de la suppression de l'absence",
+        life: 3000
+      })
+    }
+  }
+  closeDeleteModal()
 }
 
 const submitForm = async () => {
@@ -344,29 +363,6 @@ const submitForm = async () => {
       life: 3000
     })
   }
-}
-
-const confirmDelete = async () => {
-  if (selectedAbsenceId.value) {
-    try {
-      await absencesStore.removeAbsence(selectedAbsenceId.value)
-      toast.add({
-        severity: 'success',
-        summary: 'Succès',
-        detail: 'Absence supprimée avec succès',
-        life: 3000
-      })
-    } catch (error) {
-      console.error('Error deleting absence:', error)
-      toast.add({
-        severity: 'error',
-        summary: 'Erreur',
-        detail: "Échec de la suppression de l'absence",
-        life: 3000
-      })
-    }
-  }
-  closeDeleteModal()
 }
 
 // Watchers to sync startDateDisplay with startDate

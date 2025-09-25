@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Expense } from '@/models/expense.model'
+import type { Expense, UpdateExpense } from '@/models/expense.model'
 import { updateExpense, getExpenseById, getAllExpenses } from '@/services/expense.service'
 
 export const useExpensesStore = defineStore('expenses', () => {
@@ -22,7 +22,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   }
 
   //  Update an existing expense
-  const editExpense = async (data: Partial<Expense>) => {
+  const editExpense = async (data: UpdateExpense) => {
     loading.value = true
     try {
       const response = await updateExpense(data)

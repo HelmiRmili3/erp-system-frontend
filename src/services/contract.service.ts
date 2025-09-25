@@ -14,7 +14,7 @@ const createContract = (data: FormData) => {
   })
 }
 
-const updateContract = (data: Partial<Contract>) => {
+const updateContract = (data: FormData) => {
   return api.put<Response<Contract>>('Contracts', data)
 }
 

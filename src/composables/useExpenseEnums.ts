@@ -12,10 +12,9 @@ export function useExpenseEnums() {
 
   // Define expense statuses
   const expenseStatuses = computed(() => [
-    { label: 'En attente', value: 0 },
-    { label: 'Approuvé', value: 1 },
-    { label: 'Rejeté', value: 2 },
-    { label: 'Remboursé', value: 3 }
+    { label: 'Pending', value: 0 },
+    { label: 'Approved', value: 1 },
+    { label: 'Rejected', value: 2 }
   ])
 
   // Get status name by value

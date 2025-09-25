@@ -42,7 +42,7 @@ export const useContractsStore = defineStore('contracts', () => {
   }
 
   // Update an existing contract
-  const editContract = async (data: Partial<Contract>) => {
+  const editContract = async (data: FormData) => {
     loading.value = true
     try {
       const response = await updateContract(data)

@@ -34,7 +34,7 @@
           />
         </div>
         <!-- Add Attendance Button -->
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <!-- <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" /> -->
       </div>
     </div>
     <div class="h-[20px]"></div>
@@ -83,14 +83,14 @@
           <div>{{ formatTime(data.checkOut) }}</div>
         </template>
       </Column>
-      <Column header="Détails" style="min-width: 120px">
+      <Column header="Details" style="min-width: 120px">
         <template #body="{ data }">
           <Button
-            label="See More"
+            label="See more"
             text
             severity="info"
             @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
+            v-tooltip="'See More'"
           />
         </template>
       </Column>
@@ -103,13 +103,7 @@
     </DataTable>
 
     <!-- Add Modal -->
-    <Dialog
-      v-model:visible="showModal"
-      header="Ajouter Présence"
-      modal
-      :style="{ width: '600px' }"
-      class="p-4"
-    >
+    <Dialog v-model:visible="showModal" header="Add" modal :style="{ width: '600px' }" class="p-4">
       <form @submit.prevent="submitForm" class="flex flex-col gap-4">
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
@@ -302,9 +296,20 @@
       <div class="flex flex-col gap-4">
         <!-- User and Date -->
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Utilisateur:</span>
-            <span>{{ selectedAttendance?.userId || 'N/A' }}</span>
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-gray-700">Employé:</span>
+            <div class="flex items-center gap-3">
+              <img
+                :src="
+                  selectedAttendance?.user?.fileUrl
+                    ? appStore.baseURL + selectedAttendance.user.fileUrl
+                    : 'https://avatar.iran.liara.run/public/17'
+                "
+                alt="Avatar"
+                class="w-8 h-8 rounded-full object-cover border"
+              />
+              <span>{{ selectedAttendance?.user?.userName || 'Unknown' }}</span>
+            </div>
           </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Date:</span>

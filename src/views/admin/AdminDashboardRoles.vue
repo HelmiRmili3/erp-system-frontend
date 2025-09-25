@@ -2,7 +2,7 @@
   <DashboardWrapper>
     <!-- Sticky header -->
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
-      <SectionHeader title="Gestion des Rôles">
+      <SectionHeader title="Roles Management">
         <template #icon><RolesFilledIcon /></template>
       </SectionHeader>
     </div>
@@ -16,10 +16,11 @@
       <div class="flex gap-4">
         <InputText
           v-model="searchQuery"
-          placeholder="Rechercher..."
+          placeholder="Search..."
           class="pl-10 py-2 border border-gray-300 rounded-lg"
+          autofocus="false"
         />
-        <Button icon="pi pi-plus" label="Ajouter" severity="success" @click="openAddModal" />
+        <Button icon="pi pi-plus" label="Add" severity="success" @click="openAddModal" />
       </div>
     </div>
 
@@ -39,7 +40,7 @@
       @page="onPage"
       tableStyle="min-width: 1000px "
     >
-      <Column field="name" header="Rôle" style="width: 150px" />
+      <Column field="name" header="Role" style="width: 150px" />
 
       <!-- Permissions toggling (shows ALL permissions) -->
       <Column header="Permissions" style="min-width: 400px">
@@ -71,7 +72,7 @@
               text
               severity="danger"
               @click="confirmDelete(role.name)"
-              v-tooltip="'Supprimer'"
+              v-tooltip="'Delete'"
             />
           </div>
         </template>
@@ -80,7 +81,7 @@
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
-          <p class="mt-2 text-gray-500">Aucun rôle trouvé</p>
+          <p class="mt-2 text-gray-500">No roles found</p>
         </div>
       </template>
     </DataTable>
@@ -88,17 +89,17 @@
     <!-- Add Role Modal -->
     <Dialog
       v-model:visible="showModal"
-      header="Ajouter Rôle"
+      header="Add Role"
       modal
       :style="{ width: '400px' }"
       class="p-4"
     >
       <form @submit.prevent="submitForm" class="flex flex-col gap-3">
-        <InputText v-model="formData.name" placeholder="Nom du rôle" required />
+        <InputText v-model="formData.name" placeholder="Role name" required />
 
         <div class="flex justify-end gap-2 mt-4">
-          <Button label="Annuler" severity="secondary" text @click="closeModal" />
-          <Button label="Ajouter" severity="success" type="submit" />
+          <Button label="Cancel" severity="secondary" text @click="closeModal" />
+          <Button label="Add" severity="success" type="submit" />
         </div>
       </form>
     </Dialog>
@@ -166,10 +167,10 @@ const submitForm = async () => {
   try {
     await store.addRole(formData.name, [])
     await store.fetchRolesWithPermissions()
-    toast.add({ severity: 'success', summary: 'Succès', detail: 'Rôle créé', life: 3000 })
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Role created', life: 3000 })
     closeModal()
   } catch {
-    toast.add({ severity: 'error', summary: 'Erreur', detail: 'Création échouée', life: 3000 })
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Creation failed', life: 3000 })
   }
 }
 
@@ -178,9 +179,9 @@ const confirmDelete = async (role: string) => {
   try {
     await store.removeRole({ role })
     await store.fetchRolesWithPermissions()
-    toast.add({ severity: 'success', summary: 'Succès', detail: 'Rôle supprimé', life: 3000 })
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Role deleted', life: 3000 })
   } catch {
-    toast.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression échouée', life: 3000 })
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Deletion failed', life: 3000 })
   }
 }
 
@@ -194,8 +195,8 @@ const togglePermission = async (role: any, permission: any) => {
 
       toast.add({
         severity: 'info',
-        summary: 'Mise à jour',
-        detail: `Permission "${permission.name}" retirée de ${role.name}`,
+        summary: 'Updated',
+        detail: `Permission "${permission.name}" removed from ${role.name}`,
         life: 1800
       })
     } else {
@@ -203,14 +204,14 @@ const togglePermission = async (role: any, permission: any) => {
       await store.fetchRolesWithPermissions()
       toast.add({
         severity: 'success',
-        summary: 'Mise à jour',
-        detail: `Permission "${permission.name}" ajoutée à ${role.name}`,
+        summary: 'Updated',
+        detail: `Permission "${permission.name}" added to ${role.name}`,
         life: 1800
       })
     }
     // store methods already refetch roles, so nothing else to do here
   } catch {
-    toast.add({ severity: 'error', summary: 'Erreur', detail: 'Mise à jour échouée', life: 3000 })
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Update failed', life: 3000 })
   }
 }
 </script>

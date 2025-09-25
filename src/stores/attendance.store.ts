@@ -39,9 +39,8 @@ export const useAttendancesStore = defineStore('attendances', () => {
     loading.value = true
     try {
       const response = await getAllAttendances(currentPage.value, pageSize.value, searchQuery.value)
-      console.log('Attendance response :', response)
       attendances.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length // Adjust based on your API response
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
     } catch (error) {
       console.error('Error fetching attendances:', error)
       attendances.value = []

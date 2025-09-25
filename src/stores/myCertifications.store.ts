@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Certification } from '@/models/certification.model'
 import {
-  createCertification,
   updateCertification,
   deleteCertification,
   getCertificationById,
@@ -22,9 +21,41 @@ export const useMyCertificationsStore = defineStore('certifications', () => {
     currentPage.value = page
     pageSize.value = perPage
     searchQuery.value = search
-
     await fetchCurrentUserCertifications()
   }
+
+  // Fetch current user's certifications with pagination and search
+  const fetchCurrentUserCertifications = async (
+    page?: number,
+    pageSize?: number,
+    search?: string
+  ) => {
+    loading.value = true
+    try {
+      // Use provided parameters or fall back to store values
+      const actualPage = page || currentPage.value
+      const actualPageSize = pageSize
+      const actualSearch = search !== undefined ? search : searchQuery.value
+
+      const response = await getCurrentUserCertifications({
+        page: actualPage,
+        perPage: actualPageSize,
+        search: actualSearch
+      })
+
+      certifications.value = response.data.data
+      totalRecords.value = response.data.recordsTotal || response.data.data.length
+
+      // Update store values if parameters were provided
+    } catch (error) {
+      console.error('Error fetching current user certifications:', error)
+      certifications.value = []
+      totalRecords.value = 0
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Update an existing certification
   const editCertification = async (data: Partial<Certification>) => {
     loading.value = true
@@ -70,26 +101,6 @@ export const useMyCertificationsStore = defineStore('certifications', () => {
     }
   }
 
-  // Fetch current user's certifications with pagination and search
-  const fetchCurrentUserCertifications = async () => {
-    loading.value = true
-    try {
-      const response = await getCurrentUserCertifications({
-        page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
-      })
-      certifications.value = response.data.data
-      totalRecords.value = response.data.recordsTotal || response.data.data.length
-    } catch (error) {
-      console.error('Error fetching current user certifications:', error)
-      certifications.value = []
-      totalRecords.value = 0
-    } finally {
-      loading.value = false
-    }
-  }
-
   return {
     certifications,
     loading,
@@ -98,7 +109,6 @@ export const useMyCertificationsStore = defineStore('certifications', () => {
     totalRecords,
     searchQuery,
     setPageAndSize,
-    // addCertification,
     editCertification,
     removeCertification,
     getCertification,

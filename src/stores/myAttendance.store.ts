@@ -53,6 +53,29 @@ export const useMyAttendancesStore = defineStore('myattendances', () => {
       loading.value = false
     }
   }
+  // Get the attendance record with the largest id
+  const getLastAttendanceById = (): Attendance | null => {
+    if (attendances.value.length === 0) return null
+    return attendances.value.reduce((prev, curr) => (curr.id > prev.id ? curr : prev))
+  }
+
+  // Determine next operation: checkin or checkout
+  const getNextOperation = (): 'checkin' | 'checkout' => {
+    const last = getLastAttendanceById()
+
+    // If no previous attendance exists → next operation is check-in
+    if (!last) {
+      return 'checkin'
+    }
+
+    // If last record has check-in but no check-out → next is check-out
+    if (last.checkIn && !last.checkOut) {
+      return 'checkout'
+    }
+
+    // Last record has both check-in and check-out → next is check-in
+    return 'checkin'
+  }
 
   return {
     attendances,
@@ -63,6 +86,7 @@ export const useMyAttendancesStore = defineStore('myattendances', () => {
     searchQuery,
     addAttendance,
     setPageAndSize,
-    fetchCurrentUserAttendances
+    fetchCurrentUserAttendances,
+    getNextOperation
   }
 })

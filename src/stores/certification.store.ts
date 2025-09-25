@@ -18,9 +18,9 @@ export const useCertificationsStore = defineStore('certifications', () => {
   const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (page: number, perPage: number, search: string = '') => {
+  const setPageAndSize = async (page: number, size: number, search: string = '') => {
     currentPage.value = page
-    pageSize.value = perPage
+    pageSize.value = size
     searchQuery.value = search
 
     await fetchCertifications()
@@ -32,6 +32,9 @@ export const useCertificationsStore = defineStore('certifications', () => {
     try {
       const response = await createCertification(formData)
       certifications.value.push(response.data.data)
+      totalRecords.value = response.data.recordsFiltered ?? response.data.recordsTotal ?? 0
+      currentPage.value = response.data.pageNumber
+      pageSize.value = response.data.pageSize
       return response.data.data
     } catch (error) {
       console.error('Error creating certification:', error)

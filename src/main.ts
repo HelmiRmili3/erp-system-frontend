@@ -19,7 +19,8 @@ import { fab } from '@fortawesome/free-brands-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import ConfirmationService from 'primevue/confirmationservice'
 
-import { AxiosInstance, api } from '@/plugins/axios'
+import axiosPlugin from '@/plugins/axios'
+
 import { useAppStore } from './stores/app.store'
 import type { AppConfig } from './types/config'
 
@@ -42,13 +43,13 @@ async function bootstrap() {
   // 1️⃣ Load config
   const config = await loadConfig()
   console.log('Connected to :', config.VITE_BASE_URL)
+  app.use(axiosPlugin)
 
   // 2️⃣ Setup Pinia
   const pinia = createPinia()
   app.use(pinia)
 
   // 3️⃣ Create Axios instance AFTER Pinia
-  AxiosInstance(config.VITE_BASE_URL)
 
   // 4️⃣ Now stores are safe to use
   const appStore = useAppStore()
