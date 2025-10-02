@@ -216,14 +216,29 @@
     >
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
-          <div class="flex justify-between">
+          <!-- <div class="flex justify-between">
             <span class="font-medium text-gray-700">ID:</span>
             <span>{{ selectedPayroll?.id || 'N/A' }}</span>
+          </div> -->
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-gray-700">Employé:</span>
+            <div class="flex items-center gap-3">
+              <img
+                :src="
+                  selectedPayroll?.user?.fileUrl
+                    ? appStore.baseURL + selectedPayroll.user.fileUrl
+                    : 'https://avatar.iran.liara.run/public/17'
+                "
+                alt="Avatar"
+                class="w-8 h-8 rounded-full object-cover border"
+              />
+              <span>{{ selectedPayroll?.user?.userName || 'Unknown' }}</span>
+            </div>
           </div>
-          <div class="flex justify-between">
+          <!-- <div class="flex justify-between">
             <span class="font-medium text-gray-700">User:</span>
             <span>{{ selectedPayroll?.userId || 'N/A' }}</span>
-          </div>
+          </div> -->
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Period:</span>
             <span>{{ formatPeriod(selectedPayroll?.period) }}</span>
@@ -284,6 +299,7 @@ import Dialog from 'primevue/dialog'
 import { useToast } from 'primevue/usetoast'
 import PayrollsIcon from '@/components/icons/PayrollsIcon.vue'
 import { usePayrollsStore } from '@/stores/payroll.store'
+import UserSelectDropdown from '@/components/common/UserSelectDropdown.vue'
 
 const appStore = useAppStore()
 const payrollsStore = usePayrollsStore()

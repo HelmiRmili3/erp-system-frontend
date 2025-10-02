@@ -4,13 +4,17 @@
 
     <!-- Drag & Drop Area -->
     <div
-      @dragover.prevent="isDragging = true"
-      @dragleave.prevent="isDragging = false"
-      @drop.prevent="onDrop"
-      @click="triggerFileSelect"
+      @dragover.prevent="!disabled && (isDragging = true)"
+      @dragleave.prevent="!disabled && (isDragging = false)"
+      @drop.prevent="!disabled && onDrop($event)"
+      @click="!disabled && triggerFileSelect()"
       :class="[
         'border-dashed border-2 rounded-lg px-3 py-2 flex items-center justify-center gap-2 cursor-pointer transition-colors',
-        isDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-300 bg-white hover:bg-gray-50'
+        disabled
+          ? 'border-gray-200 bg-gray-100 cursor-not-allowed'
+          : isDragging
+            ? 'border-blue-400 bg-blue-50'
+            : 'border-gray-300 bg-white hover:bg-gray-50'
       ]"
     >
       <span v-if="files.length === 0" class="text-gray-500 text-sm">
@@ -24,6 +28,7 @@
         type="file"
         :accept="accept"
         :multiple="multiple"
+        :disabled="disabled"
         @change="onFileChange"
         class="hidden"
       />
@@ -39,6 +44,7 @@ const props = defineProps<{
   modelValue: File | File[] | null
   multiple?: boolean
   accept?: string
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -60,10 +66,12 @@ watch(
 )
 
 const triggerFileSelect = () => {
+  if (props.disabled) return
   fileInput.value?.click()
 }
 
 const onFileChange = (event: Event) => {
+  if (props.disabled) return
   const target = event.target as HTMLInputElement
   if (!target.files) return
   files.value = props.multiple ? Array.from(target.files) : [target.files[0]]
@@ -71,6 +79,7 @@ const onFileChange = (event: Event) => {
 }
 
 const onDrop = (event: DragEvent) => {
+  if (props.disabled) return
   const droppedFiles = event.dataTransfer?.files
   if (!droppedFiles) return
   files.value = props.multiple ? Array.from(droppedFiles) : [droppedFiles[0]]

@@ -1,18 +1,36 @@
-import { ref, computed } from 'vue'
+// stores/app.store.ts
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useAppStore = defineStore('app', () => {
-  const _loading = ref(false)
+  const loading = ref(false)
+  const baseURL = ref('http://localhost:5000') // default value
 
-  const loading = computed(() => _loading.value)
-  const baseURL = localStorage.getItem('baseURL')
   const setLoading = (value: boolean) => {
-    _loading.value = value
+    loading.value = value
+  }
+
+  const initializeBaseURL = () => {
+    if (typeof window !== 'undefined') {
+      const savedURL = localStorage.getItem('baseURL')
+      if (savedURL) {
+        baseURL.value = savedURL
+      }
+    }
+  }
+
+  const setBaseURL = (url: string) => {
+    baseURL.value = url
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('baseURL', url)
+    }
   }
 
   return {
     loading,
+    baseURL,
     setLoading,
-    baseURL
+    initializeBaseURL,
+    setBaseURL
   }
 })

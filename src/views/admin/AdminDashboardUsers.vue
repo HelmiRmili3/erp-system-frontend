@@ -90,6 +90,14 @@
               {{ r }}
             </span>
           </div>
+          <Dropdown
+            :options="adminStore.roles"
+            optionLabel="name"
+            optionValue="name"
+            placeholder="+ Add Role"
+            class="p-dropdown-sm"
+            @change="(selectedRole: any) => addRoleToUser(data, selectedRole)"
+          />
         </template>
       </Column>
 
@@ -107,7 +115,7 @@
       </Column>
 
       <!-- Actions -->
-      <Column header="Actions" style="width: 100px">
+      <!-- <Column header="Actions" style="width: 100px">
         <template #body="{ data }">
           <div class="flex gap-1">
             <Button
@@ -129,7 +137,7 @@
             />
           </div>
         </template>
-      </Column>
+      </Column> -->
 
       <!-- Empty -->
       <template #empty>
@@ -149,6 +157,11 @@
       class="p-4"
     >
       <form @submit.prevent="submitForm" class="flex flex-col gap-3">
+        <FilePicker
+          v-model="formData.file"
+          label="Select a file"
+          accept=".pdf,.doc,.docx,.jpg,.png"
+        />
         <div class="grid grid-cols-2 gap-3">
           <InputText v-model="formData.firstName" placeholder="First Name" required />
           <InputText v-model="formData.lastName" placeholder="Name" required />
@@ -291,6 +304,19 @@ const selectedUser = ref<any>(null)
 const searchQuery = ref('')
 const maxDate = ref(new Date())
 const submitted = ref(false)
+const addRoleToUser = async (user: any, role: string) => {
+  if (!role) return
+  if (!user.roles.includes(role)) {
+    try {
+      // Call your API to add role for the user
+      await adminStore.assignRoles({ userId: user.id, roleIds: [role] })
+      // Update local roles array
+      user.roles.push(role)
+    } catch (err) {
+      console.error('Error adding role:', err)
+    }
+  }
+}
 
 const contractTypes = [
   { label: 'CDI', value: 0 },
@@ -316,7 +342,8 @@ const formData = reactive({
   department: '',
   hireDate: null as Date | null,
   contractType: 0,
-  status: 0
+  status: 0,
+  file: null
 })
 const errors = reactive({
   email: '',
@@ -384,7 +411,8 @@ const openAddModal = () => {
     department: '',
     hireDate: null,
     contractType: 0,
-    status: 0
+    status: 0,
+    file: null
   })
   showModal.value = true
 }
@@ -405,7 +433,8 @@ const openUpdateModal = (user: any) => {
     department: user.department,
     hireDate: user.hireDate ? new Date(user.hireDate) : null,
     contractType: user.contractType,
-    status: user.status
+    status: user.status,
+    file: user.file
   })
   showModal.value = true
 }

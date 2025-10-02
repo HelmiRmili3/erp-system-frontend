@@ -9,3 +9,9 @@ export interface Certification {
   fileUrl: string
   user: User
 }
+export interface UpdateCertification {
+  id: number
+  name: string
+  authority: string
+  dateObtained: string
+}

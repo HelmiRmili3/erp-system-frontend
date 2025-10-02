@@ -6,7 +6,11 @@ import { api } from '@/plugins/axios'
 const register = async (userData: any) => {
   const payload = { data: userData }
   try {
-    const response = await api.post<Response<User>>('Auth/register', payload)
+    const response = await api.post<Response<User>>('Auth/register', payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
     return response.data
   } catch (error: any) {
     console.error('Registration failed:', JSON.stringify(error.response?.data, null, 2))

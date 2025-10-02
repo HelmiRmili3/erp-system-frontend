@@ -1,5 +1,6 @@
 <template>
   <DashboardWrapper>
+    <!-- Header -->
     <div class="sticky top-0 z-10 bg-[#f9f9f9] pt-5">
       <SectionHeader title="Employees Certifications Management">
         <template>
@@ -8,16 +9,16 @@
       </SectionHeader>
     </div>
 
+    <!-- Controls -->
     <div class="h-[20px]"></div>
     <div class="flex justify-between items-center flex-row">
       <div class="flex justify-between flex-row items-center gap-2.5 mb-2.5">
-        <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5"
-          >{{ certificationsStore.totalRecords }} records</span
-        >
+        <span class="text-[#494949] text-xs font-medium flex items-center gap-2.5">
+          {{ certificationsStore.totalRecords }} records
+        </span>
       </div>
       <div class="flex justify-start items-center gap-4">
-        <!-- Search Input -->
-        <div class="relative">
+        <!-- <div class="relative">
           <InputText
             v-model="certificationsStore.searchQuery"
             placeholder="Rechercher..."
@@ -30,14 +31,14 @@
               )
             "
           />
-        </div>
-        <!-- Add Certification Button -->
+        </div> -->
         <Button icon="pi pi-plus" label="" severity="success" @click="openAddModal" />
       </div>
     </div>
+
     <div class="h-[20px]"></div>
 
-    <!-- Certifications DataTable -->
+    <!-- DataTable -->
     <DataTable
       :value="certificationsStore.certifications"
       class="p-datatable-sm"
@@ -51,7 +52,6 @@
       scrollable
       scrollHeight="calc(100vh - 250px)"
     >
-      <!-- Columns -->
       <Column header="Employee" style="min-width: 200px">
         <template #body="{ data }">
           <div class="flex items-center gap-3">
@@ -80,7 +80,7 @@
         <template #body="{ data }">
           <a
             v-if="data.fileUrl"
-            :href="`${appStore.baseURL + data.fileUrl}`"
+            :href="appStore.baseURL + data.fileUrl"
             target="_blank"
             rel="noopener"
             class="text-blue-600 hover:underline"
@@ -92,13 +92,7 @@
       </Column>
       <Column header="Détails" style="min-width: 120px">
         <template #body="{ data }">
-          <Button
-            label="See More"
-            text
-            severity="info"
-            @click="openDetailsModal(data)"
-            v-tooltip="'Voir Détails'"
-          />
+          <Button label="See More" text severity="info" @click="openDetailsModal(data)" />
         </template>
       </Column>
       <Column header="Actions" style="width: 150px">
@@ -109,20 +103,19 @@
               rounded
               text
               severity="success"
-              @click="updateCertificate(data)"
-              v-tooltip="'Modifier'"
+              @click="openUpdateModal(data)"
             />
             <Button
               icon="pi pi-trash"
               rounded
               text
               severity="danger"
-              @click="deleteCertificate(data.id)"
-              v-tooltip="'Supprimer'"
+              @click="confirmDelete(data)"
             />
           </div>
         </template>
       </Column>
+
       <template #empty>
         <div class="flex flex-col items-center justify-center py-8">
           <i class="pi pi-exclamation-triangle text-4xl text-gray-400"></i>
@@ -131,22 +124,28 @@
       </template>
     </DataTable>
 
-    <!-- Add Modal -->
+    <!-- Add/Update Modal -->
     <Dialog
       v-model:visible="showAddModal"
-      header="Add Certification"
+      :header="editingCertificationId ? 'Update Certification' : 'Add Certification'"
       modal
       :style="{ width: '600px' }"
       class="p-4"
     >
-      <form @submit.prevent="submitForm" class="flex flex-col gap-4">
+      <form
+        @submit.prevent="editingCertificationId ? submitUpdateForm() : submitAddForm()"
+        class="flex flex-col gap-4"
+      >
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="userId" class="text-sm font-medium text-gray-700">User</label>
-            <UserSelectDropdown v-model="formData.userId" placeholder="Select a user" />
+            <label class="text-sm font-medium text-gray-700">User</label>
+            <UserSelectDropdown
+              v-model="formData.userId"
+              :disabled="editingCertificationId !== null"
+            />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+            <label class="text-sm font-medium text-gray-700">Name</label>
             <InputText
               v-model="formData.name"
               placeholder="Certification name"
@@ -158,9 +157,7 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col gap-2">
-            <label for="authority" class="text-sm font-medium text-gray-700"
-              >Issuing Authority</label
-            >
+            <label class="text-sm font-medium text-gray-700">Authority</label>
             <InputText
               v-model="formData.authority"
               placeholder="Issuing authority"
@@ -169,9 +166,7 @@
             />
           </div>
           <div class="flex flex-col gap-2">
-            <label for="dateObtained" class="text-sm font-medium text-gray-700"
-              >Date Obtained</label
-            >
+            <label class="text-sm font-medium text-gray-700">Date Obtained</label>
             <InputText
               type="date"
               v-model="formData.dateObtainedDisplay"
@@ -185,16 +180,21 @@
           v-model="formData.file"
           label="Select a file"
           accept=".pdf,.doc,.docx,.jpg,.png"
+          :disabled="editingCertificationId !== null"
         />
 
         <div class="flex justify-end gap-2">
           <Button label="Cancel" severity="secondary" text @click="closeAddModal" />
-          <Button label="Add" severity="success" type="submit" />
+          <Button
+            :label="editingCertificationId ? 'Update' : 'Add'"
+            severity="success"
+            type="submit"
+          />
         </div>
       </form>
     </Dialog>
 
-    <!-- Details Popup -->
+    <!-- Details Modal -->
     <Dialog
       v-model:visible="showDetailsModal"
       header="Détails de la Certification"
@@ -220,22 +220,22 @@
             </div>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Nom:</span>
-            <span>{{ selectedCertification?.name || 'N/A' }}</span>
+            <span class="font-medium text-gray-700">Nom:</span
+            ><span>{{ selectedCertification?.name || 'N/A' }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Autorité:</span>
-            <span>{{ selectedCertification?.authority || 'N/A' }}</span>
+            <span class="font-medium text-gray-700">Autorité:</span
+            ><span>{{ selectedCertification?.authority || 'N/A' }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="font-medium text-gray-700">Date Obtenue:</span>
-            <span>{{ formatDate(selectedCertification?.dateObtained) }}</span>
+            <span class="font-medium text-gray-700">Date Obtenue:</span
+            ><span>{{ formatDate(selectedCertification?.dateObtained) }}</span>
           </div>
           <div class="flex justify-between">
             <span class="font-medium text-gray-700">Fichier:</span>
             <a
               v-if="selectedCertification?.fileUrl"
-              :href="`${appStore.baseURL + selectedCertification.fileUrl}`"
+              :href="appStore.baseURL + selectedCertification.fileUrl"
               target="_blank"
               class="text-blue-600 hover:underline"
               >Voir PDF</a
@@ -248,15 +248,44 @@
         </div>
       </div>
     </Dialog>
+
+    <!-- Delete Confirmation -->
+    <Dialog
+      v-model:visible="showDeleteModal"
+      header="Confirm Delete"
+      modal
+      :style="{ width: '400px' }"
+      class="p-4"
+    >
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-3">
+          <i class="pi pi-exclamation-triangle text-3xl text-red-500"></i>
+          <div>
+            <p class="text-lg font-medium">Are you sure?</p>
+            <p class="text-sm text-gray-600">
+              This action will permanently delete the certification for
+              <strong>{{ certificationToDelete?.user?.userName || 'this employee' }}</strong
+              >. This action cannot be undone.
+            </p>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <Button label="Cancel" severity="secondary" text @click="closeDeleteModal" />
+          <Button
+            label="Delete"
+            severity="danger"
+            :loading="deleteLoading"
+            @click="executeDelete"
+          />
+        </div>
+      </div>
+    </Dialog>
   </DashboardWrapper>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, reactive } from 'vue'
-import { useAppStore } from '@/stores/app.store'
-import UserSelectDropdown from '@/components/common/UserSelectDropdown.vue'
-import FilePicker from '@/components/common/FilePicker.vue'
-
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useToast } from 'primevue/usetoast'
 import DashboardWrapper from '../admin/components/AdminDashboardOrders/DashboardWrapper.vue'
 import SectionHeader from '../admin/components/AdminDashboardOrders/SectionHeader.vue'
 import DataTable from 'primevue/datatable'
@@ -264,8 +293,10 @@ import Column from 'primevue/column'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dialog from 'primevue/dialog'
-import { useToast } from 'primevue/usetoast'
+import UserSelectDropdown from '@/components/common/UserSelectDropdown.vue'
+import FilePicker from '@/components/common/FilePicker.vue'
 import CertificationsIcon from '@/components/icons/CertificationsIcon.vue'
+import { useAppStore } from '@/stores/app.store'
 import { useCertificationsStore } from '@/stores/certification.store'
 
 const appStore = useAppStore()
@@ -276,29 +307,32 @@ const toast = useToast()
 const showAddModal = ref(false)
 const showDetailsModal = ref(false)
 const selectedCertification = ref<any>(null)
+const showDeleteModal = ref(false)
+const certificationToDelete = ref<any>(null)
+const deleteLoading = ref(false)
+const editingCertificationId = ref<number | null>(null)
 
 const formData = reactive({
   userId: '',
   name: '',
   authority: '',
-  dateObtained: '', // ISO string (e.g., 2023-10-15T00:00:00Z)
-  dateObtainedDisplay: '', // YYYY-MM-DD for input (e.g., 2023-10-15)
-  file: null
+  dateObtained: '',
+  dateObtainedDisplay: '',
+  file: null,
+  fileUrl: ''
 })
 
-// Fetch certifications when component is mounted
+// Fetch certifications
 onMounted(async () => {
   await certificationsStore.fetchCertifications()
   appStore.setLoading(false)
 })
 
-// Handle pagination
 const onPage = async (event: any) => {
-  const { page, rows } = event // page is 0-based in PrimeVue
-  await certificationsStore.setPageAndSize(page + 1, rows, certificationsStore.searchQuery)
+  const { page, rows } = event
+  await certificationsStore.setPageAndSize(page + 1, rows)
 }
 
-// Helper function to format dates
 const formatDate = (dateString: string) => {
   return dateString
     ? new Date(dateString).toLocaleDateString('en-US', {
@@ -309,110 +343,153 @@ const formatDate = (dateString: string) => {
     : 'N/A'
 }
 
-// Modal functions
+// ----- MODALS -----
 const openAddModal = () => {
-  const now = new Date()
-  const todayISO = now.toISOString()
-  const todayDate = todayISO.split('T')[0]
-  Object.assign(formData, {
-    userId: '',
-    name: '',
-    authority: '',
-    dateObtained: todayISO,
-    dateObtainedDisplay: todayDate,
-    file: null
-  })
+  editingCertificationId.value = null
+  const today = new Date()
+  formData.userId = ''
+  formData.name = ''
+  formData.authority = ''
+  formData.dateObtained = today.toISOString()
+  formData.dateObtainedDisplay = today.toISOString().split('T')[0]
+  formData.file = null
+  formData.fileUrl = ''
   showAddModal.value = true
 }
 
 const closeAddModal = () => {
   showAddModal.value = false
 }
-const updateCertificate = (data: any) => {}
-const deleteCertificate = (data: any) => {}
-const openDetailsModal = (certification: any) => {
-  selectedCertification.value = certification
-  showDetailsModal.value = true
+
+// Update modal
+const openUpdateModal = (cert: any) => {
+  editingCertificationId.value = cert.id
+  Object.assign(formData, {
+    userId: cert.userId,
+    name: cert.name,
+    authority: cert.authority,
+    dateObtained: cert.dateObtained,
+    dateObtainedDisplay: cert.dateObtained?.split('T')[0],
+    file: null,
+    fileUrl: cert.fileUrl
+  })
+  showAddModal.value = true
 }
 
-const closeDetailsModal = () => {
-  showDetailsModal.value = false
-  selectedCertification.value = null
-}
-const submitForm = async () => {
+// Submit Add
+const submitAddForm = async () => {
   try {
-    const formPayload = new FormData()
+    const payload = new FormData()
+    payload.append('Certification.UserId', formData.userId)
+    payload.append('Certification.Name', formData.name)
+    payload.append('Certification.Authority', formData.authority)
+    payload.append('Certification.DateObtained', new Date(formData.dateObtained).toISOString())
+    if (formData.file) payload.append('File', formData.file)
 
-    formPayload.append('Certification.UserId', formData.userId)
-    formPayload.append('Certification.Name', formData.name)
-    formPayload.append('Certification.Authority', formData.authority)
-    formPayload.append('Certification.DateObtained', new Date(formData.dateObtained).toISOString())
-
-    if (formData.file) {
-      formPayload.append('File', formData.file) // actual file selected
-    }
-
-    await certificationsStore.addCertification(formPayload)
-
+    await certificationsStore.addCertification(payload)
     toast.add({
       severity: 'success',
       summary: 'Succès',
       detail: 'Certification créée avec succès',
       life: 3000
     })
-
     await certificationsStore.fetchCertifications()
     closeAddModal()
-  } catch (error) {
-    console.error('Error submitting form:', error)
+  } catch (err) {
+    console.error(err)
+    toast.add({ severity: 'error', summary: 'Erreur', detail: "Échec de l'ajout", life: 3000 })
+  }
+}
+
+// Submit Update
+const submitUpdateForm = async () => {
+  if (!editingCertificationId.value) return
+  try {
+    const payload = {
+      id: editingCertificationId.value!,
+      userId: formData.userId,
+      fileUrl: formData.fileUrl,
+      name: formData.name,
+      authority: formData.authority,
+      dateObtained: new Date(formData.dateObtained).toISOString()
+    }
+    console.log('payload', payload)
+    await certificationsStore.editCertification(payload)
+    toast.add({
+      severity: 'success',
+      summary: 'Succès',
+      detail: 'Certification mise à jour avec succès',
+      life: 3000
+    })
+    await certificationsStore.fetchCertifications()
+    closeAddModal()
+    editingCertificationId.value = null
+  } catch (err) {
+    console.error(err)
     toast.add({
       severity: 'error',
       summary: 'Erreur',
-      detail: "Échec de l'enregistrement de la certification",
+      detail: 'Échec de la mise à jour',
       life: 3000
     })
   }
 }
 
-// const submitForm = async () => {
-//   try {
-//     // const data = {
-//     //   userId: formData.userId,
-//     //   name: formData.name,
-//     //   authority: formData.authority,
-//     //   dateObtained: formData.dateObtained,
-//     //   fileUrl: formData.fileUrl || null
-//     // }
-//     // await certificationsStore.addCertification(data)
-//     toast.add({
-//       severity: 'success',
-//       summary: 'Succès',
-//       detail: 'Certification créée avec succès',
-//       life: 3000
-//     })
-//     await certificationsStore.fetchCertifications()
-//     closeAddModal()
-//   } catch (error) {
-//     console.error('Error submitting form:', error)
-//     toast.add({
-//       severity: 'error',
-//       summary: 'Erreur',
-//       detail: "Échec de l'enregistrement de la certification",
-//       life: 3000
-//     })
-//   }
-// }
+// ----- DETAILS -----
+const openDetailsModal = (cert: any) => {
+  selectedCertification.value = cert
+  showDetailsModal.value = true
+}
+const closeDetailsModal = () => {
+  showDetailsModal.value = false
+  selectedCertification.value = null
+}
 
-// Watcher to sync dateObtainedDisplay with dateObtained
+// ----- DELETE -----
+const confirmDelete = (cert: any) => {
+  certificationToDelete.value = cert
+  showDeleteModal.value = true
+}
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  certificationToDelete.value = null
+  deleteLoading.value = false
+}
+
+const executeDelete = async () => {
+  if (!certificationToDelete.value) return
+  deleteLoading.value = true
+  try {
+    await certificationsStore.removeCertification(certificationToDelete.value.id)
+    toast.add({
+      severity: 'success',
+      summary: 'Succès',
+      detail: 'Certification supprimée',
+      life: 3000
+    })
+    await certificationsStore.fetchCertifications()
+    closeDeleteModal()
+  } catch (err) {
+    console.error(err)
+    toast.add({
+      severity: 'error',
+      summary: 'Erreur',
+      detail: 'Échec de la suppression',
+      life: 3000
+    })
+    deleteLoading.value = false
+  }
+}
+
+// Watch date input
 watch(
   () => formData.dateObtainedDisplay,
   (newDate) => {
-    if (newDate) {
-      const [year, month, day] = newDate.split('-')
-      const date = new Date(formData.dateObtained || new Date())
-      date.setFullYear(parseInt(year), parseInt(month) - 1, parseInt(day))
-      formData.dateObtained = date.toISOString()
-    }
+    if (!newDate) return
+    const [year, month, day] = newDate.split('-')
+    const date = new Date(formData.dateObtained || new Date())
+    date.setFullYear(+year, +month - 1, +day)
+    formData.dateObtained = date.toISOString()
   }
 )
 </script>
@@ -421,21 +498,17 @@ watch(
 * {
   font-family: 'Poppins', sans-serif;
 }
-
 .p-datatable .p-datatable-tbody > tr {
   cursor: pointer;
 }
-
 .p-datatable .p-datatable-tbody > tr:hover {
   background-color: #f8f9fa;
 }
-
 .p-paginator {
   display: flex;
   justify-content: center;
   padding: 1rem;
 }
-
 .p-paginator .p-paginator-pages .p-paginator-page {
   margin: 0 0.5rem;
 }

@@ -113,14 +113,14 @@
       <Column header="Actions" style="width: 150px">
         <template #body="{ data }">
           <div class="flex gap-1">
-            <Button
+            <!-- <Button
               icon="pi pi-pencil"
               rounded
               text
               severity="success"
               @click="openUpdateModal(data)"
-              v-tooltip="'Modifier'"
-            />
+              v-tooltip="'Modifier'" 
+            />-->
             <Button
               icon="pi pi-trash"
               rounded
@@ -586,23 +586,14 @@ const submitForm = async () => {
     }
 
     // Call store action with error handling
-    if (contractsStore && typeof contractsStore.addContract === 'function') {
-      await contractsStore.addContract(formPayload)
-
+    await contractsStore.addContract(formPayload).then(() => {
       toast.add({
         severity: 'success',
         summary: 'Succès',
         detail: 'Contrat créé avec succès',
         life: 3000
       })
-
-      // Refresh the list if fetchContracts exists
-      if (typeof contractsStore.fetchContracts === 'function') {
-        await contractsStore.fetchContracts()
-      }
-    } else {
-      throw new Error('addContract function not available')
-    }
+    })
 
     showAddModal.value = false
   } catch (error) {

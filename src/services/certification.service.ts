@@ -17,11 +17,7 @@ const createCertification = (data: FormData) => {
 }
 
 const updateCertification = (data: Partial<Certification>) => {
-  return api.put<Response<Certification>>('Certifications', data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+  return api.put<Response<Certification>>('Certifications', data, {})
 }
 
 const getAllCertifications = (params: PaginationParams = {}) => {
@@ -42,21 +38,21 @@ const getCertificationById = (id: number) => {
   return api.get<Response<Certification>>(`Certifications/${id}`)
 }
 
-const getCurrentUserCertifications = (params: PaginationParams = {}) => {
-  return api.get<Response<Certification[]>>('Certifications/me', {
-    params: {
-      page: params.page,
-      perPage: params.perPage,
-      search: params.search
-    }
-  })
-}
+// const getCurrentUserCertifications = (params: PaginationParams = {}) => {
+//   return api.get<Response<Certification[]>>('Certifications/me', {
+//     params: {
+//       page: params.page,
+//       perPage: params.perPage,
+//       search: params.search
+//     }
+//   })
+// }
 
 export {
   createCertification,
   updateCertification,
   getAllCertifications,
   deleteCertification,
-  getCertificationById,
-  getCurrentUserCertifications
+  getCertificationById
+  // getCurrentUserCertifications
 }

@@ -32,6 +32,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const response = await createContract(formData)
       contracts.value.push(response.data.data)
+      fetchContracts()
       return response.data.data
     } catch (error) {
       console.error('Error creating contract:', error)
@@ -47,10 +48,7 @@ export const useContractsStore = defineStore('contracts', () => {
     try {
       const response = await updateContract(data)
       const updatedContract = response.data.data
-      const index = contracts.value.findIndex((cont) => cont.id === updatedContract.id)
-      if (index !== -1) {
-        contracts.value[index] = updatedContract
-      }
+      fetchContracts()
       return updatedContract
     } catch (error) {
       console.error('Error updating contract:', error)

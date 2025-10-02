@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Certification } from '@/models/certification.model'
+import type { Certification, UpdateCertification } from '@/models/certification.model'
 import {
   createCertification,
   updateCertification,
@@ -15,13 +15,11 @@ export const useCertificationsStore = defineStore('certifications', () => {
   const currentPage = ref(1)
   const pageSize = ref(10)
   const totalRecords = ref(0)
-  const searchQuery = ref('')
 
   // Set page, size, and search query, then fetch data
-  const setPageAndSize = async (page: number, size: number, search: string = '') => {
+  const setPageAndSize = async (page: number, size: number) => {
     currentPage.value = page
     pageSize.value = size
-    searchQuery.value = search
 
     await fetchCertifications()
   }
@@ -45,15 +43,12 @@ export const useCertificationsStore = defineStore('certifications', () => {
   }
 
   // Update an existing certification
-  const editCertification = async (data: Partial<Certification>) => {
+  const editCertification = async (data: UpdateCertification) => {
     loading.value = true
     try {
       const response = await updateCertification(data)
       const updatedCertification = response.data.data
-      const index = certifications.value.findIndex((cert) => cert.id === updatedCertification.id)
-      if (index !== -1) {
-        certifications.value[index] = updatedCertification
-      }
+      fetchCertifications()
       return updatedCertification
     } catch (error) {
       console.error('Error updating certification:', error)
@@ -69,8 +64,7 @@ export const useCertificationsStore = defineStore('certifications', () => {
     try {
       const response = await getAllCertifications({
         page: currentPage.value,
-        perPage: pageSize.value,
-        search: searchQuery.value
+        perPage: pageSize.value
       })
       certifications.value = response.data.data
       totalRecords.value = response.data.recordsTotal || response.data.data.length
@@ -88,7 +82,7 @@ export const useCertificationsStore = defineStore('certifications', () => {
     loading.value = true
     try {
       await deleteCertification(id)
-      certifications.value = certifications.value.filter((cert) => cert.id !== id)
+      fetchCertifications()
       return true
     } catch (error) {
       console.error('Error deleting certification:', error)
@@ -115,7 +109,6 @@ export const useCertificationsStore = defineStore('certifications', () => {
     currentPage,
     pageSize,
     totalRecords,
-    searchQuery,
     setPageAndSize,
     addCertification,
     editCertification,
